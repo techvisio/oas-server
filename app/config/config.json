@@ -14,7 +14,7 @@
       "serverUrl":"localhost:3000"
      },
   "production":{},
-  "app.port":3030,
+  "app.port":3000,
    "secretKey":"techVisio",
    "tokenExpireTime" : 10,
   "log_directory":"/logs",

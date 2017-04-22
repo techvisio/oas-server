@@ -52,13 +52,14 @@ module.exports = (function () {
         init();
         logger.debug(context.reqId + " : signupClient request recieved for new client : " + context.data);
         var data = context.data;
+        var clientData = createClientData(data);
         return new Promise((resolve, reject) => {
-            var clientData = createClientData(data);
-            validationService.validate(utils.getConstants().SIGN_UP, data)
+             validationService.validate(utils.getConstants().SIGN_UP, data)
                 .then(checkValidationResult)
                 .then(createClient)
                 .then(createUser)
                 .then(sendConfirmationMail)
+                .then(client => resolve(client))
                 .catch(err => reject(err))
         });
 
@@ -88,7 +89,8 @@ module.exports = (function () {
             return new Promise((resolve, reject) => {
 
                 clientData.hashCode = uuid.v4();
-                clientDao.createClient(context).then(client => resolve(client));
+                var clientContext=utils.getUtils().cloneContext(context,clientData);
+                clientDao.createClient(clientContext).then(client => resolve(client));
             });
         }
 
@@ -100,7 +102,7 @@ module.exports = (function () {
                     emailId: data.emailId,
                     clientCode: client.clientCode
                 }
-                var userContext = { data: userData };
+                var userContext=utils.getUtils().cloneContext(context,userData);
                 userService.createUser(userContext).then(function (user) {
                     resolve(client);
                 }, function (err) {
@@ -186,8 +188,12 @@ module.exports = (function () {
                 primaryEmailId: emailId
             }
             clientDao.getClients(client).then(function (clients) {
-                resolve(clients[0].toObject());
-                logger.debug("sending response from getClientByEmailId: " + updatedUser);
+               if(clients && clients.length > 0){
+                resolve(clients[0]);
+                }
+               else{
+                   resolve();
+               }
             })
                 .catch(err => reject(err));
         });

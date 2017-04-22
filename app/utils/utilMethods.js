@@ -12,7 +12,8 @@ module.exports = (function () {
         generateClientCode: generateClientCode,
         buildSuccessResponse: buildSuccessResponse,
         buildFailedResponse: buildFailedResponse,
-        buildSystemFailedResponse: buildSystemFailedResponse
+        buildSystemFailedResponse: buildSystemFailedResponse,
+        cloneContext: cloneContext
     };
 
     function isEmpty(object) {
@@ -52,8 +53,14 @@ module.exports = (function () {
     }
 
     function cloneContext(context, data) {
-        var clonedContext = Object.clone(context);
-        cloneContext.data = data;
+         var clonedContext = {
+            data: data,
+            loggedInUser: context.loggedInUser,
+            reqId: context.reqId,
+            header: context.header,
+            remoteAddress: context.remoteAddress,
+            parameter: context.parameter
+        };
         return clonedContext;
     }
 
