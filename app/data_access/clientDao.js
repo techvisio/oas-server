@@ -66,7 +66,7 @@ module.exports = (function () {
         logger.debug(context.reqId + " : updateClient request recieved ");
         return new Promise((resolve, reject) => {
             var client = context.data;
-            client.updateDate = new Date;
+            client.updateDate = new Date();
             client.updatedBy = context.loggedInUser.userName;
             clientModel.update({ _id: client._id }, client, function (err, updatedClient) {
                 if (err) {

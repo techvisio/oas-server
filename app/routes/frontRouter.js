@@ -17,9 +17,13 @@ router.all('/*', function (req, res, next) {
     //add a unique request identifier
     req.id = ++reqId;
 
+    //adding initial context and system user
+    req.session = { user: { userName:"SYSTEM"} };
+
     //log request url
     logger.info(req.id + ':' + 'Request URL : ' + req.originalUrl);
     //check if security token exists
+    //TODO: change sectoken with x-access header
     if (req.headers.sectoken) {
         //get and populate session from store
         var session = utils.getSessionStore().get(req.headers.sectoken);
@@ -40,9 +44,9 @@ router.all('/*', function (req, res, next) {
         logger.info(req.id + ':' + 'Request Header:' + JSON.stringify(req.headers));
     }
     //for dev only injecting a dummy session
-    if (env === 'development' && !req.session) {
-        req.session = { user: {} }
-    }
+   // if (env === 'development' && !req.session) {
+     //   req.session = { user: {} }
+    //}
     next();
 });
 

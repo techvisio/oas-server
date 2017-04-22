@@ -2,9 +2,9 @@ var mongoose = require('mongoose');
 var utils = require('../utils/utilFactory');
 var env = utils.getConfiguration().getProperty('node.env') || 'development';
 const dbUrl = utils.getConfiguration().getProperty(env)['databaseUrl'];
-const dbUser = utils.getConfiguration().getProperty(env)['dbUser'];
-const dbPassword = utils.getConfiguration().getProperty(env)['dbPwd'];
-var connString = 'mongodb://'.concat(dbUser, ':', dbPassword, '@', dbUrl);
+//const dbUser = utils.getConfiguration().getProperty(env)['dbUser'];
+//const dbPassword = utils.getConfiguration().getProperty(env)['dbPwd'];
+var connString = dbUrl;
 module.exports = (function () {
     return {
         connect: connect

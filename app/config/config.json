@@ -1,12 +1,18 @@
 {
   "development":{
-      "databaseUrl":"localhost:27017/oas",
+      "databaseUrl":"mongodb://localhost:27017/oas",
       "dbUser":"",
       "dbPwd":"",
       "logPayload":true,
       "serverUrl":"localhost:3000"
   },
-  "QA":{},
+  "QA":{
+     "databaseUrl":"mongodb://heroku_mhpnt1wt:a6362faurjmal18aejritj7e0n@ds151917.mlab.com:51917/heroku_mhpnt1wt",
+      "dbUser":"",
+      "dbPwd":"",
+      "logPayload":true,
+      "serverUrl":"localhost:3000"
+     },
   "production":{},
   "app.port":3030,
    "secretKey":"techVisio",
