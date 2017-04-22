@@ -26,9 +26,20 @@ coverage
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
+#TS compiles code
+client/main.js
+client/*.js.map
+client/app/*.js
+client/app/*.js.map
+client/app/public/*.js
+client/app/public/*.js.map
+client/app/common/*.js
+client/app/common/*.js.map
+
 # Dependency directories
 node_modules
 jspm_packages
+
 
 # Optional npm cache directory
 .npm

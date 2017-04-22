@@ -1,0 +1,5 @@
+{
+   "DUP_USER":"username already exists, please choose different username",
+  "DUP_EMAIL":"Email id already exists, please choose different email id",
+  "WRNG_PASS":"Pasword not matched, try again"
+}

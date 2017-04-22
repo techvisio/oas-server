@@ -1,0 +1,19 @@
+{
+  "development":{
+      "databaseUrl":"localhost:27017/oas",
+      "dbUser":"",
+      "dbPwd":"",
+      "logPayload":true,
+      "serverUrl":"localhost:3000"
+  },
+  "QA":{},
+  "production":{},
+  "app.port":3030,
+   "secretKey":"techVisio",
+   "tokenExpireTime" : 10,
+  "log_directory":"/logs",
+  "emailService":"Gmail",
+  "user":"nikhilsharma1992.006@gmail.com",
+  "password":"GALAXYindangerhelp&SAVE",
+  "mailFrom":"Support<support@techvisio.co.in"
+}
