@@ -7,6 +7,7 @@ var emailService;
 var user;
 var password;
 var mailFrom;
+var env;
 var isInitialised = false;
 
 module.exports = (function () {
@@ -26,6 +27,7 @@ module.exports = (function () {
             user = utils.getConfiguration().getProperty('user');
             password = utils.getConfiguration().getProperty('password');
             mailFrom = utils.getConfiguration().getProperty('mailFrom');
+            env = utils.getConfiguration().getProperty('node.env') || 'development'
             isInitialised = true;
         }
     }
@@ -34,13 +36,6 @@ module.exports = (function () {
     function sendMail(mailingData) {
         init();
 
-        var smtpTransport = nodemailer.createTransport("SMTP", {
-            service: emailService,
-            auth: {
-                user: user,
-                pass: password
-            }
-        });
 
         var mailOptions = {
             envelope: {
@@ -50,6 +45,44 @@ module.exports = (function () {
             subject: mailingData.emailSubject,
             html: mailingData.htmlBody,
         }
+        var isWhiteListedMailingEnabled = utils.getConfiguration().getProperty(env)['sendMailToWhiteListed'];
+        var whiteListedEmailIds = utils.getConfiguration().getProperty(env)['whiteListedEmailIds'];
+        var supportMailId = utils.getConfiguration().getProperty(env)['supportEmailId'];
+        var emailIDArray = [];
+        emailIDArray = whiteListedEmailIds.split(',');
+
+
+        if (isWhiteListedMailingEnabled) {
+            var mailSent = false;
+            emailIDArray.forEach(function (emailId) {
+                if (mailingData.sentTo === emailId) {
+                    sendingMail(mailOptions);
+                    mailSent = true;
+                }
+
+            });
+            if (!mailSent) {
+                mailOptions.envelope.to = supportMailId;
+                sendingMail(mailOptions);
+            }
+
+        }
+        else {
+            sendingMail(mailOptions);
+        }
+
+    }
+
+    function sendingMail(mailOptions) {
+
+        var smtpTransport = nodemailer.createTransport("SMTP", {
+            service: emailService,
+            auth: {
+                user: user,
+                pass: password
+            }
+        });
+
         smtpTransport.sendMail(mailOptions, function (err, msgInfo) {
             var result = {};
             if (err) {

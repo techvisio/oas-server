@@ -4,14 +4,22 @@
       "dbUser":"",
       "dbPwd":"",
       "logPayload":true,
-      "serverUrl":"localhost:3000"
+      "serverUrl":"localhost:3000",
+      "sendMailToWhiteListed":true,
+      "whiteListedEmailIds": "sgusain91@gmail.com,gusain.pradeep1986@gmail.com,sonugusain10nov@gmail.com,nikhilsharma1992.006@gmail.com,sandeepgausain10oct@gmail.com,sandeegausain10oct@gmail.com,sandeegausain0oct@gmail.com",
+      "isSupportBcc": true,
+      "supportEmailId":"noreply.techvisio@gmail.com"
   },
   "QA":{
      "databaseUrl":"mongodb://heroku_mhpnt1wt:a6362faurjmal18aejritj7e0n@ds151917.mlab.com:51917/heroku_mhpnt1wt",
       "dbUser":"",
       "dbPwd":"",
       "logPayload":true,
-      "serverUrl":"localhost:3000"
+      "serverUrl":"localhost:3000",
+      "sendMailToWhiteListed":true,
+      "whiteListedEmailIds": "sgusain91@gmail.com,gusain.pradeep1986@gmail.com,sonugusain10nov@gmail.com,nikhilsharma1992.006@gmail.com",
+      "isSupportBcc": true,
+      "supportEmailId":"noreply.techvisio@gmail.com"
      },
   "production":{},
   "app.port":3000,
@@ -19,7 +27,7 @@
    "tokenExpireTime" : 10,
   "log_directory":"/logs",
   "emailService":"Gmail",
-  "user":"nikhilsharma1992.006@gmail.com",
-  "password":"GALAXYindangerhelp&SAVE",
+  "user":"info.techvisio@gmail.com",
+  "password":"Spac3walk3r",
   "mailFrom":"Support<support@techvisio.co.in"
 }

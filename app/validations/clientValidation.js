@@ -7,7 +7,7 @@ var isInitialised = false;
 
 module.exports = (function () {
     return {
-        "SIGN_UP": [checkDuplicatePrimaryUser, checkUserName]
+        "SIGN_UP": [checkDuplicatePrimaryUser, checkUserName, checkPassword, checkEmailFormat,checkPasswordFormat]
     }
 
     function init() {
@@ -24,7 +24,7 @@ module.exports = (function () {
         var promise = new Promise((resolve, reject) => {
             clientService.getClientByEmailId(signupData.emailId).then(function (client) {
                 if (client) {
-                    resolve('DUP_USER');
+                    resolve(utils.getErrorConstants().DUP_USER);
                 }
                 else {
                     resolve(undefined);
@@ -44,7 +44,30 @@ module.exports = (function () {
     function checkUserName(signupData) {
 
         if (utils.getUtils().isEmpty(signupData.userName)) {
-            return Promise.resolve('NO_USER_NAME');
+            return Promise.resolve(utils.getErrorConstants().NO_USER_NAME);
         }
     }
+
+    function checkPassword(signupData) {
+
+        if (utils.getUtils().isEmpty(signupData.password)) {
+            return Promise.resolve(utils.getErrorConstants().NO_PASSWORD);
+        }
+    }
+
+
+    function checkEmailFormat(signupData) {
+        var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (!(mailformat.test(signupData.emailId))) {
+            return Promise.resolve(utils.getErrorConstants().INVALID_EMAIL_FORMAT);
+        }
+    }
+
+    function checkPasswordFormat(signupData) {
+        var passFormat = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+        if (!(passFormat.test(signupData.password))) {
+            return Promise.resolve(utils.getErrorConstants().INVALID_PASS_FORMAT);
+        }
+    }
+
 }())
