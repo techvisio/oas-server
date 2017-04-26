@@ -74,7 +74,7 @@ module.exports = (function () {
                 }
                 else {
                     resolve(updatedClient);
-                    logger.debug(context.reqId + " : sending response from updateClient: " + savedClient.toObject());
+                    logger.debug(context.reqId + " : sending response from updateClient: " + updatedClient);
                 }
             })
         });
@@ -116,6 +116,9 @@ module.exports = (function () {
         }
         if (!utils.getUtils().isEmpty(data.primaryEmailId)) {
             query["primaryEmailId"] = data.primaryEmailId;
+        }
+        if (!utils.getUtils().isEmpty(data.hashCode)) {
+            query["hashCode"] = data.hashCode;
         }
         return query;
     }

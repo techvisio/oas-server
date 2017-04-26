@@ -1,7 +1,7 @@
 {
   "signUpMailTemplate":{
       "subject":"[Techvisio]Please confirm your email address",
-      "body":"<!DOCTYPE html> <html><body><p>Hi,</p><p>{{ clientName }}</p><p>Thank you for choosing techvisio</p><p><a href='http://localhost:{{ port }}/api/public/client/verify?hashCode={{ hashCode }}'> click here </a> to verify and activate your account.</p><p>Thanks,</p><p>The Techvisio Team</p></body></html>      "
+      "body":"<!DOCTYPE html> <html><body><p>Hi,</p><p>{{ clientName }}</p><p>Thank you for choosing techvisio</p><p><a href='{{ serverUrl }}'> click here </a> to verify and activate your account.</p><p>Thanks,</p><p>The Techvisio Team</p></body></html>      "
   }
   
 }

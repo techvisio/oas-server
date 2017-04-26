@@ -7,7 +7,7 @@ var isInitialised = false;
 
 module.exports = (function () {
     return {
-        "SIGN_UP": [checkDuplicatePrimaryUser, checkUserName, checkPassword, checkEmailFormat,checkPasswordFormat]
+        "SIGN_UP": [checkDuplicatePrimaryUser, checkUserName, checkPassword, checkEmailFormat, checkPasswordFormat, checkOrganizationName, checkEmailId, checkContactNo, checkContactName]
     }
 
     function init() {
@@ -54,6 +54,35 @@ module.exports = (function () {
             return Promise.resolve(utils.getErrorConstants().NO_PASSWORD);
         }
     }
+
+    function checkOrganizationName(signupData) {
+
+        if (utils.getUtils().isEmpty(signupData.orgName)) {
+            return Promise.resolve(utils.getErrorConstants().NO_ORGANISATION);
+        }
+    }
+
+    function checkEmailId(signupData) {
+
+        if (utils.getUtils().isEmpty(signupData.emailId)) {
+            return Promise.resolve(utils.getErrorConstants().NO_EMAILID);
+        }
+    }
+
+    function checkContactNo(signupData) {
+
+        if (utils.getUtils().isEmpty(signupData.cnctNo)) {
+            return Promise.resolve(utils.getErrorConstants().NO_CONTACT_NO);
+        }
+    }
+
+    function checkContactName(signupData) {
+
+        if (utils.getUtils().isEmpty(signupData.cnctName)) {
+            return Promise.resolve(utils.getErrorConstants().NO_CLIENT_NAME);
+        }
+    }
+
 
 
     function checkEmailFormat(signupData) {

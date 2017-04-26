@@ -40,7 +40,7 @@ router.post('/signup', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
     clientService.signupClient(context).then(function (client) {
-        responseBody = utils.getUtils().buildSuccessResponse('success');
+        var responseBody = utils.getUtils().buildSuccessResponse('success');
         res.status(200).json(responseBody)
     }, function (err) {
         next(err);
@@ -51,7 +51,7 @@ router.post('/signup', function (req, res, next) {
 router.get('/client/verify', function (req, res) {
     var context = utils.getUtils().getContext(req);
     clientService.verifyUser(context).then(function (client) {
-        responseBody = utils.getUtils().buildSuccessResponse(client);
+        var responseBody = utils.getUtils().buildSuccessResponse(client);
         res.status(200).json(responseBody);
     }, function (err) {
         throw err;

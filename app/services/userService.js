@@ -56,11 +56,11 @@ module.exports = (function () {
             context.data.password = encryptedPassword;
             context.data.isActive = true;;
 
-            userDao.createUser(context).then(function (savedUser) {
-
-                resolve(savedUser);
-                logger.debug(context.reqId + " : sending response from createUser: " + savedUser);
-            })
+            userDao.createUser(context)
+                .then(function (savedUser) {
+                    resolve(savedUser);
+                    logger.debug(context.reqId + " : sending response from createUser: " + savedUser);
+                })
                 .catch(err => reject(err));
         });
 
@@ -71,11 +71,11 @@ module.exports = (function () {
         logger.debug(context.reqId + " : updateUser request recieved for user : " + context.data);
 
         return new Promise((resolve, reject) => {
-            userDao.updateUser(context).then(function (updatedUser) {
-
-                resolve(updatedUser);
-                logger.debug(context.reqId + " : sending response from updateUser: " + updatedUser);
-            })
+            userDao.updateUser(context)
+                .then(function (updatedUser) {
+                    resolve(updatedUser);
+                    logger.debug(context.reqId + " : sending response from updateUser: " + updatedUser);
+                })
                 .catch(err => reject(err));
         });
 
@@ -106,10 +106,11 @@ module.exports = (function () {
             var user = {
                 userName: userName
             }
-            userDao.getUsers(user).then(function (foundUser) {
-                resolve(foundUser[0].toObject());
-                logger.debug("sending response from getUserByUserName: " + foundUser[0].toObject());
-            })
+            userDao.getUsers(user)
+                .then(function (foundUser) {
+                    resolve(foundUser[0].toObject());
+                    logger.debug("sending response from getUserByUserName: " + foundUser[0].toObject());
+                })
                 .catch(err => reject(err));
         });
 
@@ -120,14 +121,13 @@ module.exports = (function () {
         logger.debug("delete request recieved for user : " + user);
 
         return new Promise((resolve, reject) => {
-            userDao.deleteUser(context).then(function (msg) {
-
-                resolve(msg);
-                logger.debug("sending response from deleteUser: " + msg);
-            })
+            userDao.deleteUser(context)
+                .then(function (msg) {
+                    resolve(msg);
+                    logger.debug("sending response from deleteUser: " + msg);
+                })
                 .catch(err => reject(err));
         });
-
     }
 
 }());

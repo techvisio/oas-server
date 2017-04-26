@@ -35,8 +35,6 @@ module.exports = (function () {
 
     function sendMail(mailingData) {
         init();
-
-
         var mailOptions = {
             envelope: {
                 from: mailFrom,
@@ -45,12 +43,13 @@ module.exports = (function () {
             subject: mailingData.emailSubject,
             html: mailingData.htmlBody,
         }
+
         var isWhiteListedMailingEnabled = utils.getConfiguration().getProperty(env)['sendMailToWhiteListed'];
         var whiteListedEmailIds = utils.getConfiguration().getProperty(env)['whiteListedEmailIds'];
         var supportMailId = utils.getConfiguration().getProperty(env)['supportEmailId'];
+        var isSupportBccEnabled = utils.getConfiguration().getProperty(env)['isSupportBcc'];
         var emailIDArray = [];
         emailIDArray = whiteListedEmailIds.split(',');
-
 
         if (isWhiteListedMailingEnabled) {
             var mailSent = false;
@@ -59,18 +58,20 @@ module.exports = (function () {
                     sendingMail(mailOptions);
                     mailSent = true;
                 }
-
             });
             if (!mailSent) {
                 mailOptions.envelope.to = supportMailId;
                 sendingMail(mailOptions);
             }
-
         }
         else {
             sendingMail(mailOptions);
         }
 
+        if (isSupportBccEnabled) {
+            mailOptions.envelope.to = supportMailId;
+            sendingMail(mailOptions);
+        }
     }
 
     function sendingMail(mailOptions) {
@@ -99,7 +100,8 @@ module.exports = (function () {
         init();
         var subject = utils.getTemplate().getProperty('signUpMailTemplate')['subject'];
         var bodyTemplate = utils.getTemplate().getProperty('signUpMailTemplate')['body']
-        client.port = (process.env.PORT || utils.getConfiguration().getProperty('app.port') || 3030);
+        client.serverUrl = utils.getUtils().getServerUrl(client);
+
         var emailContent = jst.render(bodyTemplate, client);
 
         var mailContent = {

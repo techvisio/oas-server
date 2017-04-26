@@ -54,7 +54,7 @@ module.exports = (function () {
         var data = context.data;
         var clientData = createClientData(data);
         return new Promise((resolve, reject) => {
-             validationService.validate(utils.getConstants().SIGN_UP, data)
+            validationService.validate(utils.getConstants().SIGN_UP, data)
                 .then(checkValidationResult)
                 .then(createClient)
                 .then(createUser)
@@ -89,8 +89,10 @@ module.exports = (function () {
             return new Promise((resolve, reject) => {
 
                 clientData.hashCode = uuid.v4();
-                var clientContext=utils.getUtils().cloneContext(context,clientData);
-                clientDao.createClient(clientContext).then(client => resolve(client));
+                var clientContext = utils.getUtils().cloneContext(context, clientData);
+                clientDao.createClient(clientContext)
+                    .then(client => resolve(client))
+                    .catch(err => reject(err));
             });
         }
 
@@ -102,19 +104,23 @@ module.exports = (function () {
                     emailId: data.emailId,
                     clientCode: client.clientCode
                 }
-                var userContext=utils.getUtils().cloneContext(context,userData);
-                userService.createUser(userContext).then(function (user) {
-                    resolve(client);
-                }, function (err) {
-                    clientDao.deleteClient(client);
-                    reject(err);
-                })
+                var userContext = utils.getUtils().cloneContext(context, userData);
+                userService.createUser(userContext)
+                    .then(function (user) {
+                        resolve(client);
+                    }, function (err) {
+                        clientDao.deleteClient(client);
+                        reject(err);
+                    })
+                    .catch(err => reject(err));
             });
         }
 
         function sendConfirmationMail(client) {
             return new Promise((resolve, reject) => {
-                emailService.sendVerificationMail(client).then(data => resolve(client));
+                emailService.sendVerificationMail(client)
+                    .then(data => resolve(client))
+                    .catch(err => reject(err));
             });
         }
     }
@@ -145,7 +151,10 @@ module.exports = (function () {
                 if (client) {
                     client.isVerified = true;
                     client.activationDate = new Date();
-                    clientDao.updateClient(context).then(updatedClient => resolve(updatedClient));
+                    var clientContext = utils.getUtils().cloneContext(context, client);
+                    clientDao.updateClient(clientContext)
+                        .then(updatedClient => resolve(updatedClient))
+                        .catch(err => reject(err));
                 }
                 else {
                     var err = new Error('No user found');
@@ -161,20 +170,20 @@ module.exports = (function () {
         logger.debug(context.reqId + " : verifyUser request recieved for user : " + context.data);
         return new Promise((resolve, reject) => {
             var client = context.data;
-            getClientByEmailId(client.primaryEmailId).then(function (foundClient) {
-                if (foundClient) {
-                    emailService.sendVerificationMail(foundClient);
-                    logger.debug(context.reqId + " : sending response from verifyUser: " + foundClient);
-                }
-                else {
-                    var err = new Error('No User found with provided credentials');
-                    err.errCode = utils.getErrorConstants().NO_USER_FOUND;
-                    reject(err);
-                }
-                var msg = 'Mail sent successfully';
-                resolve(msg);
-            })
-
+            getClientByEmailId(client.primaryEmailId)
+                .then(function (foundClient) {
+                    if (foundClient) {
+                        emailService.sendVerificationMail(foundClient);
+                        logger.debug(context.reqId + " : sending response from verifyUser: " + foundClient);
+                    }
+                    else {
+                        var err = new Error('No User found with provided credentials');
+                        err.errCode = utils.getErrorConstants().NO_USER_FOUND;
+                        reject(err);
+                    }
+                    var msg = 'Mail sent successfully';
+                    resolve(msg);
+                })
                 .catch(err => reject(err));
         });
 
@@ -187,14 +196,15 @@ module.exports = (function () {
             var client = {
                 primaryEmailId: emailId
             }
-            clientDao.getClients(client).then(function (clients) {
-               if(clients && clients.length > 0){
-                resolve(clients[0]);
-                }
-               else{
-                   resolve();
-               }
-            })
+            clientDao.getClients(client)
+                .then(function (clients) {
+                    if (clients && clients.length > 0) {
+                        resolve(clients[0]);
+                    }
+                    else {
+                        resolve();
+                    }
+                })
                 .catch(err => reject(err));
         });
     }
@@ -206,10 +216,11 @@ module.exports = (function () {
             var client = {
                 hashCode: hashCode
             }
-            clientDao.getClients(client).then(function (clients) {
-                resolve(clients[0].toObject());
-                logger.debug("sending response from getClientByHashCode: " + clients[0].toObject());
-            })
+            clientDao.getClients(client)
+                .then(function (clients) {
+                    resolve(clients[0].toObject());
+                    logger.debug("sending response from getClientByHashCode: " + clients[0].toObject());
+                })
                 .catch(err => reject(err));
         });
     }
@@ -239,10 +250,11 @@ module.exports = (function () {
             var client = {
                 clientCode: clientCode
             }
-            userDao.getClients(client).then(function (foundClients) {
-                resolve(foundClient[0].toObject());
-                logger.debug("sending response from getClientByClientCode: " + foundClient[0]);
-            })
+            userDao.getClients(client)
+                .then(function (foundClients) {
+                    resolve(foundClient[0].toObject());
+                    logger.debug("sending response from getClientByClientCode: " + foundClient[0]);
+                })
                 .catch(err => reject(err));
         });
 

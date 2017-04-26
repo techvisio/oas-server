@@ -1,6 +1,9 @@
 const crypto = require('crypto');
 var algorithm = 'aes-256-ctr';
 var privateKey = '37LvDSm4XvjYOh9Y';
+var utils;
+var env;
+var isInitialised = false;
 
 module.exports = (function () {
     return {
@@ -13,8 +16,17 @@ module.exports = (function () {
         buildSuccessResponse: buildSuccessResponse,
         buildFailedResponse: buildFailedResponse,
         buildSystemFailedResponse: buildSystemFailedResponse,
-        cloneContext: cloneContext
+        cloneContext: cloneContext,
+        getServerUrl: getServerUrl
     };
+
+    function init() {
+        if (!isInitialised) {
+            utils = require('./utilFactory');
+            env = utils.getConfiguration().getProperty('node.env') || 'development';
+            isInitialised = true;
+        }
+    }
 
     function isEmpty(object) {
         if (object === '' || object === null || object === undefined) {
@@ -53,7 +65,7 @@ module.exports = (function () {
     }
 
     function cloneContext(context, data) {
-         var clonedContext = {
+        var clonedContext = {
             data: data,
             loggedInUser: context.loggedInUser,
             reqId: context.reqId,
@@ -97,6 +109,17 @@ module.exports = (function () {
             errMsg: "some error has been occured, error code: " + errCode
         };
         return responseBody
+    }
+
+    function getServerUrl(client) {
+        init();
+        if (env === 'development') {
+            var port = (process.env.PORT || utils.getConfiguration().getProperty('app.port'));
+            var hostName = utils.getConfiguration().getProperty(env)['hostName'];
+            var serverUrl = "http://" + hostName + ":" + port + "/api/public/client/verify?hashCode=" + client.hashCode;
+            return serverUrl;
+        }
+        return utils.getConfiguration().getProperty(env)['serverUrl'];
     }
 
 }())
