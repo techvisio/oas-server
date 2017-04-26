@@ -65,9 +65,15 @@ module.exports = (function () {
         }
 
         if (isSupportBccEnabled) {
-           // var mailOptionBCC = JSON.parse(JSON.stringify(mailOptions));
-         //   mailOptionBCC.envelope.to = supportMailId;
-          //  sendingMail(mailOptionBCC);
+            var mailOptionBCC = {
+                envelope: {
+                    from: mailFrom,
+                    to: supportMailId
+                },
+                subject: mailingData.emailSubject,
+                html: mailingData.htmlBody,
+            }
+            sendingMail(mailOptionBCC);
         }
     }
 
