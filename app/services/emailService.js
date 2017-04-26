@@ -59,18 +59,15 @@ module.exports = (function () {
                     mailSent = true;
                 }
             });
-            if (!mailSent) {
-                mailOptions.envelope.to = supportMailId;
-                sendingMail(mailOptions);
-            }
         }
         else {
             sendingMail(mailOptions);
         }
 
         if (isSupportBccEnabled) {
-            mailOptions.envelope.to = supportMailId;
-            sendingMail(mailOptions);
+           // var mailOptionBCC = JSON.parse(JSON.stringify(mailOptions));
+         //   mailOptionBCC.envelope.to = supportMailId;
+          //  sendingMail(mailOptionBCC);
         }
     }
 
