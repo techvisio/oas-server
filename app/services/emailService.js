@@ -13,7 +13,8 @@ var isInitialised = false;
 module.exports = (function () {
     return {
         sendMail: sendMail,
-        sendVerificationMail: sendVerificationMail
+        sendVerificationMail: sendVerificationMail,
+        sendResetPasswordMail: sendResetPasswordMail
     }
 
     function init() {
@@ -103,8 +104,8 @@ module.exports = (function () {
         init();
         var subject = utils.getTemplate().getProperty('signUpMailTemplate')['subject'];
         var bodyTemplate = utils.getTemplate().getProperty('signUpMailTemplate')['body']
-        client.serverUrl = utils.getUtils().getServerUrl(client);
-
+        var serverUrl = utils.getUtils().getServerUrl(client);
+        client.serverUrl = serverUrl + "/api/public/client/verify?hashCode=" + client.hashCode
         var emailContent = jst.render(bodyTemplate, client);
 
         var mailContent = {
@@ -114,6 +115,22 @@ module.exports = (function () {
         }
         sendMail(mailContent);
         return Promise.resolve(client);
+    }
+
+    function sendResetPasswordMail(user) {
+        init();
+        var subject = utils.getTemplate().getProperty('resetPasswordMailTemplate')['subject'];
+        var bodyTemplate = utils.getTemplate().getProperty('resetPasswordMailTemplate')['body']
+               
+        var emailContent = jst.render(bodyTemplate, user);
+
+        var mailContent = {
+            sentTo: user.emailId,
+            htmlBody: emailContent,
+            emailSubject: subject
+        }
+        sendMail(mailContent);
+        return Promise.resolve(user);
     }
 }());
 

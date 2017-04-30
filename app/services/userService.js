@@ -4,6 +4,9 @@ var daoFactory;
 var userDao;
 var userModel;
 var logger;
+var uuid;
+var passwordGenerator;
+var emailService;
 var isInitialised = false;
 
 
@@ -13,7 +16,8 @@ module.exports = (function () {
         createUser: createUser,
         getUserById: getUserById,
         updateUser: updateUser,
-        getUserByUserName: getUserByUserName
+        getUserByUserName: getUserByUserName,
+        forgetPassword: forgetPassword
     }
 
     function init() {
@@ -24,6 +28,9 @@ module.exports = (function () {
             userDao = daoFactory.getDataAccessObject(utils.getConstants().DAO_USER);
             userModel = modelFactory.getModel(utils.getConstants().MODEL_USER);
             logger = utils.getLogger();
+            uuid = require('node-uuid');
+            emailService = require('./emailService');
+            passwordGenerator = require('generate-password');
             isInitialised = true;
         }
     }
@@ -42,10 +49,7 @@ module.exports = (function () {
                 })
                 .catch(err => reject(err));
         });
-
     }
-
-
 
     function createUser(context) {
         init();
@@ -63,7 +67,6 @@ module.exports = (function () {
                 })
                 .catch(err => reject(err));
         });
-
     }
 
     function updateUser(context) {
@@ -113,7 +116,22 @@ module.exports = (function () {
                 })
                 .catch(err => reject(err));
         });
+    }
 
+    function getUserByEmailId(emailId) {
+        init();
+        logger.debug("getUserByEmailId request recieved for user name: " + emailId);
+        return new Promise((resolve, reject) => {
+            var user = {
+                emailId: emailId
+            }
+            userDao.getUsers(user)
+                .then(function (foundUser) {
+                    resolve(foundUser[0].toObject());
+                    logger.debug("sending response from getUserByEmailId: " + foundUser[0].toObject());
+                })
+                .catch(err => reject(err));
+        });
     }
 
     function deleteUser(user) {
@@ -128,6 +146,49 @@ module.exports = (function () {
                 })
                 .catch(err => reject(err));
         });
+    }
+
+    function forgetPassword(context) {
+
+        var emailId = context.data.emailId;
+        return new Promise((resolve, reject) => {
+            getUserByEmailId(emailId)
+                .then(handleUserUpdateForResetPassword)
+                .then(sendMailWithPassword)
+                .then(user => resolve(user))
+                .catch(err => reject(err))
+        });
+
+
+        function handleUserUpdateForResetPassword(user) {
+            return new Promise((resolve, reject) => {
+                if (user) {
+                    var temPass = passwordGenerator.generate({
+                        length: 8,
+                        numbers: true
+                    });
+                    user.password = temPass;
+                    user.isMandatoryPassChange = true;
+                    var userContext = utils.getUtils().cloneContext(context, user);
+                    userDao.updateUser(userContext)
+                        .then(updatedUser => resolve(user))
+                        .catch(err => reject(err));
+                }
+                else {
+                    var err = new Error('No user found');
+                    err.errCode = utils.getErrorConstants().NO_USER_FOUND;
+                    reject(err);
+                }
+            });
+        }
+
+        function sendMailWithPassword(user) {
+            return new Promise((resolve, reject) => {
+                emailService.sendResetPasswordMail(user)
+                    .then(data => resolve(user))
+                    .catch(err => reject(err));
+            });
+        }
     }
 
 }());

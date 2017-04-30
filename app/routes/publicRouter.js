@@ -70,4 +70,15 @@ router.post('/resendverificationmail', function (req, res) {
 
 });
 
+router.post('/forgetpwd', function (req, res) {
+
+    var context = utils.getUtils().getContext(req);
+    userService.forgetPassword(context).then(function (user) {
+        res.status(200).send(user)
+    }, function (err) {
+        throw err;
+    })
+
+});
+
 module.exports = router;

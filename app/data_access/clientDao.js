@@ -48,7 +48,8 @@ module.exports = (function () {
             var client = context.data;
             client.creationDate = new Date();
             client.createdBy = context.loggedInUser.userName;
-
+            client.updateDate = new Date();
+            client.updatedBy = context.loggedInUser.userName;
             clientModel.create(client, function (err, savedClient) {
                 if (err) {
                     reject(err);

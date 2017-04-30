@@ -45,6 +45,8 @@ module.exports = (function () {
             var user = context.data;
             user.creationDate = new Date().toDateString();
             user.createdBy = context.loggedInUser.userName;
+            user.updateDate = new Date();
+            user.updatedBy = context.loggedInUser.userName;
 
             userModel.create(user, function (err, savedUser) {
                 if (err) {

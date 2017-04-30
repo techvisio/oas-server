@@ -24,6 +24,9 @@ module.exports = (function () {
         if (!isInitialised) {
             utils = require('./utilFactory');
             env = utils.getConfiguration().getProperty('node.env') || 'development';
+            crypto = require('crypto');
+            algorithm = utils.getConfiguration().getProperty('algorithm');
+            privateKey = utils.getConfiguration().getProperty('privateKey');
             isInitialised = true;
         }
     }
@@ -59,7 +62,8 @@ module.exports = (function () {
         var data = req.body;
         var loggedInUser = req.session.user;
         var parameter = req.query;
-        var context = { data: data, loggedInUser: loggedInUser, reqId: req.id, header: header, remoteAddress: remoteAddress, parameter: parameter };
+        var namedParam = req.params;
+        var context = { data: data, loggedInUser: loggedInUser, reqId: req.id, header: header, remoteAddress: remoteAddress, parameter: parameter, namedParam: namedParam };
         return context;
 
     }
@@ -116,7 +120,7 @@ module.exports = (function () {
         if (env === 'development') {
             var port = (process.env.PORT || utils.getConfiguration().getProperty('app.port'));
             var hostName = utils.getConfiguration().getProperty(env)['hostName'];
-            var serverUrl = "http://" + hostName + ":" + port + "/api/public/client/verify?hashCode=" + client.hashCode;
+            var serverUrl = "http://" + hostName + ":" + port;
             return serverUrl;
         }
         return utils.getConfiguration().getProperty(env)['serverUrl'];

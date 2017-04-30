@@ -1,9 +1,13 @@
 {
-   "DUP_USER":"username already exists, please choose different username",
-  "DUP_EMAIL":"Email id already exists, please choose different email id",
-  "WRNG_PASS":"Pasword not matched, try again",
-  "NO_PASSWORD":"No password provided by client",
-  "NO_USER_NAME":"No user name provided by client",
+  "DUP_USER": "username already exists, please choose different username",
+  "DUP_EMAIL": "Email id already exists, please choose different email id",
+  "WRNG_PASS": "Pasword not matched, try again",
+  "NO_PASSWORD": "No password provided by client",
+  "NO_USER_NAME": "No user name provided by client",
   "INVALID_PASS_FORMAT": "8 to 15 characters which contain at least one lowercase letter, one uppercase letter, one numeric digit, and one special character",
-  "INVALID_EMAIL_FORMAT": "Email Address you have provided is not valid, please enter valid email address"
+  "INVALID_EMAIL_FORMAT": "Email Address you have provided is not valid, please enter valid email address",
+  "NO_ORGANISATION": "No organisation name provided by user",
+  "NO_EMAILID": "No email id provided by user",
+  "NO_CONTACT_NO": "No contact no provided by user",
+  "NO_CONTACT_NAME": "No contact person name provided by user"
 }

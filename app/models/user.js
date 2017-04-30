@@ -19,7 +19,8 @@ var User = new Schema({
     role: String,
     isActive: Boolean,
     priviledges: [String],
-    securityQuestion: { question: String, answer: String }
+    securityQuestion: { question: String, answer: String },
+    isMandatoryPassChange: Boolean
 });
 
 User.pre('save', function (next) {

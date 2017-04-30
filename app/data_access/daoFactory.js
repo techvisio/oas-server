@@ -1,18 +1,24 @@
-var utils=require('../utils/utilFactory');
-var userDao=require('./userDao.js');
+var utils = require('../utils/utilFactory');
+var userDao = require('./userDao.js');
 var clientDao = require('./clientDao.js');
+var questionDao = require('./questionDao');
+var questionnaireDao = require('./questionnaireDao');
 
-module.exports=(function(){
+module.exports = (function () {
     return {
-        getDataAccessObject:getDataAccessObject
+        getDataAccessObject: getDataAccessObject
     }
-  
-    function getDataAccessObject(type){
-switch(type){
-    case utils.getConstants().DAO_USER:
-        return userDao;
-        case utils.getConstants().DAO_CLIENT:
-        return clientDao;
-}
+
+    function getDataAccessObject(type) {
+        switch (type) {
+            case utils.getConstants().DAO_USER:
+                return userDao;
+            case utils.getConstants().DAO_CLIENT:
+                return clientDao;
+            case utils.getConstants().DAO_QUESTION:
+                return questionDao;
+            case utils.getConstants().DAO_QUESTIONNAIRE:
+                return questionnaireDao;
+        }
     }
 })()

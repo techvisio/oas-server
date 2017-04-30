@@ -79,7 +79,7 @@ module.exports = (function () {
     function checkContactName(signupData) {
 
         if (utils.getUtils().isEmpty(signupData.cnctName)) {
-            return Promise.resolve(utils.getErrorConstants().NO_CLIENT_NAME);
+            return Promise.resolve(utils.getErrorConstants().NO_CONTACT_NAME);
         }
     }
 

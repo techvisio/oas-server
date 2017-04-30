@@ -1,6 +1,7 @@
 var constants = require('../utils/constants.js');
 var clientModel = require('./client.js');
 var userModel = require('./user.js');
+var questionModel = require('./question.js');
 var questionnaireModel = require('./questionnaire.js');
 
 
@@ -17,6 +18,8 @@ module.exports = (function () {
                 return userModel;
             case constants.MODEL_QUESTIONNAIRE:
                 return questionnaireModel;
+            case constants.MODEL_QUESTION:
+                return questionModel;
         }
 
     }
