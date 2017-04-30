@@ -17,7 +17,8 @@ module.exports = (function () {
         getUserById: getUserById,
         updateUser: updateUser,
         getUserByUserName: getUserByUserName,
-        forgetPassword: forgetPassword
+        forgetPassword: forgetPassword,
+        updatePassword: updatePassword
     }
 
     function init() {
@@ -167,7 +168,7 @@ module.exports = (function () {
                         length: 8,
                         numbers: true
                     });
-                    user.password = temPass;
+                    user.password = utils.getUtils().encrypt(temPass);
                     user.isMandatoryPassChange = true;
                     var userContext = utils.getUtils().cloneContext(context, user);
                     userDao.updateUser(userContext)
@@ -186,6 +187,25 @@ module.exports = (function () {
             return new Promise((resolve, reject) => {
                 emailService.sendResetPasswordMail(user)
                     .then(data => resolve(user))
+                    .catch(err => reject(err));
+            });
+        }
+    }
+
+    function updatePassword(context) {
+
+        var data = context.data;
+        var loggedInUser = context.loggedInUser;
+        var encryptedPassword = utils.getUtils().encrypt(data.oldPassword);
+        if (encryptedPassword === loggedInUser.password) {
+            var newEncryptedPassword = utils.getUtils().encrypt(data.newPassword);
+            var user = {
+                password: newEncryptedPassword
+            };
+            var userContext = utils.getUtils().cloneContext(context, user);
+            return new Promise((resolve, reject) => {
+                userDao.updateUser(userContext)
+                    .then(updatedUser => resolve(loggedInUser))
                     .catch(err => reject(err));
             });
         }

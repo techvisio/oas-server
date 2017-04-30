@@ -16,7 +16,11 @@ module.exports = (function () {
         verifyUser: verifyUser,
         resendVerificationMail: resendVerificationMail,
         getClientByEmailId: getClientByEmailId,
-        getClients: getClients
+        getClients: getClients,
+        getClientByClientCode: getClientByClientCode,
+        getClientById: getClientById,
+        getClientByHashCode: getClientByHashCode,
+        getClientByEmailId: getClientByEmailId
     }
 
     function init() {
@@ -102,7 +106,8 @@ module.exports = (function () {
                     userName: data.userName,
                     password: data.password,
                     emailId: data.emailId,
-                    clientCode: client.clientCode
+                    clientCode: client.clientCode,
+                    clientId: client.clientId
                 }
                 var userContext = utils.getUtils().cloneContext(context, userData);
                 userService.createUser(userContext)

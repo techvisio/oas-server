@@ -1,6 +1,6 @@
-const crypto = require('crypto');
-var algorithm = 'aes-256-ctr';
-var privateKey = '37LvDSm4XvjYOh9Y';
+var crypto;
+var algorithm;
+var privateKey;
 var utils;
 var env;
 var isInitialised = false;
@@ -32,6 +32,7 @@ module.exports = (function () {
     }
 
     function isEmpty(object) {
+        init();
         if (object === '' || object === null || object === undefined) {
             return true;
         }
@@ -39,6 +40,7 @@ module.exports = (function () {
     }
     // method to decrypt data(password)
     function decrypt(password) {
+        init();
         var decipher = crypto.createDecipher(algorithm, privateKey);
         var dec = decipher.update(password, 'hex', 'utf8');
         dec += decipher.final('utf8');
@@ -47,16 +49,19 @@ module.exports = (function () {
 
     // method to encrypt data(password)
     function encrypt(password) {
+        init();
         var cipher = crypto.createCipher(algorithm, privateKey);
         var crypted = cipher.update(password, 'utf8', 'hex');
         crypted += cipher.final('hex');
         return crypted;
     }
     function getLeftPaddingData(seq) {
+        init();
         return String("00000" + seq).slice(-5);
     }
 
     function getContext(req) {
+        init();
         var header = req.headers;
         var remoteAddress = req.connection.remoteAddress;
         var data = req.body;
@@ -69,6 +74,7 @@ module.exports = (function () {
     }
 
     function cloneContext(context, data) {
+        init();
         var clonedContext = {
             data: data,
             loggedInUser: context.loggedInUser,
@@ -81,6 +87,7 @@ module.exports = (function () {
     }
 
     function generateClientCode(clientName, clientId) {
+        init();
         var clientCode = clientName.slice(0, 4);
         var clientId = getLeftPaddingData(clientId);
         clientCode = clientCode + clientId;
@@ -89,7 +96,7 @@ module.exports = (function () {
     }
 
     function buildSuccessResponse(data) {
-
+        init();
         var responseBody = {
             status: "success",
             data: data
@@ -99,6 +106,7 @@ module.exports = (function () {
     }
 
     function buildFailedResponse(msgs, errType) {
+        init();
         var responseBody = {
             status: "failed",
             errType: errType,
@@ -108,6 +116,7 @@ module.exports = (function () {
     }
 
     function buildSystemFailedResponse(errCode) {
+        init();
         var responseBody = {
             status: "failed",
             errMsg: "some error has been occured, error code: " + errCode

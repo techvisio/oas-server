@@ -3,6 +3,7 @@ var sessionStore;
 var daoFactory;
 var utils;
 var userService;
+var clientService;
 var isInitialised = false;
 
 module.exports = (function () {
@@ -19,6 +20,7 @@ module.exports = (function () {
       daoFactory = require('../data_access/daoFactory');
       utils = require('../utils/utilFactory');
       userService = require('../services/userService');
+      clientService = require('../services/clientService');
       isInitialised = true;
     }
   }
@@ -70,8 +72,25 @@ module.exports = (function () {
     init();
     return new Promise((resolve, reject) => {
       var userName = context.data.userName;
-      userService.getUserByUserName(userName).then(userFetchSuccessHandler)
+      userService.getUserByUserName(userName)
+      .then(getClientForSessionData)
+      .then(userFetchSuccessHandler)
         .catch(err => reject(err));
+
+      function getClientForSessionData(user) {
+
+        return new Promise((resolve, reject) => {
+
+          clientService.getClientById(user.clientId, user.clientCode).then(function (foundClient) {
+            user.client = foundClient;
+            resolve(user);
+
+          })
+            .catch(err => reject(err));
+        });
+
+      }
+
 
       function userFetchSuccessHandler(user) {
 
@@ -97,13 +116,17 @@ module.exports = (function () {
         var tokenData = {
           remoteIP: context.remoteAddress,
           tokenExpires: expires,
-          user: context.data
+          user: user
         }
         var token = createToken(tokenData);
         //add token to sessionStore
 
         sessionStore.put(token, tokenData);
-        resolve(token);
+        var responseData = {
+          token: token,
+          user: user
+        }
+        resolve(responseData);
 
       }
     });
