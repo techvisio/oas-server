@@ -9,7 +9,7 @@ var logger = utils.getLogger();
 
 
 /**
- * @api {get} /client/:clientid/users Request all Users information
+ * @api {post} /client/:clientid/users Request all Users information
  * @apiName GetUsers
  *
  * @apiParam {Number} clientid client's unique Id.
@@ -32,11 +32,27 @@ var logger = utils.getLogger();
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "firstname": "John",
- *       "lastname": "Doe"
- *     }
- *
- * @apiError UserNotFound The id of the User was not found.
+ *"status": "success",
+ *"data": [
+ * {
+ *  "_id": "59075610aa442311f4e36990",
+ * "userId": 1,
+ * "userName": "sandeep9015",
+ * "password": "72676fb835b1ee33",
+ * "emailId": "sgusain91@gmail.com",
+ * "clientCode": "ACS100001",
+ * "clientId": 1,
+ * "isActive": true,
+ * "creationDate": "2017-04-30T18:30:00.000Z",
+ * "createdBy": "SYSTEM",
+ * "updateDate": "2017-05-01T15:36:48.285Z",
+ * "updatedBy": "SYSTEM",
+ * "priviledges": []
+ * }
+ * ]
+ * }
+
+ * @apiError UserNotFound no user list found for clientId.
  * 
  */
 router.post('/client/:clientid/users', function (req, res) {
@@ -51,6 +67,52 @@ router.post('/client/:clientid/users', function (req, res) {
     })
 });
 
+/**
+ * @api {get} /client/:clientid/user/:id Request all Users information
+ * @apiName GetUsers
+ *
+ * @apiParam {Number} userid user's unique Id.
+ 
+ 
+ * @apiSuccess {Number}   user._id   User's Unique Object Id.
+ * @apiSuccess {Number}   user.userId   User's Unique User Id.
+ * @apiSuccess {String}   user.userName User's User Name.
+ * @apiSuccess {String}   user.password User's password.
+ * @apiSuccess {String}   user.emailId User's Email Id.
+ * @apiSuccess {String}   user.clientCode User's Client Code.
+ * @apiSuccess {String}   user.clientId User's Client Id.
+ * @apiSuccess {String}   user.isActive User is active or not.
+ * @apiSuccess {String}   user.creationDate User Creation Date.
+ * @apiSuccess {String}   user.createdBy User Created By.
+ * @apiSuccess {String}   user.updateDate User updation Date.
+ * @apiSuccess {String}   user.updatedBy User Updated By.
+ * @apiSuccess {Object[]}   priviledges List of priviledge.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * {
+ * "status": "success",
+ * "data": {
+ * "_id": "59075610aa442311f4e36990",
+ * "userId": 1,
+ * "userName": "sandeep9015",
+ * "password": "72676fb835b1ee33",
+ * "emailId": "sgusain91@gmail.com",
+ * "clientCode": "ACS100001",
+ * "clientId": 1,
+ * "isActive": true,
+ * "creationDate": "2017-04-30T18:30:00.000Z",
+ * "createdBy": "SYSTEM",
+ * "updateDate": "2017-05-01T15:36:48.285Z",
+ * "updatedBy": "SYSTEM",
+ * "priviledges": [],
+ * }
+ * }
+ *     
+ *
+ * @apiError UserNotFound The userid of the User was not found.
+ * 
+ */
 router.get('/client/:clientid/user/:id', function (req, res) {
 
     var userId = req.params.id;

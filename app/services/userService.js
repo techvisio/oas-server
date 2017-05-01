@@ -152,6 +152,7 @@ module.exports = (function () {
     function resetPassword(context) {
         init();
         var emailId = context.data.emailId;
+        var temPass;
         return new Promise((resolve, reject) => {
             if (!emailId) {
                 var err = new Error('No Email Id Provided By User');
@@ -172,11 +173,11 @@ module.exports = (function () {
         function handleUserUpdateForResetPassword(user) {
             return new Promise((resolve, reject) => {
                 if (user) {
-                    var temPass = passwordGenerator.generate({
+                    temPass = passwordGenerator.generate({
                         length: 8,
                         numbers: true
                     });
-                    user.password = temPass;
+                    user.password = utils.getUtils().encrypt(temPass);
                     user.isMandatoryPassChange = true;
                     var userContext = utils.getUtils().cloneContext(context, user);
                     userDao.updateUser(userContext)
@@ -192,6 +193,7 @@ module.exports = (function () {
         }
 
         function sendMailWithPassword(user) {
+            user.password = temPass;
             return new Promise((resolve, reject) => {
                 emailService.sendResetPasswordMail(user)
                     .then(data => resolve('success'))
