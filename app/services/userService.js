@@ -194,7 +194,7 @@ module.exports = (function () {
         function sendMailWithPassword(user) {
             return new Promise((resolve, reject) => {
                 emailService.sendResetPasswordMail(user)
-                    .then(data => resolve(user))
+                    .then(data => resolve('success'))
                     .catch(err => reject(err));
             });
         }
