@@ -176,7 +176,7 @@ module.exports = (function () {
                         length: 8,
                         numbers: true
                     });
-                    user.password = utils.getUtils().encrypt(temPass);
+                    user.password = temPass;
                     user.isMandatoryPassChange = true;
                     var userContext = utils.getUtils().cloneContext(context, user);
                     userDao.updateUser(userContext)
@@ -210,6 +210,7 @@ module.exports = (function () {
                 var newEncryptedPassword = utils.getUtils().encrypt(data.newPassword);
                 var clonedUser = context.loggedInUser;
                 clonedUser.password = newEncryptedPassword;
+                clonedUser.isMandatoryPassChange = false;
                 var userContext = utils.getUtils().cloneContext(context, clonedUser);
 
                 userDao.updateUser(userContext)

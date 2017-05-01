@@ -4,6 +4,7 @@ var counterModel = require('../providers/sequenceProvider.js');
 
 var User = new Schema({
     userId: Number,
+    clientId: Number,
     clientCode: String,
     userName: String,
     password: String,

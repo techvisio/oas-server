@@ -12,12 +12,22 @@ var logger = utils.getLogger();
  * @api {get} /client/:clientid/users Request all Users information
  * @apiName GetUsers
  *
- * @apiParam {Number} clientid client's unique ID.
+ * @apiParam {Number} clientid client's unique Id.
  
- * @apiSuccess {Object[]} users       List of user profiles.
+ * @apiSuccess {Object[]} users List of user profiles.
  * @apiSuccess {Number}   user._id   User's Unique Object Id.
  * @apiSuccess {Number}   user.userId   User's Unique User Id.
- * @apiSuccess {String}   user.userName User Name.
+ * @apiSuccess {String}   user.userName User's User Name.
+ * @apiSuccess {String}   user.password User's password.
+ * @apiSuccess {String}   user.emailId User's Email Id.
+ * @apiSuccess {String}   user.clientCode User's Client Code.
+ * @apiSuccess {String}   user.clientId User's Client Id.
+ * @apiSuccess {String}   user.isActive User is active or not.
+ * @apiSuccess {String}   user.creationDate User Creation Date.
+ * @apiSuccess {String}   user.createdBy User Created By.
+ * @apiSuccess {String}   user.updateDate User updation Date.
+ * @apiSuccess {String}   user.updatedBy User Updated By.
+ * @apiSuccess {Object[]}   priviledges List of priviledge.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
