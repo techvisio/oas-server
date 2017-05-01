@@ -7,7 +7,29 @@ var questionnaireService = serviceLocator.getService(utils.getConstants().SERVIC
 var router = express.Router();
 var logger = utils.getLogger();
 
-router.post('/users', function (req, res) {
+
+/**
+ * @api {get} /client/:clientid/users Request all Users information
+ * @apiName GetUsers
+ *
+ * @apiParam {Number} clientid client's unique ID.
+ 
+ * @apiSuccess {Object[]} users       List of user profiles.
+ * @apiSuccess {Number}   user._id   User's Unique Object Id.
+ * @apiSuccess {Number}   user.userId   User's Unique User Id.
+ * @apiSuccess {String}   user.userName User Name.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "firstname": "John",
+ *       "lastname": "Doe"
+ *     }
+ *
+ * @apiError UserNotFound The id of the User was not found.
+ * 
+ */
+router.post('/client/:clientid/users', function (req, res) {
 
     var context = utils.getUtils().getContext(req);
 
@@ -19,7 +41,7 @@ router.post('/users', function (req, res) {
     })
 });
 
-router.get('/user/:id', function (req, res) {
+router.get('/client/:clientid/user/:id', function (req, res) {
 
     var userId = req.params.id;
     userService.getUserById(userId).then(function (user) {
@@ -30,7 +52,7 @@ router.get('/user/:id', function (req, res) {
     })
 });
 
-router.post('/user', function (req, res) {
+router.post('/client/:clientid/user', function (req, res) {
 
     var context = utils.getUtils().getContext(req);
 
@@ -42,7 +64,7 @@ router.post('/user', function (req, res) {
     })
 });
 
-router.put('/user', function (req, res) {
+router.put('/client/:clientid/user', function (req, res) {
 
     var context = utils.getUtils().getContext(req);
 
@@ -54,7 +76,7 @@ router.put('/user', function (req, res) {
     })
 });
 
-router.post('/qnr/:id/question', function (req, res) {
+router.post('/client/:clientid/qnr/:id/question', function (req, res) {
 
     var context = utils.getUtils().getContext(req);
     questionService.createQuestion(context).then(function (question) {
@@ -65,7 +87,7 @@ router.post('/qnr/:id/question', function (req, res) {
     })
 });
 
-router.post('/questionnaire', function (req, res) {
+router.post('/client/:clientid/questionnaire', function (req, res) {
 
     var context = utils.getUtils().getContext(req);
     questionnaireService.createQuestionnaire(context).then(function (questionnaire) {

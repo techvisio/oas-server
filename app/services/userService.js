@@ -17,7 +17,7 @@ module.exports = (function () {
         getUserById: getUserById,
         updateUser: updateUser,
         getUserByUserName: getUserByUserName,
-        forgetPassword: forgetPassword,
+        resetPassword: resetPassword,
         updatePassword: updatePassword
     }
 
@@ -149,15 +149,23 @@ module.exports = (function () {
         });
     }
 
-    function forgetPassword(context) {
-
+    function resetPassword(context) {
+        init();
         var emailId = context.data.emailId;
         return new Promise((resolve, reject) => {
-            getUserByEmailId(emailId)
-                .then(handleUserUpdateForResetPassword)
-                .then(sendMailWithPassword)
-                .then(user => resolve(user))
-                .catch(err => reject(err))
+            if (!emailId) {
+                var err = new Error('No Email Id Provided By User');
+                err.errCode = utils.getErrorConstants().NO_EMAIL_ID;
+                err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+                reject(err);
+            }
+            else {
+                getUserByEmailId(emailId)
+                    .then(handleUserUpdateForResetPassword)
+                    .then(sendMailWithPassword)
+                    .then(user => resolve(user))
+                    .catch(err => reject(err))
+            }
         });
 
 
@@ -193,22 +201,28 @@ module.exports = (function () {
     }
 
     function updatePassword(context) {
-
+        init();
         var data = context.data;
         var loggedInUser = context.loggedInUser;
         var encryptedPassword = utils.getUtils().encrypt(data.oldPassword);
-        if (encryptedPassword === loggedInUser.password) {
-            var newEncryptedPassword = utils.getUtils().encrypt(data.newPassword);
-            var user = {
-                password: newEncryptedPassword
-            };
-            var userContext = utils.getUtils().cloneContext(context, user);
-            return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
+            if (encryptedPassword === loggedInUser.password) {
+                var newEncryptedPassword = utils.getUtils().encrypt(data.newPassword);
+                var clonedUser = context.loggedInUser;
+                clonedUser.password = newEncryptedPassword;
+                var userContext = utils.getUtils().cloneContext(context, clonedUser);
+
                 userDao.updateUser(userContext)
-                    .then(updatedUser => resolve(loggedInUser))
+                    .then(updatedUser => resolve("Password updated successfully"))
                     .catch(err => reject(err));
-            });
-        }
+            }
+            else {
+                var err = new Error('No user found');
+                err.errCode = utils.getErrorConstants().NO_USER_FOUND;
+                err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+                reject(err);
+            }
+        });
     }
 
 }());

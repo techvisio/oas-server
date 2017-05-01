@@ -72,10 +72,18 @@ module.exports = (function () {
     init();
     return new Promise((resolve, reject) => {
       var userName = context.data.userName;
-      userService.getUserByUserName(userName)
-      .then(getClientForSessionData)
-      .then(userFetchSuccessHandler)
-        .catch(err => reject(err));
+      if (userName) {
+        userService.getUserByUserName(userName)
+          .then(getClientForSessionData)
+          .then(userFetchSuccessHandler)
+          .catch(err => reject(err));
+      }
+      else {
+        var err = new Error();
+        err.errCode = utils.getErrorConstants().NO_USER_NAME;
+        err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+        reject(err);
+      }
 
       function getClientForSessionData(user) {
 
@@ -91,22 +99,29 @@ module.exports = (function () {
 
       }
 
-
       function userFetchSuccessHandler(user) {
 
         if (!user) {
           // incorrect username
-          throw new Error('Authentication failed. User Not Found');
+          var err = new Error('Authentication failed. User Not Found');
+          err.errCode = utils.getErrorConstants().NO_USER_FOUND;
+          err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+          reject(err);
         }
         var userPassword = context.data.password;
         var encryptedPassword = utils.getUtils().encrypt(userPassword);
         if (user.password != encryptedPassword) {
           // incorrect password
-          throw new Error('Authentication failed. Password Not Matched');
-
+          var err = new Error('Authentication failed. Password Not Matched');
+          err.errCode = utils.getErrorConstants().INVALID_CREDENTIAL;
+          err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+          reject(err);
         }
         if (!user.isActive) {
-          throw new Error('Authentication failed. User Is Not Active');
+          var err = new Error('Authentication failed. User Is Not Active');
+          err.errCode = utils.getErrorConstants().USER_INACTIVE;
+          err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+          reject(err);
         }
 
         //create token

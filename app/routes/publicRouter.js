@@ -8,13 +8,13 @@ var authenticationHandler = serviceLocator.getService(utils.getConstants().SERVI
 
 var router = express.Router();
 
-router.post('/login', function (req, res) {
+router.post('/login', function (req, res, next) {
     var context = utils.getUtils().getContext(req);
     authenticationHandler.login(context).then(function (token) {
         var responseBody = utils.getUtils().buildSuccessResponse(token);
         res.status(200).json(responseBody);
     }, function (err) {
-        throw err;
+        next(err);
     })
 });
 
@@ -48,46 +48,46 @@ router.post('/signup', function (req, res, next) {
 
 });
 
-router.get('/client/verify', function (req, res) {
+router.get('/client/verify', function (req, res, next) {
     var context = utils.getUtils().getContext(req);
     clientService.verifyUser(context).then(function (client) {
         var responseBody = utils.getUtils().buildSuccessResponse(client);
         res.status(200).json(responseBody);
     }, function (err) {
-        throw err;
+        next(err);
     })
 
 });
 
-router.post('/resendverificationmail', function (req, res) {
+router.post('/resendverificationmail', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
     clientService.resendVerificationMail(context).then(function (msg) {
         res.status(200).send(msg)
     }, function (err) {
-        throw err;
+        next(err);
     })
 
 });
 
-router.post('/forgetpwd', function (req, res) {
+router.post('/forgetpwd', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
-    userService.forgetPassword(context).then(function (user) {
+    userService.resetPassword(context).then(function (user) {
         res.status(200).send(user)
     }, function (err) {
-        throw err;
+        next(err);
     })
 
 });
 
-router.post('/resetpassword', function (req, res) {
+router.put('/updatepassword', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
     userService.updatePassword(context).then(function (user) {
         res.status(200).send(user)
     }, function (err) {
-        throw err;
+        next(err);
     })
 
 });

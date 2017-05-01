@@ -105,12 +105,12 @@ module.exports = (function () {
         return responseBody;
     }
 
-    function buildFailedResponse(msgs, errType) {
+    function buildFailedResponse(errCodes, errType) {
         init();
         var responseBody = {
             status: "failed",
             errType: errType,
-            msgs: msgs
+            errorCodes: errCodes
         };
         return responseBody;
     }
