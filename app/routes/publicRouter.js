@@ -254,7 +254,8 @@ router.post('/forgetpwd', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
     userService.resetPassword(context).then(function (user) {
-        res.status(200).send(user)
+        var responseBody = utils.getUtils().buildSuccessResponse(user);
+        res.status(200).send(responseBody)
     }, function (err) {
         next(err);
     })
@@ -283,7 +284,8 @@ router.put('/updatepassword', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
     userService.updatePassword(context).then(function (msg) {
-        res.status(200).send(msg)
+        var responseBody = utils.getUtils().buildSuccessResponse(msg);
+        res.status(200).send(responseBody);
     }, function (err) {
         next(err);
     })
