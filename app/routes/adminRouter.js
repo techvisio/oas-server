@@ -123,7 +123,52 @@ router.get('/client/:clientid/user/:id', function (req, res) {
         throw err;
     })
 });
-
+/**
+ * @api {post} /client/:clientid/user Creating new user
+ * @apiName createUser
+ *
+ * @apiParam {Number} clientid    client's unique ID.
+ * @apiParam {Number} userId    user's unique ID.
+ * @apiParam {String} [clientCode] clientCode of the User.
+ * @apiParam {String} [firstname] First name of the User.
+ * @apiParam {String} [lastname]  Last name of the User.
+ * @apiParam {String} [userName]  User name of the User.
+ * @apiParam {String} [password]  Password of the User.
+ * @apiParam {Date} [dateOfBirth]  Date Of Birth of the User.
+ * @apiParam {String} [mobileNo]  Mobile No of the User.
+ * @apiParam {String} [emailId]  Email Id of the User.
+ * @apiParam {Date} [creationDate]  user's creation date.
+ * @apiParam {String} [createdBy]  user created by.
+ * @apiParam {Date} [updateDate]  user's updation date'.
+ * @apiParam {String} [updatedBy]  user updated by.
+ * @apiParam {Boolean} [isActive]  user is active or not.
+ * @apiParam {String} [role]  user updated by.
+ * 
+ * 
+ * 
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * {
+"status": "success",
+"data": {
+"__v": 0,
+"userId": 2,
+"userName": "raman81",
+"password": "52466fb835eeee33",
+"firstName": "Raman",
+"lastName": "Nagar",
+"isActive": true,
+"creationDate": "2017-05-01T18:30:00.000Z",
+"createdBy": "SYSTEM",
+"updateDate": "2017-05-02T08:41:39.152Z",
+"updatedBy": "SYSTEM",
+"_id": "59084643b5167436b05aca02",
+"priviledges": [],
+}
+}
+ *
+ * @apiUse UserNotFoundError
+ */
 router.post('/client/:clientid/user', function (req, res) {
 
     var context = utils.getUtils().getContext(req);
@@ -136,6 +181,53 @@ router.post('/client/:clientid/user', function (req, res) {
     })
 });
 
+
+/**
+ * @api {put} /client/:clientid/user updating existing user
+ * @apiName updateUser
+ *
+ * @apiParam {Number} clientid    client's unique ID.
+ * @apiParam {Number} userId    user's unique ID.
+ * @apiParam {String} [clientCode] clientCode of the User.
+ * @apiParam {String} [firstname] First name of the User.
+ * @apiParam {String} [lastname]  Last name of the User.
+ * @apiParam {String} [userName]  User name of the User.
+ * @apiParam {String} [password]  Password of the User.
+ * @apiParam {Date} [dateOfBirth]  Date Of Birth of the User.
+ * @apiParam {String} [mobileNo]  Mobile No of the User.
+ * @apiParam {String} [emailId]  Email Id of the User.
+ * @apiParam {Date} [creationDate]  user's creation date.
+ * @apiParam {String} [createdBy]  user created by.
+ * @apiParam {Date} [updateDate]  user's updation date'.
+ * @apiParam {String} [updatedBy]  user updated by.
+ * @apiParam {Boolean} [isActive]  user is active or not.
+ * @apiParam {String} [role]  user updated by.
+ * 
+ * 
+ * 
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * {
+"status": "success",
+"data": {
+"__v": 0,
+"userId": 2,
+"userName": "raman81",
+"password": "52466fb835eeee33",
+"firstName": "Raman",
+"lastName": "Nagar",
+"isActive": true,
+"creationDate": "2017-05-01T18:30:00.000Z",
+"createdBy": "SYSTEM",
+"updateDate": "2017-05-02T08:41:39.152Z",
+"updatedBy": "SYSTEM",
+"_id": "59084643b5167436b05aca02",
+"priviledges": []
+}
+}
+ *
+ * @apiUse UserNotFoundError
+ */
 router.put('/client/:clientid/user', function (req, res) {
 
     var context = utils.getUtils().getContext(req);
@@ -148,6 +240,30 @@ router.put('/client/:clientid/user', function (req, res) {
     })
 });
 
+/**
+ * @api {post} /client/:clientid/qnr/:id/question Creating a new question
+ * @apiName createQuestion
+ *
+ * @apiParam {Number} clientid    client's unique ID.
+ * @apiParam {Number} questionId  question's unique ID.
+ * @apiParam {String} QuestionDesc  decription of the question.
+ * @apiParam {String} ImageURL  image url of the question.
+ * @apiParam {String} Section  in which section ques.
+ * @apiParam {String} Difficulty  Difficulty level of a question.
+ * @apiParam {Boolean} ResponseType  response type of question
+ * @apiParam {Boolean} isActive  question is active or not
+ * @apiParam {Date} creationDate  question's creation date.
+ * @apiParam {String} createdBy  question is created by.
+ * @apiParam {Date} updateDate  question's updated date.
+ * @apiParam {String} updatedBy question is updated By.
+ * 
+ * 
+ * 
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *
+ * @apiUse UserNotFoundError
+ */
 router.post('/client/:clientid/qnr/:id/question', function (req, res) {
 
     var context = utils.getUtils().getContext(req);
@@ -159,6 +275,47 @@ router.post('/client/:clientid/qnr/:id/question', function (req, res) {
     })
 });
 
+/**
+ * @api {post} /client/:clientid/qnr/:id/question Creating a new question
+ * @apiName createQuestion
+ *
+ * @apiParam {Number} clientid    client's unique ID.
+ * @apiParam {Number} questionnaireId  questionnaire's unique ID.
+ * @apiParam {String} desc decription of the questionnaire.
+ * @apiParam {String} marks marks of the questionnaire.
+ * @apiParam {String} duration time duration of the questionnaire.
+ * @apiParam {String} noOfQuestion decription of the questionnaire.
+ * @apiParam {Object[]} questions list questionIds of the questionnaire.
+ * @apiParam {Date} creationDate creation date of the questionnaire.
+ * @apiParam {String} createdBy questionnaire is created by.
+ * @apiParam {Date} updateDate updation date of the questionnaire.
+ * @apiParam {String} updatedBy questionnaire updated by.
+ * 
+ * 
+ * 
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * {
+ * "status": "success",
+ * "data": {
+ * "__v": 0,
+ * "questionnaireId": 1,
+ * "clientId": 1,
+ * "desc": "xyz",
+ * "marks": 100,
+ * "duration": 3,
+ * "noOfQuestion": 50,
+ * "creationDate": "2017-05-02T10:44:17.542Z",
+ * "createdBy": "SYSTEM",
+ * "updateDate": "2017-05-02T10:44:17.542Z",
+ * "updatedBy": "SYSTEM",
+ * "_id": "59086301ddd68d3700973fb6",
+ * "questions": [],
+ * }
+ * }
+ *
+ * @apiUse UserNotFoundError
+ */
 router.post('/client/:clientid/questionnaire', function (req, res) {
 
     var context = utils.getUtils().getContext(req);

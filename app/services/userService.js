@@ -164,7 +164,7 @@ module.exports = (function () {
                 getUserByEmailId(emailId)
                     .then(handleUserUpdateForResetPassword)
                     .then(sendMailWithPassword)
-                    .then(user => resolve(user))
+                    .then(msg => resolve(msg))
                     .catch(err => reject(err))
             }
         });

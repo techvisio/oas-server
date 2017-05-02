@@ -79,7 +79,7 @@ module.exports = (function () {
           .catch(err => reject(err));
       }
       else {
-        var err = new Error();
+        var err = new Error('No User Name Provided');
         err.errCode = utils.getErrorConstants().NO_USER_NAME;
         err.errType = utils.getErrorConstants().VALIDATION_ERROR;
         reject(err);
