@@ -7,7 +7,8 @@ var isInitialised = false;
 
 module.exports = (function () {
     return {
-        "SIGN_UP": [checkDuplicatePrimaryUser, checkUserName, checkPassword, checkEmailFormat, checkPasswordFormat, checkOrganizationName, checkEmailId, checkContactNo, checkContactName]
+        "SIGN_UP": [checkDuplicatePrimaryUser, checkUserName, checkPassword, checkEmailFormat, checkPasswordFormat, checkOrganizationName, checkEmailId, checkContactNo, checkContactName],
+        "LOGIN": [checkUserName, checkPassword]
     }
 
     function init() {
@@ -42,42 +43,42 @@ module.exports = (function () {
     }
 
     function checkUserName(signupData) {
-
+        init();
         if (utils.getUtils().isEmpty(signupData.userName)) {
             return Promise.resolve(utils.getErrorConstants().NO_USER_NAME);
         }
     }
 
     function checkPassword(signupData) {
-
+        init();
         if (utils.getUtils().isEmpty(signupData.password)) {
             return Promise.resolve(utils.getErrorConstants().NO_PASSWORD);
         }
     }
 
     function checkOrganizationName(signupData) {
-
+        init();
         if (utils.getUtils().isEmpty(signupData.orgName)) {
             return Promise.resolve(utils.getErrorConstants().NO_ORGANISATION);
         }
     }
 
     function checkEmailId(signupData) {
-
+        init();
         if (utils.getUtils().isEmpty(signupData.emailId)) {
             return Promise.resolve(utils.getErrorConstants().NO_EMAILID);
         }
     }
 
     function checkContactNo(signupData) {
-
+        init();
         if (utils.getUtils().isEmpty(signupData.cnctNo)) {
             return Promise.resolve(utils.getErrorConstants().NO_CONTACT_NO);
         }
     }
 
     function checkContactName(signupData) {
-
+        init();
         if (utils.getUtils().isEmpty(signupData.cnctName)) {
             return Promise.resolve(utils.getErrorConstants().NO_CONTACT_NAME);
         }
@@ -86,6 +87,7 @@ module.exports = (function () {
 
 
     function checkEmailFormat(signupData) {
+        init();
         var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if (!(mailformat.test(signupData.emailId))) {
             return Promise.resolve(utils.getErrorConstants().INVALID_EMAIL_FORMAT);
@@ -93,6 +95,7 @@ module.exports = (function () {
     }
 
     function checkPasswordFormat(signupData) {
+        init();
         var passFormat = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
         if (!(passFormat.test(signupData.password))) {
             return Promise.resolve(utils.getErrorConstants().INVALID_PASS_FORMAT);

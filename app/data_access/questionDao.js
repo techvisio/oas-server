@@ -65,20 +65,32 @@ module.exports = (function () {
     function updateQuestion(context) {
         init();
         logger.debug(context.reqId + " : updateQuestion request recieved ");
+
         return new Promise((resolve, reject) => {
-            var question = context.data;
-            question.updateDate = new Date();
-            question.updatedBy = context.loggedInUser.userName;
-            questionModel.update({ _id: question._id }, question, function (err, updatedQuestion) {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    resolve(updatedQuestion);
-                    logger.debug(context.reqId + " : sending response from updateQuestion: " + updatedQuestion);
-                }
-            })
+            questionUpdate()
+                .then(getQuestionById)
+                .then(question => resolve(question))
+                .catch(err => reject(err))
+
         });
+
+        function questionUpdate() {
+            return new Promise((resolve, reject) => {
+                var question = context.data;
+                question.updateDate = new Date();
+                question.updatedBy = context.loggedInUser.userName;
+                questionModel.update({ _id: question._id }, question, function (err, updatedQuestion) {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(question);
+                        logger.debug(context.reqId + " : sending response from updateQuestion: " + question);
+                    }
+                })
+            });
+
+        }
 
     }
 
@@ -93,6 +105,26 @@ module.exports = (function () {
             query["clientId"] = data.clientId;
         }
         return query;
+    }
+
+
+    function getQuestionById(question) {
+        init();
+        logger.debug("getQuestionById request recieved for userId : " + question.questionId);
+        return new Promise((resolve, reject) => {
+            if (!utils.getUtils().isEmpty(question.questionId)) {
+                getQuestions(question)
+                    .then(function (foundQuestion) {
+                        resolve(foundQuestion[0].toObject());
+                        logger.debug("sending response from getQuestionById: " + foundQuestion[0].toObject());
+                    })
+                    .catch(err => reject(err));
+            }
+            else {
+                resolve(undefined);
+            }
+        });
+
     }
 
 }())

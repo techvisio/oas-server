@@ -60,25 +60,37 @@ module.exports = (function () {
         });
     }
 
-
     function updateUser(context) {
         init();
         logger.debug(context.reqId + " : updateUser request recieved ");
-        return new Promise((resolve, reject) => {
-            var user = context.data;
-            user.updateDate = new Date;
-            user.updatedBy = context.loggedInUser.userName;
-            userModel.update({ _id: user._id }, user, function (err, updatedUser) {
 
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    resolve(updatedUser);
-                    logger.debug(context.reqId + " : sending response from updateUser: " + updatedUser);
-                }
-            })
+        return new Promise((resolve, reject) => {
+
+            userUpdate()
+                .then(getUserById)
+                .then(user => resolve(user))
+                .catch(err => reject(err))
+
         });
+
+        function userUpdate() {
+            return new Promise((resolve, reject) => {
+                var user = context.data;
+                user.updateDate = new Date;
+                user.updatedBy = context.loggedInUser.userName;
+
+                userModel.update({ _id: user._id }, user, function (err, updatedUser) {
+
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(user);
+                        logger.debug(context.reqId + " : sending response from updateUser: " + updatedUser);
+                    }
+                })
+            });
+        }
     }
 
     function deleteUser(user) {
@@ -126,6 +138,25 @@ module.exports = (function () {
         }
 
         return query;
+    }
+
+    function getUserById(user) {
+        init();
+        logger.debug("getUserById request recieved for userId : " + user.userId);
+        return new Promise((resolve, reject) => {
+            if (!utils.getUtils().isEmpty(user.userId)) {
+                getUsers(user)
+                    .then(function (foundUser) {
+                        resolve(foundUser[0].toObject());
+                        logger.debug("sending response from getUserById: " + foundUser[0].toObject());
+                    })
+                    .catch(err => reject(err));
+            }
+            else {
+                resolve(undefined);
+            }
+        });
+
     }
 
 }())

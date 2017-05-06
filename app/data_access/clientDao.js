@@ -65,20 +65,33 @@ module.exports = (function () {
     function updateClient(context) {
         init();
         logger.debug(context.reqId + " : updateClient request recieved ");
+
         return new Promise((resolve, reject) => {
-            var client = context.data;
-            client.updateDate = new Date();
-            client.updatedBy = context.loggedInUser.userName;
-            clientModel.update({ _id: client._id }, client, function (err, updatedClient) {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    resolve(updatedClient);
-                    logger.debug(context.reqId + " : sending response from updateClient: " + updatedClient);
-                }
-            })
+
+            clientUpdate()
+                .then(getClientById)
+                .then(client => resolve(client))
+                .catch(err => reject(err))
+
         });
+
+        function clientUpdate() {
+            return new Promise((resolve, reject) => {
+                var client = context.data;
+                client.updateDate = new Date();
+                client.updatedBy = context.loggedInUser.userName;
+                clientModel.update({ _id: client._id }, client, function (err, updatedClient) {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(client);
+                        logger.debug(context.reqId + " : sending response from updateClient: " + updatedClient);
+                    }
+                })
+            });
+        }
+
 
     }
 
@@ -123,5 +136,25 @@ module.exports = (function () {
         }
         return query;
     }
+
+    function getClientById(client) {
+        init();
+        logger.debug("getClientById request recieved for userId : " + client.clientId);
+        return new Promise((resolve, reject) => {
+            if (!utils.getUtils().isEmpty(client.clientId)) {
+                getClients(client)
+                    .then(function (foundClient) {
+                        resolve(foundClient[0].toObject());
+                        logger.debug("sending response from getClientById: " + foundClient[0].toObject());
+                    })
+                    .catch(err => reject(err));
+            }
+            else {
+                resolve(undefined);
+            }
+        });
+
+    }
+
 
 }())

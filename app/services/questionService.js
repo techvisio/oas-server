@@ -41,7 +41,7 @@ module.exports = (function () {
     function createQuestion(context) {
         init();
         logger.debug(context.reqId + " : createQuestion request recieved for new user : " + context.data);
-
+        var question;
         return new Promise((resolve, reject) => {
             questionDao.createQuestion(context)
                 .then(getQuestionnaireById)
@@ -57,6 +57,7 @@ module.exports = (function () {
             return new Promise((resolve, reject) => {
                 questionnaireService.getQuestionnaireById(questionnaireId)
                     .then(function (questionnaire) {
+                        question = savedQuestion;
                         questionnaire.questions.push(savedQuestion);
                         resolve(questionnaire);
                     })
@@ -69,7 +70,7 @@ module.exports = (function () {
                 if (questionnaire) {
                     var questionnaireContext = utils.getUtils().cloneContext(context, questionnaire);
                     questionnaireService.updateQuestionnaire(questionnaireContext)
-                        .then(updatedQuestionnaire => resolve(updatedQuestionnaire))
+                        .then(updatedQuestionnaire => resolve(question))
                         .catch(err => reject(err));
                 }
                 else {

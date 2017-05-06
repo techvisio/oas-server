@@ -89,6 +89,7 @@ module.exports = (function () {
         init();
         logger.debug("getUserById request recieved for userId : " + userId);
         return new Promise((resolve, reject) => {
+            if (!utils.getUtils().isEmpty(userId) && !utils.getUtils().isEmpty(clientCode)) {
             var user = {
                 userId: userId,
                 clientCode: clientCode
@@ -99,6 +100,10 @@ module.exports = (function () {
                     logger.debug("sending response from getUserById: " + foundUser[0].toObject());
                 })
                 .catch(err => reject(err));
+            }
+            else{
+                resolve(undefined);
+            }
         });
 
     }
@@ -107,6 +112,7 @@ module.exports = (function () {
         init();
         logger.debug("getUserByUserName request recieved for user name: " + userName);
         return new Promise((resolve, reject) => {
+            if (!utils.getUtils().isEmpty(userName)) {
             var user = {
                 userName: userName
             }
@@ -116,6 +122,10 @@ module.exports = (function () {
                     logger.debug("sending response from getUserByUserName: " + foundUser[0].toObject());
                 })
                 .catch(err => reject(err));
+            }
+            else{
+                resolve(undefined);
+            }
         });
     }
 

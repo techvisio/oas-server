@@ -29,5 +29,6 @@ module.exports = {
 
     //constants for operations
     SIGN_UP: "SIGN_UP",
+    LOGIN: "LOGIN"
 
 }

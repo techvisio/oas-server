@@ -4,6 +4,7 @@ var daoFactory;
 var utils;
 var userService;
 var clientService;
+var validationService;
 var isInitialised = false;
 
 module.exports = (function () {
@@ -20,6 +21,7 @@ module.exports = (function () {
       daoFactory = require('../data_access/daoFactory');
       utils = require('../utils/utilFactory');
       userService = require('../services/userService');
+      validationService = require('../validations/validationProcessor');
       clientService = require('../services/clientService');
       isInitialised = true;
     }
@@ -71,18 +73,45 @@ module.exports = (function () {
   function login(context) {
     init();
     return new Promise((resolve, reject) => {
-      var userName = context.data.userName;
-      if (userName) {
-        userService.getUserByUserName(userName)
-          .then(getClientForSessionData)
-          .then(userFetchSuccessHandler)
-          .catch(err => reject(err));
+      var data = context.data;
+
+      validationService.validate(utils.getConstants().LOGIN, data)
+        .then(checkValidationResult)
+        .then(getUserByUserName)
+        .then(getClientForSessionData)
+        .then(userFetchSuccessHandler)
+        .catch(err => reject(err));
+
+      function checkValidationResult(codes) {
+        return new Promise((resolve, reject) => {
+          var isValidCode = false;
+          var errorCodes = [];
+          if (codes) {
+            codes.forEach(function (code) {
+              if (code) {
+                isValidCode = true;
+                errorCodes.push(code);
+              }
+            });
+          }
+          if (isValidCode) {
+            var err = new Error('Validation failed');
+            err.errorCodes = errorCodes;
+            err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+            throw (err);
+          }
+          resolve('valid');
+        });
       }
-      else {
-        var err = new Error('No User Name Provided');
-        err.errCode = utils.getErrorConstants().NO_USER_NAME;
-        err.errType = utils.getErrorConstants().VALIDATION_ERROR;
-        reject(err);
+
+      function getUserByUserName() {
+
+        return new Promise((resolve, reject) => {
+          userService.getUserByUserName(userName).then(function (foundUser) {
+            resolve(foundUser);
+          })
+            .catch(err => reject(err));
+        });
       }
 
       function getClientForSessionData(user) {

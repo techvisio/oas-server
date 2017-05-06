@@ -6,6 +6,10 @@
   "scripts": {
     "start": "node server.js"
   },
+  "apidoc": {
+    "title": "Custom apiDoc",
+    "url" : "https://localhost:3000"
+  },
   "repository": {},
   "devDependencies": {},
   "dependencies": {

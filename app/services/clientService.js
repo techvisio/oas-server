@@ -15,7 +15,6 @@ module.exports = (function () {
         signupClient: signupClient,
         verifyUser: verifyUser,
         resendVerificationMail: resendVerificationMail,
-        getClientByEmailId: getClientByEmailId,
         getClients: getClients,
         getClientByClientCode: getClientByClientCode,
         getClientById: getClientById,
@@ -198,6 +197,7 @@ module.exports = (function () {
         init();
         logger.debug("getClientByEmailId request recieved for client : " + emailId);
         return new Promise((resolve, reject) => {
+            if (!utils.getUtils().isEmpty(emailId)) {
             var client = {
                 primaryEmailId: emailId
             }
@@ -211,6 +211,10 @@ module.exports = (function () {
                     }
                 })
                 .catch(err => reject(err));
+            }
+            else{
+                resolve(undefined);
+            }
         });
     }
 
@@ -218,6 +222,7 @@ module.exports = (function () {
         init();
         logger.debug("getClientByHashCode request recieved for client : " + hashCode);
         return new Promise((resolve, reject) => {
+            if (!utils.getUtils().isEmpty(hashCode)) {
             var client = {
                 hashCode: hashCode
             }
@@ -227,6 +232,10 @@ module.exports = (function () {
                     logger.debug("sending response from getClientByHashCode: " + clients[0].toObject());
                 })
                 .catch(err => reject(err));
+            }
+            else{
+                resolve(undefined);
+            }
         });
     }
 
@@ -234,6 +243,7 @@ module.exports = (function () {
         init();
         logger.debug("getClientById request recieved for clientId : " + clientId);
         return new Promise((resolve, reject) => {
+            if (!utils.getUtils().isEmpty(clientId) && !utils.getUtils().isEmpty(clientCode)) {
             var client = {
                 clientId: clientId,
                 clientCode: clientCode
@@ -244,6 +254,10 @@ module.exports = (function () {
                     logger.debug("sending response from getClientById: " + foundClients[0].toObject());
                 })
                 .catch(err => reject(err));
+            }
+            else{
+                resolve(undefined);
+            }
         });
 
     }
@@ -252,15 +266,20 @@ module.exports = (function () {
         init();
         logger.debug("getClientByClientCode request recieved for client code: " + clientCode);
         return new Promise((resolve, reject) => {
-            var client = {
-                clientCode: clientCode
+            if (!utils.getUtils().isEmpty(clientCode)) {
+                var client = {
+                    clientCode: clientCode
+                }
+                userDao.getClients(client)
+                    .then(function (foundClients) {
+                        resolve(foundClient[0].toObject());
+                        logger.debug("sending response from getClientByClientCode: " + foundClient[0]);
+                    })
+                    .catch(err => reject(err));
             }
-            userDao.getClients(client)
-                .then(function (foundClients) {
-                    resolve(foundClient[0].toObject());
-                    logger.debug("sending response from getClientByClientCode: " + foundClient[0]);
-                })
-                .catch(err => reject(err));
+            else{
+                resolve(undefined);
+            }
         });
 
     }

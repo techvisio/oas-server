@@ -28,7 +28,7 @@ next();
 }
 });
 //setting static Content
-app.use(express.static('client'));
+app.use(express.static('apidoc'));
 
 //setting home page
 app.get('/',function (req, res) {
