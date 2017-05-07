@@ -82,6 +82,7 @@ module.exports = (function () {
         .then(userFetchSuccessHandler)
         .catch(err => reject(err));
 
+//TODO:this is generic logic move this to validation service so that it can be used by all components
       function checkValidationResult(codes) {
         return new Promise((resolve, reject) => {
           var isValidCode = false;
@@ -107,13 +108,15 @@ module.exports = (function () {
       function getUserByUserName() {
 
         return new Promise((resolve, reject) => {
-          userService.getUserByUserName(userName).then(function (foundUser) {
+          userService.getUserByUserName(data.userName).then(function (foundUser) {
             resolve(foundUser);
           })
             .catch(err => reject(err));
         });
       }
 
+//TODO:rename this method should like getClientforUser
+//make this global function
       function getClientForSessionData(user) {
 
         return new Promise((resolve, reject) => {
@@ -128,6 +131,7 @@ module.exports = (function () {
 
       }
 
+      //TODO:rename this method to authenticate
       function userFetchSuccessHandler(user) {
 
         if (!user) {
@@ -153,6 +157,7 @@ module.exports = (function () {
           reject(err);
         }
 
+//TODO : move this login to new method which create token and add to session
         //create token
         var tokenExpires = utils.getConfiguration().getProperty('tokenExpireTime');
         var expires = new Date();

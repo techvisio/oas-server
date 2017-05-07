@@ -107,7 +107,8 @@ module.exports = (function () {
         });
 
     }
-
+//TODO:No method can call with single attribute always use with client id/code
+//in case of same user name for different client it will fail
     function getUserByUserName(userName) {
         init();
         logger.debug("getUserByUserName request recieved for user name: " + userName);
@@ -118,6 +119,7 @@ module.exports = (function () {
             }
             userDao.getUsers(user)
                 .then(function (foundUser) {
+                    //TODO:for a wrong user name it will be empty array how you can get 0th element on empty array
                     resolve(foundUser[0].toObject());
                     logger.debug("sending response from getUserByUserName: " + foundUser[0].toObject());
                 })
