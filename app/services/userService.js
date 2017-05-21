@@ -164,15 +164,14 @@ module.exports = (function () {
         });
     }
 
-    function getUserByEmailId(emailId, clientId) {
+    function getUserByEmailId(emailId) {
         init();
         logger.debug("getUserByEmailId request recieved for user name: " + emailId);
         return new Promise((resolve, reject) => {
 
-            if (!utils.getUtils().isEmpty(emailId) && !utils.getUtils().isEmpty(clientId)) {
+            if (!utils.getUtils().isEmpty(emailId)) {
                 var user = {
-                    emailId: emailId,
-                    clientId: clientId
+                    emailId: emailId
                 }
                 userDao.getUsers(user)
                     .then(function (foundUser) {
@@ -215,7 +214,7 @@ module.exports = (function () {
                 reject(err);
             }
             else {
-                getUserByEmailId(emailId, clientId)
+                getUserByEmailId(emailId)
                     .then(handleUserUpdateForResetPassword)
                     .then(sendMailWithPassword)
                     .then(msg => resolve(msg))
