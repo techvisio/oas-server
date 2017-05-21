@@ -89,9 +89,7 @@ module.exports = (function () {
                     }
                 })
             });
-
         }
-
     }
 
     function criteriaQueryBuilder(data) {
@@ -112,7 +110,7 @@ module.exports = (function () {
         init();
         logger.debug("getQuestionById request recieved for userId : " + question.questionId);
         return new Promise((resolve, reject) => {
-            if (!utils.getUtils().isEmpty(question.questionId)) {
+            if (!utils.getUtils().isEmpty(question.questionId) && !utils.getUtils().isEmpty(question.clientId)) {
                 getQuestions(question)
                     .then(function (foundQuestion) {
                         resolve(foundQuestion[0].toObject());
@@ -124,7 +122,6 @@ module.exports = (function () {
                 resolve(undefined);
             }
         });
-
     }
 
 }())

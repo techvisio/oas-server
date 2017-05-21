@@ -7,8 +7,7 @@ var isInitialised = false;
 
 module.exports = (function () {
     return {
-        "SIGN_UP": [checkDuplicatePrimaryUser, checkUserName, checkPassword, checkEmailFormat, checkPasswordFormat, checkEmailId, checkContactNo, checkContactName],
-        "LOGIN": [checkUserName, checkPassword]
+        "LOGIN": [checkUserName, checkPassword, checkClientCode]
     }
 
     function init() {
@@ -20,10 +19,10 @@ module.exports = (function () {
             isInitialised = true;
         }
     }
-    function checkDuplicatePrimaryUser(signupData) {
+    function checkDuplicatePrimaryUser(data) {
         init();
         var promise = new Promise((resolve, reject) => {
-            clientService.getClientByEmailId(signupData.emailId).then(function (client) {
+            clientService.getClientByEmailId(data.emailId).then(function (client) {
                 if (client) {
                     resolve(utils.getErrorConstants().DUP_USER);
                 }
@@ -42,62 +41,69 @@ module.exports = (function () {
 
     }
 
-    function checkUserName(signupData) {
+    function checkClientCode(data) {
         init();
-        if (utils.getUtils().isEmpty(signupData.userName)) {
+        if (utils.getUtils().isEmpty(data.clientCode)) {
+            return Promise.resolve(utils.getErrorConstants().NO_CLIENT_CODE);
+        }
+    }
+
+    function checkUserName(data) {
+        init();
+        if (utils.getUtils().isEmpty(data.userName)) {
             return Promise.resolve(utils.getErrorConstants().NO_USER_NAME);
         }
     }
 
-    function checkPassword(signupData) {
+    function checkPassword(data) {
         init();
-        if (utils.getUtils().isEmpty(signupData.password)) {
+        if (utils.getUtils().isEmpty(data.password)) {
             return Promise.resolve(utils.getErrorConstants().NO_PASSWORD);
         }
     }
 
-    function checkOrganizationName(signupData) {
+    function checkOrganizationName(data) {
         init();
-        if (utils.getUtils().isEmpty(signupData.orgName)) {
+        if (utils.getUtils().isEmpty(data.orgName)) {
             return Promise.resolve(utils.getErrorConstants().NO_ORGANISATION);
         }
     }
 
-    function checkEmailId(signupData) {
+    function checkEmailId(data) {
         init();
-        if (utils.getUtils().isEmpty(signupData.emailId)) {
+        if (utils.getUtils().isEmpty(data.emailId)) {
             return Promise.resolve(utils.getErrorConstants().NO_EMAILID);
         }
     }
 
-    function checkContactNo(signupData) {
+    function checkContactNo(data) {
         init();
-        if (utils.getUtils().isEmpty(signupData.cnctNo)) {
+        if (utils.getUtils().isEmpty(data.cnctNo)) {
             return Promise.resolve(utils.getErrorConstants().NO_CONTACT_NO);
         }
     }
 
-    function checkContactName(signupData) {
+    function checkContactName(data) {
         init();
-        if (utils.getUtils().isEmpty(signupData.cnctName)) {
+        if (utils.getUtils().isEmpty(data.cnctName)) {
             return Promise.resolve(utils.getErrorConstants().NO_CONTACT_NAME);
         }
     }
 
 
 
-    function checkEmailFormat(signupData) {
+    function checkEmailFormat(data) {
         init();
         var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        if (!(mailformat.test(signupData.emailId))) {
+        if (!(mailformat.test(data.emailId))) {
             return Promise.resolve(utils.getErrorConstants().INVALID_EMAIL_FORMAT);
         }
     }
 
-    function checkPasswordFormat(signupData) {
+    function checkPasswordFormat(data) {
         init();
-        var passFormat = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,}$/;
-        if (!(passFormat.test(signupData.password))) {
+        var passFormat = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+        if (!(passFormat.test(data.password))) {
             return Promise.resolve(utils.getErrorConstants().INVALID_PASS_FORMAT);
         }
     }

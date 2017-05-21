@@ -1,5 +1,6 @@
 var modelFactory;
 var utils;
+var questionnaireModel;
 var questionModel;
 var isInitialised = false;
 var logger;
@@ -9,7 +10,8 @@ module.exports = (function () {
 
         createQuestionnaire: createQuestionnaire,
         getQuestionnaires: getQuestionnaires,
-        updateQuestionnaire: updateQuestionnaire
+        updateQuestionnaire: updateQuestionnaire,
+        getQuestionsByQuestionnaireId: getQuestionsByQuestionnaireId
     }
 
     function init() {
@@ -17,6 +19,7 @@ module.exports = (function () {
             modelFactory = require('../models/modelFactory');
             utils = require('../utils/utilFactory');
             questionnaireModel = modelFactory.getModel(utils.getConstants().MODEL_QUESTIONNAIRE);
+            questionModel = modelFactory.getModel(utils.getConstants().MODEL_QUESTION);
             logger = utils.getLogger();
             isInitialised = true;
         }
@@ -65,20 +68,33 @@ module.exports = (function () {
     function updateQuestionnaire(context) {
         init();
         logger.debug(context.reqId + " : updateQuestionnaire request recieved ");
+
         return new Promise((resolve, reject) => {
-            var questionnaire = context.data;
-            questionnaire.updateDate = new Date();
-            questionnaire.updatedBy = context.loggedInUser.userName;
-            questionnaireModel.update({ _id: questionnaire._id }, questionnaire, function (err, updatedQuestionnaire) {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    resolve(updatedQuestionnaire);
-                    logger.debug(context.reqId + " : sending response from updateQuestionnaire: " + updatedQuestionnaire);
-                }
-            })
+            questionnaireUpdate()
+                .then(getQuestionnaireById)
+                .then(questionnaire => resolve(questionnaire))
+                .catch(err => reject(err))
+
         });
+
+
+        function questionnaireUpdate() {
+            return new Promise((resolve, reject) => {
+                var questionnaire = context.data;
+                questionnaire.updateDate = new Date();
+                questionnaire.updatedBy = context.loggedInUser.userName;
+                questionnaireModel.update({ _id: questionnaire._id }, questionnaire, function (err, updatedQuestionnaire) {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(updatedQuestionnaire);
+                        logger.debug(context.reqId + " : sending response from updateQuestionnaire: " + updatedQuestionnaire);
+                    }
+                })
+            });
+        }
+
 
     }
 
@@ -94,5 +110,55 @@ module.exports = (function () {
         }
         return query;
     }
+
+    function getQuestionnaireById(questionnaire) {
+        init();
+        logger.debug("getQuestionnaireById request recieved for userId : " + questionnaire.questionnaireId);
+        return new Promise((resolve, reject) => {
+            if (!utils.getUtils().isEmpty(questionnaire.questionnaireId) && !utils.getUtils().isEmpty(questionnaire.clientId)) {
+                getQuestionnaires(questionnaire)
+                    .then(function (foundQuestionnaire) {
+                        resolve(foundQuestionnaire[0].toObject());
+                        logger.debug("sending response from getQuestionnaireById: " + foundQuestionnaire[0].toObject());
+                    })
+                    .catch(err => reject(err));
+            }
+            else {
+                resolve(undefined);
+            }
+        });
+    }
+
+    function getQuestionsByQuestionnaireId(context) {
+        init();
+        var questionnaire = {
+            questionnaireId: context.namedParam.qnrId,
+            clientId: context.namedParam.clientid,
+        }
+        return new Promise((resolve, reject) => {
+            getQuestionnaireById(questionnaire)
+                .then(getQuestions)
+                .then(questions => resolve(questions))
+                .catch(err => reject(err))
+        });
+
+        function getQuestions(questionnaire) {
+
+            return new Promise((resolve, reject) => {
+                questionModel.find({
+                    '_id': { $in: questionnaire.questions }
+                }, function (err, foundQuestions) {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(foundQuestions);
+                    }
+                })
+            });
+        }
+    }
+
+
 
 }())

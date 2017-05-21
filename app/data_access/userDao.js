@@ -119,10 +119,10 @@ module.exports = (function () {
         }
 
         if (!utils.getUtils().isEmpty(data.userName)) {
-            query["userName"] = data.userName;
+            query["userName"] = data.userName.toLowerCase();
         }
         if (!utils.getUtils().isEmpty(data.clientCode)) {
-            query["clientCode"] = data.clientCode;
+            query["clientCode"] = data.clientCode.toLowerCase();
         }
         if (!utils.getUtils().isEmpty(data.firstName)) {
             query["firstName"] = new RegExp('^' + data.firstName, "i");
@@ -134,7 +134,7 @@ module.exports = (function () {
             query["mobileNo"] = data.mobileNo;
         }
         if (!utils.getUtils().isEmpty(data.emailId)) {
-            query["emailId"] = data.emailId;
+            query["emailId"] = data.emailId.toLowerCase();
         }
 
         return query;
@@ -144,7 +144,7 @@ module.exports = (function () {
         init();
         logger.debug("getUserById request recieved for userId : " + user.userId);
         return new Promise((resolve, reject) => {
-            if (!utils.getUtils().isEmpty(user.userId)) {
+            if (!utils.getUtils().isEmpty(user.userId) && !utils.getUtils().isEmpty(user.clientId)) {
                 getUsers(user)
                     .then(function (foundUser) {
                         resolve(foundUser[0].toObject());

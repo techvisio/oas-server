@@ -54,8 +54,9 @@ module.exports = (function () {
         function getQuestionnaireById(savedQuestion) {
             init();
             var questionnaireId = context.namedParam.id;
+            var clientId = context.namedParam.clientid;
             return new Promise((resolve, reject) => {
-                questionnaireService.getQuestionnaireById(questionnaireId)
+                questionnaireService.getQuestionnaireById(questionnaireId, clientId)
                     .then(function (questionnaire) {
                         question = savedQuestion;
                         questionnaire.questions.push(savedQuestion);
@@ -94,6 +95,30 @@ module.exports = (function () {
                     logger.debug(context.reqId + " : sending response from updateQuestion: " + updatedQuestion);
                 })
                 .catch(err => reject(err));
+        });
+    }
+
+    function getQuestionById(questionId, clientId) {
+        init();
+        logger.debug("getQuestionById request recieved for questionnaireId : " + questionId);
+        return new Promise((resolve, reject) => {
+            if (!utils.getUtils().isEmpty(questionId) && !utils.getUtils().isEmpty(clientId)) {
+                var question = {
+                    questionId: questionId,
+                    clientId: clientId
+                };
+                questionDao.getQuestions(question)
+                    .then(function (foundQuestion) {
+                        if (foundQuestion) {
+                            resolve(foundQuestion[0].toObject());
+                            logger.debug("sending response from getQuestionById: " + foundQuestion[0].toObject());
+                        }
+                    })
+                    .catch(err => reject(err));
+            }
+            else {
+                resolve(undefined);
+            }
         });
     }
 

@@ -75,14 +75,15 @@ module.exports = (function () {
     return new Promise((resolve, reject) => {
       var data = context.data;
 
-      validationService.validate(utils.getConstants().LOGIN, data)
+      validationService.validate(utils.getConstants().USER_VALIDATION, utils.getConstants().LOGIN, data)
         .then(checkValidationResult)
-        .then(getUserByUserName)
-        .then(getClientForSessionData)
-        .then(userFetchSuccessHandler)
+        //.then(getClientByClientCode)
+        .then(getUserByUserNameAndClientCode)
+        .then(getClientforUser)
+        .then(authenticateUser)
         .catch(err => reject(err));
 
-//TODO:this is generic logic move this to validation service so that it can be used by all components
+      //TODO:this is generic logic move this to validation service so that it can be used by all components
       function checkValidationResult(codes) {
         return new Promise((resolve, reject) => {
           var isValidCode = false;
@@ -105,39 +106,34 @@ module.exports = (function () {
         });
       }
 
-      function getUserByUserName() {
+      /*function getClientByClientCode() {
 
+        var clientCode = context.data.clientCode;
         return new Promise((resolve, reject) => {
-          userService.getUserByUserName(data.userName).then(function (foundUser) {
+          clientService.getClientByClientCode(clientCode).then(function (foundClient) {
+            resolve(foundClient);
+          })
+            .catch(err => reject(err));
+        });
+      }*/
+
+      function getUserByUserNameAndClientCode() {
+        return new Promise((resolve, reject) => {
+          userService.getUserByUserNameAndClientCode(data.userName, data.clientCode).then(function (foundUser) {
             resolve(foundUser);
           })
             .catch(err => reject(err));
         });
       }
 
-//TODO:rename this method should like getClientforUser
-//make this global function
-      function getClientForSessionData(user) {
-
-        return new Promise((resolve, reject) => {
-
-          clientService.getClientById(user.clientId, user.clientCode).then(function (foundClient) {
-            user.client = foundClient;
-            resolve(user);
-
-          })
-            .catch(err => reject(err));
-        });
-
-      }
-
-      //TODO:rename this method to authenticate
-      function userFetchSuccessHandler(user) {
-
+      function authenticateUser(user) {
         if (!user) {
           // incorrect username
           var err = new Error('Authentication failed. User Not Found');
-          err.errCode = utils.getErrorConstants().NO_USER_FOUND;
+          var errCodes = [];
+          var errCode = utils.getErrorConstants().NO_USER_FOUND;
+          errCodes.push(errCode);
+          err.errorCodes = errCodes;
           err.errType = utils.getErrorConstants().VALIDATION_ERROR;
           reject(err);
         }
@@ -146,35 +142,24 @@ module.exports = (function () {
         if (user.password != encryptedPassword) {
           // incorrect password
           var err = new Error('Authentication failed. Password Not Matched');
-          err.errCode = utils.getErrorConstants().INVALID_CREDENTIAL;
+          var errCodes = [];
+          var errCode = utils.getErrorConstants().INVALID_CREDENTIAL;
+          errCodes.push(errCode);
+          err.errorCodes = errCodes;
           err.errType = utils.getErrorConstants().VALIDATION_ERROR;
           reject(err);
         }
         if (!user.isActive) {
           var err = new Error('Authentication failed. User Is Not Active');
-          err.errCode = utils.getErrorConstants().USER_INACTIVE;
+          var errCodes = [];
+          var errCode = utils.getErrorConstants().USER_INACTIVE;
+          errCodes.push(errCode);
+          err.errorCodes = errCodes;
           err.errType = utils.getErrorConstants().VALIDATION_ERROR;
           reject(err);
         }
 
-//TODO : move this login to new method which create token and add to session
-        //create token
-        var tokenExpires = utils.getConfiguration().getProperty('tokenExpireTime');
-        var expires = new Date();
-        var expires = expires.setMinutes(expires.getMinutes() + tokenExpires);
-        var tokenData = {
-          remoteIP: context.remoteAddress,
-          tokenExpires: expires,
-          user: user
-        }
-        var token = createToken(tokenData);
-        //add token to sessionStore
-
-        sessionStore.put(token, tokenData);
-        var responseData = {
-          token: token,
-          user: user
-        }
+        var responseData = createTokenAndAddItToSession(context, user);
         resolve(responseData);
 
       }
@@ -202,11 +187,9 @@ module.exports = (function () {
       return false;
     }
     return true;
-
   }
 
   function isTokenExpired(expiredTime) {
-
     if (expiredTime > new Date()) {
       return true;
     }
@@ -220,6 +203,43 @@ module.exports = (function () {
     var newTokenExpireTime = new Date().getMinutes() + expires;
     session.tokenExpires = newTokenExpireTime;
     sessionStore.put(token, session);
+  }
+
+  function getClientforUser(user) {
+    if (user) {
+
+      return new Promise((resolve, reject) => {
+
+        clientService.getClientById(user.clientId, user.clientCode).then(function (foundClient) {
+          user.client = foundClient;
+          resolve(user);
+
+        })
+          .catch(err => reject(err));
+      });
+    }
+  }
+
+  function createTokenAndAddItToSession(context, user) {
+
+    //create token
+    var tokenExpires = utils.getConfiguration().getProperty('tokenExpireTime');
+    var expires = new Date();
+    var expires = expires.setMinutes(expires.getMinutes() + tokenExpires);
+    var tokenData = {
+      remoteIP: context.remoteAddress,
+      tokenExpires: expires,
+      user: user
+    }
+    var token = createToken(tokenData);
+    //add token to sessionStore
+
+    sessionStore.put(token, tokenData);
+    var responseData = {
+      token: token,
+      user: user
+    }
+    return responseData;
   }
 
 }())

@@ -18,7 +18,9 @@ module.exports = (function () {
         updateUser: updateUser,
         getUserByUserName: getUserByUserName,
         resetPassword: resetPassword,
-        updatePassword: updatePassword
+        updatePassword: updatePassword,
+        getUserByEmailId: getUserByEmailId,
+        getUserByUserNameAndClientCode: getUserByUserNameAndClientCode
     }
 
     function init() {
@@ -85,65 +87,105 @@ module.exports = (function () {
 
     }
 
-    function getUserById(userId, clientCode) {
+    function getUserById(userId, clientId) {
         init();
         logger.debug("getUserById request recieved for userId : " + userId);
         return new Promise((resolve, reject) => {
-            if (!utils.getUtils().isEmpty(userId) && !utils.getUtils().isEmpty(clientCode)) {
-            var user = {
-                userId: userId,
-                clientCode: clientCode
-            };
-            userDao.getUsers(user)
-                .then(function (foundUser) {
-                    resolve(foundUser[0].toObject());
-                    logger.debug("sending response from getUserById: " + foundUser[0].toObject());
-                })
-                .catch(err => reject(err));
+            if (!utils.getUtils().isEmpty(userId) && !utils.getUtils().isEmpty(clientId)) {
+                var user = {
+                    userId: userId,
+                    clientId: clientId
+                };
+                userDao.getUsers(user)
+                    .then(function (foundUser) {
+                        if (foundUser.length > 0) {
+                            resolve(foundUser[0].toObject());
+                            logger.debug("sending response from getUserById: " + foundUser[0].toObject());
+                        }
+                    })
+                    .catch(err => reject(err));
             }
-            else{
+            else {
                 resolve(undefined);
             }
         });
 
     }
-//TODO:No method can call with single attribute always use with client id/code
-//in case of same user name for different client it will fail
-    function getUserByUserName(userName) {
+
+    function getUserByUserName(userName, clientId) {
         init();
         logger.debug("getUserByUserName request recieved for user name: " + userName);
         return new Promise((resolve, reject) => {
-            if (!utils.getUtils().isEmpty(userName)) {
-            var user = {
-                userName: userName
+            if (!utils.getUtils().isEmpty(userName) && !utils.getUtils().isEmpty(clientId)) {
+                var user = {
+                    userName: userName,
+                    clientId: clientId
+                }
+                userDao.getUsers(user)
+                    .then(function (foundUser) {
+                        if (foundUser.length > 0) {
+                            resolve(foundUser[0].toObject());
+                            logger.debug("sending response from getUserByUserName: " + foundUser[0].toObject());
+                        }
+                    })
+                    .catch(err => reject(err));
             }
-            userDao.getUsers(user)
-                .then(function (foundUser) {
-                    //TODO:for a wrong user name it will be empty array how you can get 0th element on empty array
-                    resolve(foundUser[0].toObject());
-                    logger.debug("sending response from getUserByUserName: " + foundUser[0].toObject());
-                })
-                .catch(err => reject(err));
-            }
-            else{
+            else {
                 resolve(undefined);
             }
         });
     }
 
-    function getUserByEmailId(emailId) {
+    function getUserByUserNameAndClientCode(userName, clientCode) {
+        init();
+        logger.debug("getUserByUserName request recieved for user name: " + userName);
+        return new Promise((resolve, reject) => {
+            if (!utils.getUtils().isEmpty(userName) && !utils.getUtils().isEmpty(clientCode)) {
+                var user = {
+                    userName: userName,
+                    clientCode: clientCode
+                }
+                userDao.getUsers(user)
+                    .then(function (foundUser) {
+                        if (foundUser.length > 0) {
+                            resolve(foundUser[0].toObject());
+                            logger.debug("sending response from getUserByUserName: " + foundUser[0].toObject());
+                        }
+                        else {
+                            resolve(undefined);
+                        }
+
+                    })
+                    .catch(err => reject(err));
+            }
+            else {
+                resolve(undefined);
+            }
+        });
+    }
+
+    function getUserByEmailId(emailId, clientId) {
         init();
         logger.debug("getUserByEmailId request recieved for user name: " + emailId);
         return new Promise((resolve, reject) => {
-            var user = {
-                emailId: emailId
+
+            if (!utils.getUtils().isEmpty(emailId) && !utils.getUtils().isEmpty(clientId)) {
+                var user = {
+                    emailId: emailId,
+                    clientId: clientId
+                }
+                userDao.getUsers(user)
+                    .then(function (foundUser) {
+                        if (foundUser.length > 0) {
+                            resolve(foundUser[0].toObject());
+                            logger.debug("sending response from getUserByEmailId: " + foundUser[0].toObject());
+                        }
+                    })
+                    .catch(err => reject(err));
             }
-            userDao.getUsers(user)
-                .then(function (foundUser) {
-                    resolve(foundUser[0].toObject());
-                    logger.debug("sending response from getUserByEmailId: " + foundUser[0].toObject());
-                })
-                .catch(err => reject(err));
+            else {
+                resolve(undefined);
+            }
         });
     }
 
@@ -173,7 +215,7 @@ module.exports = (function () {
                 reject(err);
             }
             else {
-                getUserByEmailId(emailId)
+                getUserByEmailId(emailId, clientId)
                     .then(handleUserUpdateForResetPassword)
                     .then(sendMailWithPassword)
                     .then(msg => resolve(msg))
@@ -198,7 +240,10 @@ module.exports = (function () {
                 }
                 else {
                     var err = new Error('No user found');
-                    err.errCode = utils.getErrorConstants().NO_USER_FOUND;
+                    var errCodes = [];
+                    var errCode = utils.getErrorConstants().NO_USER_FOUND;
+                    errCodes.push(errCode);
+                    err.errorCodes = errCodes;
                     reject(err);
                 }
             });
@@ -233,7 +278,10 @@ module.exports = (function () {
             }
             else {
                 var err = new Error('No user found');
-                err.errCode = utils.getErrorConstants().NO_USER_FOUND;
+                var errCodes = [];
+                var errCode = utils.getErrorConstants().NO_USER_FOUND;
+                errCodes.push(errCode);
+                err.errorCodes = errCodes;
                 err.errType = utils.getErrorConstants().VALIDATION_ERROR;
                 reject(err);
             }

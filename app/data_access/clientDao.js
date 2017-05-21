@@ -123,7 +123,7 @@ module.exports = (function () {
             query["clientName"] = data.clientName;
         }
         if (!utils.getUtils().isEmpty(data.clientCode)) {
-            query["clientCode"] = data.clientCode;
+            query["clientCode"] = data.clientCode.toLowerCase();
         }
         if (!utils.getUtils().isEmpty(data.primaryContactNo)) {
             query["primaryContactNo"] = data.primaryContactNo;

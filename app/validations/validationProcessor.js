@@ -1,4 +1,4 @@
-var clientValidation;
+var validationFactory;
 var isInitialised = false;
 module.exports = (function () {
     return {
@@ -7,14 +7,15 @@ module.exports = (function () {
 
     function init() {
         if (!isInitialised) {
-            clientValidation = require('./clientValidation.js');
+            validationFactory = require('./validationFactory.js');
             isInitialised = true;
         }
     }
-    function validate(operation, data) {
+    function validate(validationType, operation, data) {
         init();
         var validationError = [];
-        var validationFunctions = clientValidation[operation];
+        var factoryData = validationFactory.getValidation(validationType);
+        var validationFunctions = factoryData[operation];
         var result = {};
         validationFunctions.forEach(function (validationFunction) {
             result = validationFunction(data);

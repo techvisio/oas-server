@@ -27,6 +27,10 @@ module.exports = {
     //constants for mappings
     MAPPING_USER: "USER",
 
+//constants for validation type
+    CLIENT_VALIDATION: "CLIENT_VALIDATION",
+    USER_VALIDATION: "USER_VALIDATION",
+
     //constants for operations
     SIGN_UP: "SIGN_UP",
     LOGIN: "LOGIN"

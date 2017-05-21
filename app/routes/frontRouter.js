@@ -23,7 +23,6 @@ router.all('/*', function (req, res, next) {
     //log request url
     logger.info(req.id + ':' + 'Request URL : ' + req.originalUrl);
     //check if security token exists
-    //TODO: change sectoken with x-access header
     if (req.headers['x-access-token']) {
         //get and populate session from store
         var session = utils.getSessionStore().get(req.headers['x-access-token']);

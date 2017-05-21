@@ -34,8 +34,10 @@ Client.pre('save', function (next) {
             counter = { seq: 1 };
         }
 
+
         doc.clientId = counter.seq;
         doc.clientCode = utils.getUtils().generateClientCode(doc.clientName, doc.clientId);
+        doc.clientCode = doc.clientCode.toLowerCase();
         next();
     });
 });

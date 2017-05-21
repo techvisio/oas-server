@@ -7,16 +7,21 @@ var utils = require('../utils/utilFactory');
 var Question = new Schema({
     questionId: Number,
     clientId: Number,
-    QuestionDesc: String,
-    ImageURL: String,
-    Section: String,
-    Difficulty: String,
-    ResponseType: Boolean,
+    questionDesc: String,
+    imageURL: String,
+    section: String,
+    difficulty: String,
+    questionType: String,
     isActive: Boolean,
     creationDate: Date,
     createdBy: String,
     updateDate: Date,
-    updatedBy: String
+    updatedBy: String,
+    answer:[{
+        description:String,
+        imageURL: String,
+        isCorrect: Boolean
+    }]
 });
 
 Question.pre('save', function (next) {

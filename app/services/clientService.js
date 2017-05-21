@@ -57,7 +57,7 @@ module.exports = (function () {
         var data = context.data;
         var clientData = createClientData(data);
         return new Promise((resolve, reject) => {
-            validationService.validate(utils.getConstants().SIGN_UP, data)
+            validationService.validate(utils.getConstants().CLIENT_VALIDATION, utils.getConstants().SIGN_UP, data)
                 .then(checkValidationResult)
                 .then(createClient)
                 .then(createUser)
@@ -101,12 +101,19 @@ module.exports = (function () {
 
         function createUser(client) {
             return new Promise((resolve, reject) => {
+                if (data.cnctName) {
+                    var contactName = data.cnctName.split(" ");
+                    data.firstName = contactName[0];
+                    data.lastName = contactName[1];
+                }
                 var userData = {
                     userName: data.userName,
                     password: data.password,
                     emailId: data.emailId,
                     clientCode: client.clientCode,
-                    clientId: client.clientId
+                    clientId: client.clientId,
+                    firstName: data.firstName,
+                    lastName: data.lastName
                 }
                 var userContext = utils.getUtils().cloneContext(context, userData);
                 userService.createUser(userContext)
@@ -198,21 +205,21 @@ module.exports = (function () {
         logger.debug("getClientByEmailId request recieved for client : " + emailId);
         return new Promise((resolve, reject) => {
             if (!utils.getUtils().isEmpty(emailId)) {
-            var client = {
-                primaryEmailId: emailId
+                var client = {
+                    primaryEmailId: emailId
+                }
+                clientDao.getClients(client)
+                    .then(function (clients) {
+                        if (clients && clients.length > 0) {
+                            resolve(clients[0]);
+                        }
+                        else {
+                            resolve();
+                        }
+                    })
+                    .catch(err => reject(err));
             }
-            clientDao.getClients(client)
-                .then(function (clients) {
-                    if (clients && clients.length > 0) {
-                        resolve(clients[0]);
-                    }
-                    else {
-                        resolve();
-                    }
-                })
-                .catch(err => reject(err));
-            }
-            else{
+            else {
                 resolve(undefined);
             }
         });
@@ -223,17 +230,17 @@ module.exports = (function () {
         logger.debug("getClientByHashCode request recieved for client : " + hashCode);
         return new Promise((resolve, reject) => {
             if (!utils.getUtils().isEmpty(hashCode)) {
-            var client = {
-                hashCode: hashCode
+                var client = {
+                    hashCode: hashCode
+                }
+                clientDao.getClients(client)
+                    .then(function (clients) {
+                        resolve(clients[0].toObject());
+                        logger.debug("sending response from getClientByHashCode: " + clients[0].toObject());
+                    })
+                    .catch(err => reject(err));
             }
-            clientDao.getClients(client)
-                .then(function (clients) {
-                    resolve(clients[0].toObject());
-                    logger.debug("sending response from getClientByHashCode: " + clients[0].toObject());
-                })
-                .catch(err => reject(err));
-            }
-            else{
+            else {
                 resolve(undefined);
             }
         });
@@ -244,18 +251,18 @@ module.exports = (function () {
         logger.debug("getClientById request recieved for clientId : " + clientId);
         return new Promise((resolve, reject) => {
             if (!utils.getUtils().isEmpty(clientId) && !utils.getUtils().isEmpty(clientCode)) {
-            var client = {
-                clientId: clientId,
-                clientCode: clientCode
-            };
-            clientDao.getClients(client)
-                .then(function (foundClients) {
-                    resolve(foundClients[0].toObject());
-                    logger.debug("sending response from getClientById: " + foundClients[0].toObject());
-                })
-                .catch(err => reject(err));
+                var client = {
+                    clientId: clientId,
+                    clientCode: clientCode
+                };
+                clientDao.getClients(client)
+                    .then(function (foundClients) {
+                        resolve(foundClients[0].toObject());
+                        logger.debug("sending response from getClientById: " + foundClients[0].toObject());
+                    })
+                    .catch(err => reject(err));
             }
-            else{
+            else {
                 resolve(undefined);
             }
         });
@@ -270,14 +277,16 @@ module.exports = (function () {
                 var client = {
                     clientCode: clientCode
                 }
-                userDao.getClients(client)
+                clientDao.getClients(client)
                     .then(function (foundClients) {
-                        resolve(foundClient[0].toObject());
+                        if(foundClients.length>0){
+                        resolve(foundClients[0].toObject());
                         logger.debug("sending response from getClientByClientCode: " + foundClient[0]);
+                        }
                     })
                     .catch(err => reject(err));
             }
-            else{
+            else {
                 resolve(undefined);
             }
         });
