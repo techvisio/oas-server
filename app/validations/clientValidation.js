@@ -7,7 +7,7 @@ var isInitialised = false;
 
 module.exports = (function () {
     return {
-        "SIGN_UP": [checkDuplicatePrimaryUser, checkUserName, checkPassword, checkEmailFormat, checkPasswordFormat, checkEmailId, checkContactNo, checkContactName],
+        "SIGN_UP": [checkDuplicatePrimaryEmailId, checkUserName, checkPassword, checkEmailFormat, checkPasswordFormat, checkEmailId, checkContactNo, checkContactName],
         "LOGIN": [checkUserName, checkPassword]
     }
 
@@ -20,12 +20,12 @@ module.exports = (function () {
             isInitialised = true;
         }
     }
-    function checkDuplicatePrimaryUser(signupData) {
+    function checkDuplicatePrimaryEmailId(signupData) {
         init();
         var promise = new Promise((resolve, reject) => {
             clientService.getClientByEmailId(signupData.emailId).then(function (client) {
                 if (client) {
-                    resolve(utils.getErrorConstants().DUP_USER);
+                    resolve(utils.getErrorConstants().DUP_CLIENT_EMAIL);
                 }
                 else {
                     resolve(undefined);

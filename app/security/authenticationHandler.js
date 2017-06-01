@@ -76,8 +76,6 @@ module.exports = (function () {
       var data = context.data;
 
       validationService.validate(utils.getConstants().USER_VALIDATION, utils.getConstants().LOGIN, data)
-        .then(checkValidationResult)
-        //.then(getClientByClientCode)
         .then(getUserByUserNameAndClientCode)
         .then(getClientforUser)
         .then(authenticateUser)
@@ -99,23 +97,12 @@ module.exports = (function () {
           if (isValidCode) {
             var err = new Error('Validation failed');
             err.errorCodes = errorCodes;
-            err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+            err.errType = utils.getErrorConstants().LOGIN_VALIDATION_ERROR;
             throw (err);
           }
           resolve('valid');
         });
       }
-
-      /*function getClientByClientCode() {
-
-        var clientCode = context.data.clientCode;
-        return new Promise((resolve, reject) => {
-          clientService.getClientByClientCode(clientCode).then(function (foundClient) {
-            resolve(foundClient);
-          })
-            .catch(err => reject(err));
-        });
-      }*/
 
       function getUserByUserNameAndClientCode() {
         return new Promise((resolve, reject) => {
@@ -134,7 +121,7 @@ module.exports = (function () {
           var errCode = utils.getErrorConstants().NO_USER_FOUND;
           errCodes.push(errCode);
           err.errorCodes = errCodes;
-          err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+          err.errType = utils.getErrorConstants().LOGIN_VALIDATION_ERROR;
           reject(err);
         }
         var userPassword = context.data.password;
@@ -146,7 +133,7 @@ module.exports = (function () {
           var errCode = utils.getErrorConstants().INVALID_CREDENTIAL;
           errCodes.push(errCode);
           err.errorCodes = errCodes;
-          err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+          err.errType = utils.getErrorConstants().LOGIN_VALIDATION_ERROR;
           reject(err);
         }
         if (!user.isActive) {
@@ -155,7 +142,7 @@ module.exports = (function () {
           var errCode = utils.getErrorConstants().USER_INACTIVE;
           errCodes.push(errCode);
           err.errorCodes = errCodes;
-          err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+          err.errType = utils.getErrorConstants().LOGIN_VALIDATION_ERROR;
           reject(err);
         }
 

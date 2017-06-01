@@ -1,8 +1,11 @@
 var utils;
 var daoFactory;
 var questionnaireDao;
+var questionService;
 var logger;
+var validationService;
 var isInitialised = false;
+
 
 module.exports = (function () {
     return {
@@ -10,7 +13,8 @@ module.exports = (function () {
         getQuestionnaires: getQuestionnaires,
         updateQuestionnaire: updateQuestionnaire,
         getQuestionnaireById: getQuestionnaireById,
-        getQuestionsByQuestionnaireId: getQuestionsByQuestionnaireId
+        getQuestionsByQuestionnaireId: getQuestionsByQuestionnaireId,
+        deleteQuestionFromQuestionnaire: deleteQuestionFromQuestionnaire
     }
 
     function init() {
@@ -19,6 +23,8 @@ module.exports = (function () {
             utils = require('../utils/utilFactory');
             daoFactory = require('../data_access/daoFactory');
             questionnaireDao = daoFactory.getDataAccessObject(utils.getConstants().DAO_QUESTIONNAIRE);
+            validationService = require('../validations/validationProcessor');
+            questionService = require('./questionService');
             logger = utils.getLogger();
             isInitialised = true;
         }
@@ -42,15 +48,24 @@ module.exports = (function () {
         logger.debug(context.reqId + " : createQuestionnaire request recieved for new user : " + context.data);
 
         return new Promise((resolve, reject) => {
-
-            questionnaireDao.createQuestionnaire(context)
-                .then(function (savedQuestionnnaire) {
-                    resolve(savedQuestionnnaire);
-                    logger.debug(context.reqId + " : sending response from createQuestion: " + savedQuestionnnaire);
-                })
-                .catch(err => reject(err));
+            validationService.validate(utils.getConstants().QUESTIONNAIRE_VALIDATION, utils.getConstants().SAVE_QUESTIONNAIRE, context.data)
+                .then(createQuestionnaire)
+                .then(savedQuestionnnaire => resolve(savedQuestionnnaire))
+                .catch(err => reject(err))
         });
 
+        function createQuestionnaire() {
+
+            return new Promise((resolve, reject) => {
+
+                questionnaireDao.createQuestionnaire(context)
+                    .then(function (savedQuestionnnaire) {
+                        resolve(savedQuestionnnaire);
+                        logger.debug(context.reqId + " : sending response from createQuestion: " + savedQuestionnnaire);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
     }
 
     function updateQuestionnaire(context) {
@@ -93,7 +108,7 @@ module.exports = (function () {
                 };
                 questionnaireDao.getQuestionnaires(questionnaire)
                     .then(function (foundQuestionnaire) {
-                        if (foundQuestionnaire.length>0) {
+                        if (foundQuestionnaire.length > 0) {
                             resolve(foundQuestionnaire[0].toObject());
                             logger.debug("sending response from getQuestionnaireById: " + foundQuestionnaire[0].toObject());
                         }
@@ -105,5 +120,62 @@ module.exports = (function () {
             }
         });
     }
+
+    function deleteQuestionFromQuestionnaire(context) {
+        init();
+
+        return new Promise((resolve, reject) => {
+            getQuestionnaire()
+                .then(getQuestion)
+                .then(updatingQuestionnaire)
+                .then(updatedQuestionnaire => resolve(updatedQuestionnaire))
+                .catch(err => reject(err))
+        });
+
+        function getQuestionnaire() {
+            return new Promise((resolve, reject) => {
+                var questionnaireId = context.namedParam.qnrId;
+                var clientId = context.namedParam.clientid;
+                getQuestionnaireById(questionnaireId, clientId)
+                    .then(function (foundQuestionnaire) {
+                        resolve(foundQuestionnaire);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
+
+        function getQuestion(foundQuestionnaire) {
+            return new Promise((resolve, reject) => {
+                var questionId = context.namedParam.quesId;
+                var clientId = context.namedParam.clientid;
+                questionService.getQuestionById(questionId, clientId)
+                    .then(function (foundQuestion) {
+                        foundQuestionnaire.questions.forEach(function (questionId, index) {
+                            if (questionId.toJSON() === foundQuestion._id.toJSON()) {
+                                foundQuestionnaire.questions.splice(index, 1);
+                            }
+                        });
+                        
+                        resolve(foundQuestionnaire);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
+
+        function updatingQuestionnaire(foundQuestionnaire) {
+            var questionContext = utils.getUtils().cloneContext(context, foundQuestionnaire);
+            return new Promise((resolve, reject) => {
+                questionnaireDao.updateQuestionnaire(questionContext)
+                    .then(function (updatedQuestionnnaire) {
+                        resolve(updatedQuestionnnaire);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
+    }
+
+
+
+
 
 }());

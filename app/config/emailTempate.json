@@ -1,12 +1,12 @@
 {
   "signUpMailTemplate":{
       "subject":"[Techvisio] Please confirm your email address",
-      "body":"<!DOCTYPE html> <html><body><p>Hi,</p><p>{{ clientName }}</p><p>Thank you for choosing techvisio</p><p><a href='{{ serverUrl }}'> click here </a> to verify and activate your account.</p><p>Thanks,</p><p>The Techvisio Team</p></body></html>      "
+      "body":"<!DOCTYPE html> <html><body><p>Hi,</p><p>{{ clientName }}</p><p>Thank you for choosing techvisio</p><p><p>Your client Code is <b> {{ clientCode }}</b></p><a href='{{ serverUrl }}'> click here </a> to verify and activate your account.</p><p>Thanks,</p><p>The Techvisio Team</p></body></html>      "
   },
   
   "resetPasswordMailTemplate":{
       "subject":"[Techvisio] New password generated",
-      "body":"<!DOCTYPE html> <html><body><p>Hi,</p><p>{{ userName }}</p><p>You recently requested to reset your password for your techvisio account.</p><p>your new password provided below you can change it after login.</p> <p><b>{{ password }}</b></p><p>Thanks,</p><p>The Techvisio Team</p></body></html>      "
+      "body":"<!DOCTYPE html> <html><body><p>Hi,</p><p>{{ fullName }}</p><p>You recently requested to reset your password for your techvisio account.</p><p>your new password provided below you can change it after login.</p> <p><b> Password - {{ password }}</b></p><p><b>User Name - {{ userName }}</b></p><p><b>Client Code - {{ clientCode }}</b></p><p>Thanks,</p><p>The Techvisio Team</p></body></html>      "
   }
 
 }

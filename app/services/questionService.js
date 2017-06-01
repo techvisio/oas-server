@@ -2,6 +2,7 @@ var utils;
 var daoFactory;
 var questionDao;
 var logger;
+var validationService;
 var questionnaireService;
 var isInitialised = false;
 
@@ -10,7 +11,8 @@ module.exports = (function () {
     return {
         createQuestion: createQuestion,
         getQuestions: getQuestions,
-        updateQuestion: updateQuestion
+        updateQuestion: updateQuestion,
+        getQuestionById: getQuestionById
     }
 
     function init() {
@@ -20,6 +22,7 @@ module.exports = (function () {
             daoFactory = require('../data_access/daoFactory');
             questionDao = daoFactory.getDataAccessObject(utils.getConstants().DAO_QUESTION);
             questionnaireService = require('./questionnaireService');
+            validationService = require('../validations/validationProcessor');
             logger = utils.getLogger();
             isInitialised = true;
         }
@@ -43,13 +46,23 @@ module.exports = (function () {
         logger.debug(context.reqId + " : createQuestion request recieved for new user : " + context.data);
         var question;
         return new Promise((resolve, reject) => {
-            questionDao.createQuestion(context)
+            validationService.validate(utils.getConstants().QUESTIONNAIRE_VALIDATION, utils.getConstants().SAVE_QUESTION, context.data)
+                .then(createQuestion)
                 .then(getQuestionnaireById)
                 .then(updateQuestionnaire)
                 .then(updQuestionnaire => resolve(updQuestionnaire))
                 .catch(err => reject(err))
         });
 
+        function createQuestion() {
+            return new Promise((resolve, reject) => {
+                questionDao.createQuestion(context)
+                    .then(function (savedQuestion) {
+                        resolve(savedQuestion);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
 
         function getQuestionnaireById(savedQuestion) {
             init();

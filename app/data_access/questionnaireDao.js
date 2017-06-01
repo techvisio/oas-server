@@ -25,11 +25,11 @@ module.exports = (function () {
         }
     }
 
-    function getQuestionnaires(question) {
+    function getQuestionnaires(questionnaire) {
         init();
         logger.debug("getQuestionnaires request recieved ");
         return new Promise((resolve, reject) => {
-            var query = criteriaQueryBuilder(question);
+            var query = criteriaQueryBuilder(questionnaire);
             questionnaireModel.find(query).exec(function (err, foundQuestionnaire) {
                 if (err) {
                     reject(err);
@@ -88,8 +88,8 @@ module.exports = (function () {
                         reject(err);
                     }
                     else {
-                        resolve(updatedQuestionnaire);
-                        logger.debug(context.reqId + " : sending response from updateQuestionnaire: " + updatedQuestionnaire);
+                        resolve(questionnaire);
+                        logger.debug(context.reqId + " : sending response from updateQuestionnaire: " + questionnaire);
                     }
                 })
             });
@@ -118,8 +118,19 @@ module.exports = (function () {
             if (!utils.getUtils().isEmpty(questionnaire.questionnaireId) && !utils.getUtils().isEmpty(questionnaire.clientId)) {
                 getQuestionnaires(questionnaire)
                     .then(function (foundQuestionnaire) {
+                        if(foundQuestionnaire.length>0){
                         resolve(foundQuestionnaire[0].toObject());
                         logger.debug("sending response from getQuestionnaireById: " + foundQuestionnaire[0].toObject());
+                    }
+                    else{
+                         var err={};
+                            var errCodes = [];
+                            var errCode = utils.getErrorConstants().NO_QUESTIONNAIRE_FOUND;
+                            errCodes.push(errCode);
+                            err.errorCodes = errCodes;
+                            err.errType = utils.getErrorConstants().QUESTIONNAIRE_VALIDATION_ERROR;
+                            reject(err);
+                    }
                     })
                     .catch(err => reject(err));
             }

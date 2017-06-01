@@ -18,8 +18,7 @@ var logger = utils.getLogger();
  * @apiParam {Number} userId user unique Id.
  * @apiParam {String} userName user name of user.
  * @apiParam {String} clientCode client code of user.
- * @apiParam {String} firstName first name of user.
- * @apiParam {String} lastname last name of user.
+ * @apiParam {String} fullName first name of user.
  * @apiParam {String} mobileNo mobile no of user.
  * @apiParam {String} emailId email id name of user.
  *    
@@ -64,7 +63,7 @@ var logger = utils.getLogger();
  * @apiError NO_USER_FOUND no user list found for clientId.
  * 
  */
-router.post('/client/:clientid/users', function (req, res) {
+router.post('/client/:clientid/users', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
 
@@ -72,7 +71,7 @@ router.post('/client/:clientid/users', function (req, res) {
         var responseBody = utils.getUtils().buildSuccessResponse(users);
         res.status(200).json(responseBody);
     }, function (err) {
-        throw err;
+        next(err);
     })
 });
 
@@ -121,7 +120,7 @@ router.post('/client/:clientid/users', function (req, res) {
  * @apiError USER_NOT_FOUND The userid of the User was not found.
  * 
  */
-router.get('/client/:clientid/user/:id', function (req, res) {
+router.get('/client/:clientid/user/:id', function (req, res, next) {
 
     var userId = req.params.id;
     var clientId = req.params.clientid;
@@ -129,7 +128,7 @@ router.get('/client/:clientid/user/:id', function (req, res) {
         var responseBody = utils.getUtils().buildSuccessResponse(user);
         res.status(200).json(responseBody);
     }, function (err) {
-        throw err;
+        next(err);
     })
 });
 
@@ -140,8 +139,7 @@ router.get('/client/:clientid/user/:id', function (req, res) {
  * @apiParam {Number} clientid            client's unique ID.
  * @apiParam {Number} userId              user's unique ID.
  * @apiParam {String} [clientCode]        clientCode of the User.
- * @apiParam {String} [firstname]         First name of the User.
- * @apiParam {String} [lastname]          Last name of the User.
+ * @apiParam {String} [fullName]         First name of the User.
  * @apiParam {String} [userName]          User name of the User.
  * @apiParam {String} [password]          Password of the User.
  * @apiParam {Date} [dateOfBirth]         Date Of Birth of the User.
@@ -163,8 +161,7 @@ router.get('/client/:clientid/user/:id', function (req, res) {
  *     "userId": 2,
  *     "userName": "raman81",
  *     "password": "52466fb835eeee33",
- *     "firstName": "Raman",
- *     "lastName": "Nagar",
+ *     "fullName": "Raman",
  *     "isActive": true,
  *     "creationDate": "2017-05-01T18:30:00.000Z",
  *     "createdBy": "SYSTEM",
@@ -177,7 +174,7 @@ router.get('/client/:clientid/user/:id', function (req, res) {
  *
  * 
  */
-router.post('/client/:clientid/user', function (req, res) {
+router.post('/client/:clientid/user', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
 
@@ -185,7 +182,7 @@ router.post('/client/:clientid/user', function (req, res) {
         var responseBody = utils.getUtils().buildSuccessResponse(user);
         res.status(200).json(responseBody);
     }, function (err) {
-        throw err;
+        next(err);
     })
 });
 
@@ -197,7 +194,7 @@ router.post('/client/:clientid/user', function (req, res) {
  * @apiParam {Number} clientid    client's unique ID.
  * @apiParam {Number} userId    user's unique ID.
  * @apiParam {String} [clientCode] clientCode of the User.
- * @apiParam {String} [firstname] First name of the User.
+ * @apiParam {String} [fullName] First name of the User.
  * @apiParam {String} [lastname]  Last name of the User.
  * @apiParam {String} [userName]  User name of the User.
  * @apiParam {String} [password]  Password of the User.
@@ -220,8 +217,7 @@ router.post('/client/:clientid/user', function (req, res) {
  *     "userId": 2,
  *     "userName": "raman81",
  *     "password": "52466fb835eeee33", 
- *     "firstName": "Raman",
- *     "lastName": "Nagar",
+ *     "fullName": "Raman",
  *     "isActive": true,
  *     "creationDate": "2017-05-01T18:30:00.000Z",
  *     "createdBy": "SYSTEM",
@@ -234,7 +230,7 @@ router.post('/client/:clientid/user', function (req, res) {
  *
  * 
  */
-router.put('/client/:clientid/user', function (req, res) {
+router.put('/client/:clientid/user', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
 
@@ -242,7 +238,7 @@ router.put('/client/:clientid/user', function (req, res) {
         var responseBody = utils.getUtils().buildSuccessResponse(user);
         res.status(200).json(responseBody);
     }, function (err) {
-        throw err;
+        next(err);
     })
 });
 
@@ -307,7 +303,7 @@ router.put('/client/:clientid/user', function (req, res) {
  * @apiError NO_QUESTION_FOUND no question found with provided criteria.
  * 
  */
-router.post('/client/:clientid/questions', function (req, res) {
+router.post('/client/:clientid/questions', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
 
@@ -315,7 +311,7 @@ router.post('/client/:clientid/questions', function (req, res) {
         var responseBody = utils.getUtils().buildSuccessResponse(questions);
         res.status(200).json(responseBody);
     }, function (err) {
-        throw err;
+        next(err);
     })
 });
 
@@ -359,14 +355,14 @@ router.post('/client/:clientid/questions', function (req, res) {
  *
  * 
  */
-router.post('/client/:clientid/qnr/:id/question', function (req, res) {
+router.post('/client/:clientid/qnr/:id/question', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
     questionService.createQuestion(context).then(function (question) {
         var responseBody = utils.getUtils().buildSuccessResponse(question);
         res.status(200).json(responseBody);
     }, function (err) {
-        throw err;
+        next(err);
     })
 });
 
@@ -523,14 +519,14 @@ router.post('/client/:clientid/questionnaires', function (req, res) {
  *             }
  *         } 
  */
-router.post('/client/:clientid/questionnaire', function (req, res) {
+router.post('/client/:clientid/questionnaire', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
     questionnaireService.createQuestionnaire(context).then(function (questionnaire) {
         var responseBody = utils.getUtils().buildSuccessResponse(questionnaire);
         res.status(200).json(responseBody);
     }, function (err) {
-        throw err;
+        next(err);
     })
 });
 
@@ -610,19 +606,19 @@ router.put('/client/:clientid/questionnaire', function (req, res) {
  *                 ], 
  *   } 
  */
-router.get('/client/:clientid/qnr/:qnrId/questions', function (req, res) {
+router.get('/client/:clientid/qnr/:qnrId/questions', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
     questionnaireService.getQuestionsByQuestionnaireId(context).then(function (questions) {
         var responseBody = utils.getUtils().buildSuccessResponse(questions);
         res.status(200).json(responseBody);
     }, function (err) {
-        throw err;
+        next(err);
     })
 });
 
 
-router.get('/client/:clientid/qnr/:qnrId', function (req, res) {
+router.get('/client/:clientid/qnr/:qnrId', function (req, res, next) {
 
     var clientId = req.params.clientid;
     var questionnaireId = req.params.qnrId;
@@ -631,7 +627,20 @@ router.get('/client/:clientid/qnr/:qnrId', function (req, res) {
         var responseBody = utils.getUtils().buildSuccessResponse(questionnaire);
         res.status(200).json(responseBody);
     }, function (err) {
-        throw err;
+        next(err);
     })
 });
+
+
+router.delete('/client/:clientid/qnr/:qnrId/question/:quesId', function (req, res, next) {
+
+        var context = utils.getUtils().getContext(req);
+        questionnaireService.deleteQuestionFromQuestionnaire(context).then(function (questionnaire) {
+        var responseBody = utils.getUtils().buildSuccessResponse(questionnaire);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+});
+
 module.exports = router;

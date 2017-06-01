@@ -27,12 +27,15 @@ module.exports = {
     //constants for mappings
     MAPPING_USER: "USER",
 
-//constants for validation type
+    //constants for validation type
     CLIENT_VALIDATION: "CLIENT_VALIDATION",
     USER_VALIDATION: "USER_VALIDATION",
+    QUESTIONNAIRE_VALIDATION: "QUESTIONNAIRE_VALIDATION",
 
     //constants for operations
     SIGN_UP: "SIGN_UP",
-    LOGIN: "LOGIN"
+    LOGIN: "LOGIN",
+    SAVE_QUESTIONNAIRE: "SAVE_QUESTIONNAIRE",
+    SAVE_QUESTION: "SAVE_QUESTION"
 
 }

@@ -102,6 +102,15 @@ module.exports = (function () {
                             resolve(foundUser[0].toObject());
                             logger.debug("sending response from getUserById: " + foundUser[0].toObject());
                         }
+                        else {
+                            var err = {};
+                            var errCodes = [];
+                            var errCode = utils.getErrorConstants().NO_USER_FOUND;
+                            errCodes.push(errCode);
+                            err.errorCodes = errCodes;
+                            err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+                            reject(err);
+                        }
                     })
                     .catch(err => reject(err));
             }
@@ -126,6 +135,15 @@ module.exports = (function () {
                         if (foundUser.length > 0) {
                             resolve(foundUser[0].toObject());
                             logger.debug("sending response from getUserByUserName: " + foundUser[0].toObject());
+                        }
+                        else {
+                            var err = {};
+                            var errCodes = [];
+                            var errCode = utils.getErrorConstants().NO_USER_FOUND;
+                            errCodes.push(errCode);
+                            err.errorCodes = errCodes;
+                            err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+                            reject(err);
                         }
                     })
                     .catch(err => reject(err));
@@ -152,7 +170,13 @@ module.exports = (function () {
                             logger.debug("sending response from getUserByUserName: " + foundUser[0].toObject());
                         }
                         else {
-                            resolve(undefined);
+                            var err = {};
+                            var errCodes = [];
+                            var errCode = utils.getErrorConstants().NO_USER_FOUND;
+                            errCodes.push(errCode);
+                            err.errorCodes = errCodes;
+                            err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+                            reject(err);
                         }
 
                     })
@@ -178,6 +202,15 @@ module.exports = (function () {
                         if (foundUser.length > 0) {
                             resolve(foundUser[0].toObject());
                             logger.debug("sending response from getUserByEmailId: " + foundUser[0].toObject());
+                        }
+                        else {
+                            var err = {};
+                            var errCodes = [];
+                            var errCode = utils.getErrorConstants().NO_USER_EMAIL_ID_FOUND;
+                            errCodes.push(errCode);
+                            err.errorCodes = errCodes;
+                            err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+                            reject(err);
                         }
                     })
                     .catch(err => reject(err));
@@ -209,9 +242,13 @@ module.exports = (function () {
         return new Promise((resolve, reject) => {
             if (!emailId) {
                 var err = new Error('No Email Id Provided By User');
-                err.errCode = utils.getErrorConstants().NO_EMAIL_ID;
+                var errCodes = [];
+                var errCode = utils.getErrorConstants().NO_EMAIL_ID;
                 err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+                errCodes.push(errCode);
+                err.errorCodes = errCodes;
                 reject(err);
+
             }
             else {
                 getUserByEmailId(emailId)

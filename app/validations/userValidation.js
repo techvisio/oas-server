@@ -1,7 +1,6 @@
 var utils;
 var serviceLocator;
 var clientService;
-var clientService;
 var logger;
 var isInitialised = false;
 

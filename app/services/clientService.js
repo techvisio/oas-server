@@ -58,7 +58,6 @@ module.exports = (function () {
         var clientData = createClientData(data);
         return new Promise((resolve, reject) => {
             validationService.validate(utils.getConstants().CLIENT_VALIDATION, utils.getConstants().SIGN_UP, data)
-                .then(checkValidationResult)
                 .then(createClient)
                 .then(createUser)
                 .then(sendConfirmationMail)
@@ -66,27 +65,6 @@ module.exports = (function () {
                 .catch(err => reject(err))
         });
 
-        function checkValidationResult(codes) {
-            return new Promise((resolve, reject) => {
-                var isValidCode = false;
-                var errorCodes = [];
-                if (codes) {
-                    codes.forEach(function (code) {
-                        if (code) {
-                            isValidCode = true;
-                            errorCodes.push(code);
-                        }
-                    });
-                }
-                if (isValidCode) {
-                    var err = new Error('Validation failed');
-                    err.errorCodes = errorCodes;
-                    err.errType = utils.getErrorConstants().VALIDATION_ERROR;
-                    throw (err);
-                }
-                resolve('valid');
-            });
-        }
 
         function createClient() {
             return new Promise((resolve, reject) => {
@@ -102,9 +80,7 @@ module.exports = (function () {
         function createUser(client) {
             return new Promise((resolve, reject) => {
                 if (data.cnctName) {
-                    var contactName = data.cnctName.split(" ");
-                    data.firstName = contactName[0];
-                    data.lastName = contactName[1];
+                    data.fullName = data.cnctName;
                 }
                 var userData = {
                     userName: data.userName,
@@ -112,8 +88,7 @@ module.exports = (function () {
                     emailId: data.emailId,
                     clientCode: client.clientCode,
                     clientId: client.clientId,
-                    firstName: data.firstName,
-                    lastName: data.lastName
+                    fullName: data.fullName
                 }
                 var userContext = utils.getUtils().cloneContext(context, userData);
                 userService.createUser(userContext)
@@ -169,7 +144,7 @@ module.exports = (function () {
                 }
                 else {
                     var err = new Error('No user found');
-                    err.errCode = utils.getErrorConstants().NO_USER_FOUND;
+                    err.errCode = utils.getErrorConstants().NO_CLIENT_FOUND;
                     reject(err);
                 }
             });
@@ -188,8 +163,8 @@ module.exports = (function () {
                         logger.debug(context.reqId + " : sending response from verifyUser: " + foundClient);
                     }
                     else {
-                        var err = new Error('No User found with provided credentials');
-                        err.errCode = utils.getErrorConstants().NO_USER_FOUND;
+                        var err = new Error('No client found with provided credentials');
+                        err.errCode = utils.getErrorConstants().NO_CLIENT_EMAIL_ID_FOUND;
                         reject(err);
                     }
                     var msg = 'Mail sent successfully';
@@ -279,9 +254,9 @@ module.exports = (function () {
                 }
                 clientDao.getClients(client)
                     .then(function (foundClients) {
-                        if(foundClients.length>0){
-                        resolve(foundClients[0].toObject());
-                        logger.debug("sending response from getClientByClientCode: " + foundClient[0]);
+                        if (foundClients.length > 0) {
+                            resolve(foundClients[0].toObject());
+                            logger.debug("sending response from getClientByClientCode: " + foundClient[0]);
                         }
                     })
                     .catch(err => reject(err));

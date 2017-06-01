@@ -124,12 +124,10 @@ module.exports = (function () {
         if (!utils.getUtils().isEmpty(data.clientCode)) {
             query["clientCode"] = data.clientCode.toLowerCase();
         }
-        if (!utils.getUtils().isEmpty(data.firstName)) {
-            query["firstName"] = new RegExp('^' + data.firstName, "i");
+        if (!utils.getUtils().isEmpty(data.fullName)) {
+            query["fullName"] = new RegExp('^' + data.fullName, "i");
         }
-        if (!utils.getUtils().isEmpty(data.lastname)) {
-            query["lastName"] = new RegExp('^' + data.lastname, "i");
-        }
+       
         if (!utils.getUtils().isEmpty(data.mobileNo)) {
             query["mobileNo"] = data.mobileNo;
         }
@@ -147,8 +145,19 @@ module.exports = (function () {
             if (!utils.getUtils().isEmpty(user.userId) && !utils.getUtils().isEmpty(user.clientId)) {
                 getUsers(user)
                     .then(function (foundUser) {
-                        resolve(foundUser[0].toObject());
-                        logger.debug("sending response from getUserById: " + foundUser[0].toObject());
+                        if (foundUser.length > 0) {
+                            resolve(foundUser[0].toObject());
+                            logger.debug("sending response from getUserById: " + foundUser[0].toObject());
+                        }
+                        else {
+                            var err = {};
+                            var errCodes = [];
+                            var errCode = utils.getErrorConstants().NO_USER_FOUND;
+                            errCodes.push(errCode);
+                            err.errorCodes = errCodes;
+                            err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+                            reject(err);
+                        }
                     })
                     .catch(err => reject(err));
             }

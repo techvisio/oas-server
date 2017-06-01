@@ -1,6 +1,7 @@
 var constants = require('../utils/constants.js');
 var clientValidation = require('./clientValidation.js');
 var userValidation = require('./userValidation.js');
+var questionnaireValidation = require('./questionnaireValidation.js');
 
 module.exports = (function () {
     return {
@@ -13,6 +14,8 @@ module.exports = (function () {
                 return clientValidation;
             case constants.USER_VALIDATION:
                 return userValidation;
+            case constants.QUESTIONNAIRE_VALIDATION:
+                return questionnaireValidation;
         }
 
     }
