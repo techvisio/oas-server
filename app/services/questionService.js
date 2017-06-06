@@ -12,7 +12,8 @@ module.exports = (function () {
         createQuestion: createQuestion,
         getQuestions: getQuestions,
         updateQuestion: updateQuestion,
-        getQuestionById: getQuestionById
+        getQuestionById: getQuestionById,
+        getQuestionsByCriteria: getQuestionsByCriteria
     }
 
     function init() {
@@ -36,6 +37,18 @@ module.exports = (function () {
             questionDao.getQuestions(queryData).then(function (questions) {
                 resolve(questions);
                 logger.debug(context.reqId + " : sending response : " + questions);
+            })
+                .catch(err => reject(err));
+        });
+    }
+
+     function getQuestionsByCriteria(context) {
+        init();
+        logger.debug(context.reqId + " : getQuestionsByCriteria request recieved ");
+        return new Promise((resolve, reject) => {
+            questionDao.getQuestionsByCriteria(context).then(function (questions) {
+                resolve(questions);
+                logger.debug(context.reqId + " : sending response from getQuestionsByCriteria: " + questions);
             })
                 .catch(err => reject(err));
         });

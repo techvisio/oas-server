@@ -79,30 +79,11 @@ module.exports = (function () {
         .then(getUserByUserNameAndClientCode)
         .then(getClientforUser)
         .then(authenticateUser)
-        .catch(err => reject(err));
-
-      //TODO:this is generic logic move this to validation service so that it can be used by all components
-      function checkValidationResult(codes) {
-        return new Promise((resolve, reject) => {
-          var isValidCode = false;
-          var errorCodes = [];
-          if (codes) {
-            codes.forEach(function (code) {
-              if (code) {
-                isValidCode = true;
-                errorCodes.push(code);
-              }
-            });
-          }
-          if (isValidCode) {
-            var err = new Error('Validation failed');
-            err.errorCodes = errorCodes;
-            err.errType = utils.getErrorConstants().LOGIN_VALIDATION_ERROR;
-            throw (err);
-          }
-          resolve('valid');
+        .catch(err => {
+          err.errType=utils.getErrorConstants().LOGIN_VALIDATION_ERROR;
+          reject(err)
         });
-      }
+
 
       function getUserByUserNameAndClientCode() {
         return new Promise((resolve, reject) => {
@@ -121,7 +102,6 @@ module.exports = (function () {
           var errCode = utils.getErrorConstants().NO_USER_FOUND;
           errCodes.push(errCode);
           err.errorCodes = errCodes;
-          err.errType = utils.getErrorConstants().LOGIN_VALIDATION_ERROR;
           reject(err);
         }
         var userPassword = context.data.password;
@@ -133,7 +113,6 @@ module.exports = (function () {
           var errCode = utils.getErrorConstants().INVALID_CREDENTIAL;
           errCodes.push(errCode);
           err.errorCodes = errCodes;
-          err.errType = utils.getErrorConstants().LOGIN_VALIDATION_ERROR;
           reject(err);
         }
         if (!user.isActive) {
@@ -142,7 +121,6 @@ module.exports = (function () {
           var errCode = utils.getErrorConstants().USER_INACTIVE;
           errCodes.push(errCode);
           err.errorCodes = errCodes;
-          err.errType = utils.getErrorConstants().LOGIN_VALIDATION_ERROR;
           reject(err);
         }
 

@@ -9,7 +9,8 @@ module.exports = (function () {
 
         createQuestion: createQuestion,
         getQuestions: getQuestions,
-        updateQuestion: updateQuestion
+        updateQuestion: updateQuestion,
+        getQuestionsByCriteria: getQuestionsByCriteria
     }
 
     function init() {
@@ -36,6 +37,34 @@ module.exports = (function () {
                     logger.debug("sending response from getQuestions: " + foundQuestion);
                 }
             })
+        });
+
+    }
+
+    function getQuestionsByCriteria(context) {
+        init();
+        logger.debug("getQuestionsByCriteria request recieved ");
+        return new Promise((resolve, reject) => {
+
+            var queryFilter = criteriaQueryBuilder(context.data);
+            var pageSize = context.data.pageSize;
+            var pageNo = context.data.pageNo;
+            var sortBy = context.data.sortBy;
+            var skipQues = pageSize * (pageNo - 1);
+            query = questionModel.find(queryFilter).sort(sortBy);
+            query.count(function (err, count) {
+                query.skip(skipQues).limit(pageSize).exec('find', function (err, foundQuestions) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        var response = {
+                            count: count,
+                            foundQuestions: foundQuestions
+                        }
+                        resolve(response);
+                    }
+                });
+            });
         });
 
     }
@@ -98,9 +127,23 @@ module.exports = (function () {
         if (!utils.getUtils().isEmpty(data.questionId)) {
             query["questionId"] = data.questionId;
         }
-
         if (!utils.getUtils().isEmpty(data.clientId)) {
             query["clientId"] = data.clientId;
+        }
+        if (!utils.getUtils().isEmpty(data.section)) {
+            query["section"] = data.section;
+        }
+        if (!utils.getUtils().isEmpty(data.difficulty)) {
+            query["difficulty"] = data.difficulty;
+        }
+        if (!utils.getUtils().isEmpty(data.questionType)) {
+            query["questionType"] = data.questionType;
+        }
+        if (!utils.getUtils().isEmpty(data.creationDate)) {
+            query["creationDate"] = data.creationDate;
+        }
+        if (!utils.getUtils().isEmpty(data.createdBy)) {
+            query["createdBy"] = data.createdBy;
         }
         return query;
     }

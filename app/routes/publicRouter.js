@@ -191,8 +191,13 @@ router.post('/signup', function (req, res, next) {
 router.get('/client/verify', function (req, res, next) {
     var context = utils.getUtils().getContext(req);
     clientService.verifyUser(context).then(function (client) {
-        var responseBody = utils.getUtils().buildSuccessResponse(client);
-        res.status(200).json(responseBody);
+        //var responseBody = utils.getUtils().buildSuccessResponse(client);
+ res.writeHead(200, { "Content-Type": "text/html" });
+        res.write('<h3>Your account has been verified successfully. You can login to your account</h3>');
+        res.end();
+
+        
+        //res.status(200).json(responseBody);
     }, function (err) {
         next(err);
     })

@@ -305,9 +305,9 @@ router.put('/client/:clientid/user', function (req, res, next) {
  */
 router.post('/client/:clientid/questions', function (req, res, next) {
 
-    var context = utils.getUtils().getContext(req);
 
-    questionService.getQuestions(context).then(function (questions) {
+    var context = utils.getUtils().getContext(req);
+    questionService.getQuestionsByCriteria(context).then(function (questions) {
         var responseBody = utils.getUtils().buildSuccessResponse(questions);
         res.status(200).json(responseBody);
     }, function (err) {
@@ -642,5 +642,6 @@ router.delete('/client/:clientid/qnr/:qnrId/question/:quesId', function (req, re
         next(err);
     })
 });
+
 
 module.exports = router;
