@@ -4,8 +4,7 @@ var utils = require('../utils/utilFactory');
 var userService = serviceLocator.getService(utils.getConstants().SERVICE_USER);
 var questionService = serviceLocator.getService(utils.getConstants().SERVICE_QUESTION);
 var questionnaireService = serviceLocator.getService(utils.getConstants().SERVICE_QUESTIONNAIRE);
-var daoFactory = require('../data_access/daoFactory');
-var userDao = daoFactory.getDataAccessObject(utils.getConstants().DAO_QUESTIONNAIRE);
+var masterDataService = serviceLocator.getService(utils.getConstants().SERVICE_MASTERDATA);
 var router = express.Router();
 var logger = utils.getLogger();
 
@@ -617,7 +616,6 @@ router.get('/client/:clientid/qnr/:qnrId/questions', function (req, res, next) {
     })
 });
 
-
 router.get('/client/:clientid/qnr/:qnrId', function (req, res, next) {
 
     var clientId = req.params.clientid;
@@ -634,8 +632,8 @@ router.get('/client/:clientid/qnr/:qnrId', function (req, res, next) {
 
 router.delete('/client/:clientid/qnr/:qnrId/question/:quesId', function (req, res, next) {
 
-        var context = utils.getUtils().getContext(req);
-        questionnaireService.deleteQuestionFromQuestionnaire(context).then(function (questionnaire) {
+    var context = utils.getUtils().getContext(req);
+    questionnaireService.deleteQuestionFromQuestionnaire(context).then(function (questionnaire) {
         var responseBody = utils.getUtils().buildSuccessResponse(questionnaire);
         res.status(200).json(responseBody);
     }, function (err) {
@@ -643,5 +641,62 @@ router.delete('/client/:clientid/qnr/:qnrId/question/:quesId', function (req, re
     })
 });
 
+router.get('/client/:clientId/masterdata/:dataName', function (req, res, next) {
+    var context = utils.getUtils().getContext(req);
+    masterDataService.getMasterDataByClientIdAndType(context).then(function (foundMasterData) {
+        var responseBody = utils.getUtils().buildSuccessResponse(foundMasterData);
+        res.status(200).send(responseBody);
+    }, function (err) {
+        next(err);
+    })
+});
+
+router.post('/client/:clientId/masterdata', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    masterDataService.createMasterData(context).then(function (savedMasterData) {
+        var responseBody = utils.getUtils().buildSuccessResponse(savedMasterData);
+        res.status(200).send(responseBody)
+    }, function (err) {
+        next(err);
+    })
+
+});
+
+router.put('/client/:clientId/masterdata/:dataName', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    masterDataService.updateMasterData(context).then(function (updatedMasterData) {
+        var responseBody = utils.getUtils().buildSuccessResponse(updatedMasterData);
+        res.status(200).send(responseBody);
+    }, function (err) {
+        next(err);
+    })
+
+});
+
+router.post('/client/:clientid/filterquestion', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    questionService.getFiltteredQuestions(context).then(function (questions) {
+        var responseBody = utils.getUtils().buildSuccessResponse(questions);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+
+});
+
+router.post('/client/:clientid/qnr/:qnrId/import', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    questionnaireService.importQuestionsToQuestionnaire(context).then(function (questions) {
+        var responseBody = utils.getUtils().buildSuccessResponse(questions);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+
+});
 
 module.exports = router;

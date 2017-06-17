@@ -117,7 +117,9 @@ module.exports = (function () {
         if (!utils.getUtils().isEmpty(data.userId)) {
             query["userId"] = data.userId;
         }
-
+        if (!utils.getUtils().isEmpty(data.clientId)) {
+            query["clientId"] = data.clientId;
+        }
         if (!utils.getUtils().isEmpty(data.userName)) {
             query["userName"] = data.userName.toLowerCase();
         }

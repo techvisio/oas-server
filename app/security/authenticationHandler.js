@@ -83,8 +83,7 @@ module.exports = (function () {
           err.errType=utils.getErrorConstants().LOGIN_VALIDATION_ERROR;
           reject(err)
         });
-
-
+      
       function getUserByUserNameAndClientCode() {
         return new Promise((resolve, reject) => {
           userService.getUserByUserNameAndClientCode(data.userName, data.clientCode).then(function (foundUser) {
@@ -102,6 +101,7 @@ module.exports = (function () {
           var errCode = utils.getErrorConstants().NO_USER_FOUND;
           errCodes.push(errCode);
           err.errorCodes = errCodes;
+          
           reject(err);
         }
         var userPassword = context.data.password;

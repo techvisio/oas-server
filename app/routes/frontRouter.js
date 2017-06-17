@@ -56,24 +56,16 @@ router.use(errorHandler);
 
 function errorHandler(err, req, res, next) {
     var responseBody;
-    if (err.errorCodes) {
+    if (err.errorCodes) {  
         logger.error(req.id + ": error occured code: " + err.errorCode);
-    /*    var msgs = [];
-        err.errorCodes.forEach(function (errorCode) {
-            var errorMsg = utils.getCustomError().getErrorMsg(errorCode);
-            msgs.push(errorMsg);
-        });*/
+    
         responseBody = utils.getUtils().buildFailedResponse(err.errorCodes, err.errType);
         res.status(500).json(responseBody)
     }
 
     else if (err.errCode) {
         logger.error(req.id + ": error occured code: " + err.errCode);
-    /*    var msgs = [];
-        err.errorCodes.forEach(function (errorCode) {
-            var errorMsg = utils.getCustomError().getErrorMsg(errorCode);
-            msgs.push(errorMsg);
-        });*/
+    
         responseBody = utils.getUtils().buildFailedResponse(err.errCode, err.errType);
         res.status(500).json(responseBody)
     }

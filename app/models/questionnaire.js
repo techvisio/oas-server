@@ -15,7 +15,8 @@ var Questionnaire = new Schema({
     creationDate: Date,
     createdBy: String,
     updateDate: Date,
-    updatedBy: String
+    updatedBy: String,
+    subject: String
 
 });
 

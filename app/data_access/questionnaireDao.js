@@ -95,7 +95,6 @@ module.exports = (function () {
             });
         }
 
-
     }
 
     function criteriaQueryBuilder(data) {

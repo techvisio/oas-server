@@ -3,6 +3,7 @@ var clientModel = require('./client.js');
 var userModel = require('./user.js');
 var questionModel = require('./question.js');
 var questionnaireModel = require('./questionnaire.js');
+var masterDataModel = require('./masterData.js');
 
 
 module.exports = (function () {
@@ -20,6 +21,8 @@ module.exports = (function () {
                 return questionnaireModel;
             case constants.MODEL_QUESTION:
                 return questionModel;
+            case constants.MODEL_MASTERDATA:
+                return masterDataModel;
         }
 
     }

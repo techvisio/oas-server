@@ -3,6 +3,7 @@ var clientService = require('./clientService.js');
 var userService = require('./userService.js');
 var questionnaireService = require('./questionnaireService.js');
 var questionService = require('./questionService.js');
+var masterDataService = require('./masterDataService.js');
 var authenticationService = require('../security/authenticationHandler.js');
 
 module.exports = (function () {
@@ -22,6 +23,8 @@ module.exports = (function () {
                 return questionService;
             case constants.SERVICE_AUTHENTICATION:
                 return authenticationService;
+            case constants.SERVICE_MASTERDATA:
+                return masterDataService;
         }
 
     }

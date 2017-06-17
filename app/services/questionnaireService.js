@@ -14,7 +14,8 @@ module.exports = (function () {
         updateQuestionnaire: updateQuestionnaire,
         getQuestionnaireById: getQuestionnaireById,
         getQuestionsByQuestionnaireId: getQuestionsByQuestionnaireId,
-        deleteQuestionFromQuestionnaire: deleteQuestionFromQuestionnaire
+        deleteQuestionFromQuestionnaire: deleteQuestionFromQuestionnaire,
+        importQuestionsToQuestionnaire: importQuestionsToQuestionnaire
     }
 
     function init() {
@@ -155,7 +156,7 @@ module.exports = (function () {
                                 foundQuestionnaire.questions.splice(index, 1);
                             }
                         });
-                        
+
                         resolve(foundQuestionnaire);
                     })
                     .catch(err => reject(err));
@@ -173,8 +174,46 @@ module.exports = (function () {
             });
         }
     }
+    function importQuestionsToQuestionnaire(context) {
+        init();
+        logger.debug(context.reqId + " : importQuestionsToQuestionnaire request recieved : " + context.data);
+        var question;
+        return new Promise((resolve, reject) => {
+            getQuestionnaire()
+                .then(updatingQuestionnaire)
+                .then(updQuestionnaire => resolve(updQuestionnaire))
+                .catch(err => reject(err))
+        });
 
+        function getQuestionnaire() {
+            init();
+            var questionnaireId = context.namedParam.qnrId;
+            var clientId = context.namedParam.clientid;
+            var questions = context.data;
+            return new Promise((resolve, reject) => {
+                getQuestionnaireById(questionnaireId, clientId)
+                    .then(function (questionnaire) {
+                        questions.forEach(function (question) {
+                            questionnaire.questions.push(question);
+                        });
 
+                        resolve(questionnaire);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
+
+        function updatingQuestionnaire(foundQuestionnaire) {
+            var questionContext = utils.getUtils().cloneContext(context, foundQuestionnaire);
+            return new Promise((resolve, reject) => {
+                questionnaireDao.updateQuestionnaire(questionContext)
+                    .then(function (updatedQuestionnnaire) {
+                        resolve(updatedQuestionnnaire);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
+    }
 
 
 

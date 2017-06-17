@@ -21,7 +21,10 @@ var Question = new Schema({
         description:String,
         imageURL: String,
         isCorrect: Boolean
-    }]
+    }],
+    category:[]
+
+    
 });
 
 Question.pre('save', function (next) {

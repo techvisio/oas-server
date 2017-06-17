@@ -10,7 +10,7 @@ module.exports = (function () {
         createQuestion: createQuestion,
         getQuestions: getQuestions,
         updateQuestion: updateQuestion,
-        getQuestionsByCriteria: getQuestionsByCriteria
+        getFiltteredQuestions: getFiltteredQuestions
     }
 
     function init() {
@@ -41,17 +41,26 @@ module.exports = (function () {
 
     }
 
-    function getQuestionsByCriteria(context) {
+    function getFiltteredQuestions(context) {
         init();
         logger.debug("getQuestionsByCriteria request recieved ");
         return new Promise((resolve, reject) => {
 
             var queryFilter = criteriaQueryBuilder(context.data);
-            var pageSize = context.data.pageSize;
+            //populateFilterData(queryFilter, masterData)
+            var pageSize = Number(context.data.pageSize);
             var pageNo = context.data.pageNo;
             var sortBy = context.data.sortBy;
             var skipQues = pageSize * (pageNo - 1);
-            query = questionModel.find(queryFilter).sort(sortBy);
+            var sections;
+
+            query = questionModel.find({
+              //  'section': { $in: queryFilter.sections },
+               // 'difficulty': { $in: queryFilter.difficulties },
+                //'questionType': { $in: queryFilter.questionTypes },
+                //'category': { $in: queryFilter.categories },
+                //"questionDesc": { "$regex": queryFilter.questionDesc, "$options": "i" }
+            }).sort(sortBy);
             query.count(function (err, count) {
                 query.skip(skipQues).limit(pageSize).exec('find', function (err, foundQuestions) {
                     if (err) {
@@ -69,6 +78,21 @@ module.exports = (function () {
 
     }
 
+    function populateFilterData(masterData, queryFilter) {
+        if (queryFilter.questionTypes.length <= 0) {
+            queryFilter.questionTypes = masterData.questionTypes;
+        }
+        if (queryFilter.difficulties.length <= 0) {
+            queryFilter.difficulties = masterData.difficulties;
+        }
+        if (queryFilter.categories.length <= 0) {
+            queryFilter.categories = masterData.categories;
+        }
+        if (queryFilter.sections.length <= 0) {
+            queryFilter.sections = masterData.sections;
+        }
+
+    }
     function createQuestion(context) {
         init();
         logger.debug(context.reqId + " : createClient request recieved ");
@@ -139,11 +163,26 @@ module.exports = (function () {
         if (!utils.getUtils().isEmpty(data.questionType)) {
             query["questionType"] = data.questionType;
         }
+        if (data.sections && data.sections.length > 0) {
+            query["sections"] = data.sections;
+        }
+        if (data.difficulties && data.difficulties.length > 0) {
+            query["difficulties"] = data.difficulties;
+        }
+        if (data.categories && data.categories.length > 0) {
+            query["categories"] = data.categories;
+        }
+        if (data.questionTypes && data.questionTypes.length > 0) {
+            query["questionTypes"] = data.questionTypes;
+        }
         if (!utils.getUtils().isEmpty(data.creationDate)) {
             query["creationDate"] = data.creationDate;
         }
         if (!utils.getUtils().isEmpty(data.createdBy)) {
             query["createdBy"] = data.createdBy;
+        }
+        if (!utils.getUtils().isEmpty(data.title)) {
+            query["questionDesc"] = data.title;
         }
         return query;
     }

@@ -3,6 +3,7 @@ var userDao = require('./userDao.js');
 var clientDao = require('./clientDao.js');
 var questionDao = require('./questionDao');
 var questionnaireDao = require('./questionnaireDao');
+var masterDataDao = require('./masterDataDao');
 
 module.exports = (function () {
     return {
@@ -19,6 +20,8 @@ module.exports = (function () {
                 return questionDao;
             case utils.getConstants().DAO_QUESTIONNAIRE:
                 return questionnaireDao;
+            case utils.getConstants().DAO_MASTERDATA:
+                return masterDataDao;
         }
     }
 })()

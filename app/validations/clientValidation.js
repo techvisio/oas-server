@@ -7,7 +7,7 @@ var isInitialised = false;
 
 module.exports = (function () {
     return {
-        "SIGN_UP": [checkDuplicatePrimaryEmailId, checkUserName, checkPassword, checkEmailFormat, checkPasswordFormat, checkEmailId, checkContactNo, checkContactName],
+        "SIGN_UP": [checkDuplicatePrimaryEmailId, checkUserName, checkPassword, checkEmailFormat, checkPasswordFormat, checkEmailId, checkContactName],
         "LOGIN": [checkUserName, checkPassword]
     }
 
@@ -70,12 +70,12 @@ module.exports = (function () {
         }
     }
 
-    function checkContactNo(signupData) {
+    /*function checkContactNo(signupData) {
         init();
         if (utils.getUtils().isEmpty(signupData.cnctNo)) {
             return Promise.resolve(utils.getErrorConstants().NO_CONTACT_NO);
         }
-    }
+    }*/
 
     function checkContactName(signupData) {
         init();

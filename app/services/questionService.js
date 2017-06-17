@@ -4,6 +4,7 @@ var questionDao;
 var logger;
 var validationService;
 var questionnaireService;
+var masterDataService;
 var isInitialised = false;
 
 
@@ -13,7 +14,7 @@ module.exports = (function () {
         getQuestions: getQuestions,
         updateQuestion: updateQuestion,
         getQuestionById: getQuestionById,
-        getQuestionsByCriteria: getQuestionsByCriteria
+        getFiltteredQuestions: getFiltteredQuestions
     }
 
     function init() {
@@ -23,6 +24,7 @@ module.exports = (function () {
             daoFactory = require('../data_access/daoFactory');
             questionDao = daoFactory.getDataAccessObject(utils.getConstants().DAO_QUESTION);
             questionnaireService = require('./questionnaireService');
+            masterDataService = require('./masterDataService');
             validationService = require('../validations/validationProcessor');
             logger = utils.getLogger();
             isInitialised = true;
@@ -37,18 +39,6 @@ module.exports = (function () {
             questionDao.getQuestions(queryData).then(function (questions) {
                 resolve(questions);
                 logger.debug(context.reqId + " : sending response : " + questions);
-            })
-                .catch(err => reject(err));
-        });
-    }
-
-     function getQuestionsByCriteria(context) {
-        init();
-        logger.debug(context.reqId + " : getQuestionsByCriteria request recieved ");
-        return new Promise((resolve, reject) => {
-            questionDao.getQuestionsByCriteria(context).then(function (questions) {
-                resolve(questions);
-                logger.debug(context.reqId + " : sending response from getQuestionsByCriteria: " + questions);
             })
                 .catch(err => reject(err));
         });
@@ -147,5 +137,22 @@ module.exports = (function () {
             }
         });
     }
+
+
+    function getFiltteredQuestions(context) {
+        init();
+        //var masterData = masterDataService.getMasterDataForQestion(context.namedParam.clientid);
+        logger.debug(context.reqId + " : getFiltteredQuestions request recieved for user : " + context.data);
+
+        return new Promise((resolve, reject) => {
+            questionDao.getFiltteredQuestions(context)
+                .then(function (Questions) {
+                    resolve(Questions);
+                    logger.debug(context.reqId + " : sending response from getFiltteredQuestions: " + Questions);
+                })
+                .catch(err => reject(err));
+        });
+    }
+
 
 }());
