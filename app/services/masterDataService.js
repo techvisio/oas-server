@@ -82,7 +82,9 @@ module.exports = (function () {
                     resolve(foundMasterData);
                     logger.debug(context.reqId + " : sending response from getMasterDataByClientIdAndType: " + updatedMasterData);
                 })
-                .catch(err => reject(err));
+                .catch(
+                    err => reject(err)
+                    );
         });
     }
 

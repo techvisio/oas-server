@@ -3,7 +3,7 @@ var utils = require('./app/utils/utilFactory.js');
 var bodyParser = require('body-parser');
 var dbProvider=require('./app/providers/dbProvider.js');
 var frontRouteHandler = require('./app/routes/frontRouter');
-var jst = require('jst');
+//var jst = require('jst');
 
 //initialise the application
 var app = express();
@@ -17,8 +17,10 @@ app.use(bodyParser.json());
 //set request headers for all requests
 app.all('/*', function(req, res, next) {
 // CORS headers
-res.header("Access-Control-Allow-Origin", "*"); // restrict it to the required domain
+res.header("Access-Control-Allow-Origin", "http://localhost:4200"); // restrict it to the required domain
 res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+res.header('Access-Control-Allow-Credentials', 'true');
+
 // Set custom headers for CORS
 res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');
 if (req.method == 'OPTIONS') {

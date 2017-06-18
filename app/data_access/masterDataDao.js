@@ -125,6 +125,9 @@ module.exports = (function () {
                             resolve(foundMasterData[0].toObject());
                             logger.debug("sending response from getMasterDataById: " + foundMasterData[0].toObject());
                         }
+                        else{
+                            resolve({});
+                        }
                     })
                     .catch(err => reject(err));
             }
