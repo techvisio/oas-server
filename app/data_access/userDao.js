@@ -26,7 +26,7 @@ module.exports = (function () {
         logger.debug("getUsers request recieved ");
         return new Promise((resolve, reject) => {
             var query = criteriaQueryBuilder(user);
-            userModel.find(query).exec(function (err, foundUsers) {
+            userModel.find(query).lean().exec(function (err, foundUsers) {
                 if (err) {
                     reject(err);
                 }
@@ -148,8 +148,8 @@ module.exports = (function () {
                 getUsers(user)
                     .then(function (foundUser) {
                         if (foundUser.length > 0) {
-                            resolve(foundUser[0].toObject());
-                            logger.debug("sending response from getUserById: " + foundUser[0].toObject());
+                            resolve(foundUser[0]);
+                            logger.debug("sending response from getUserById: " + foundUser[0]);
                         }
                         else {
                             var err = {};

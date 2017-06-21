@@ -122,7 +122,7 @@ router.post('/client/:clientid/users', function (req, res, next) {
 router.get('/client/:clientid/user/:id', function (req, res, next) {
 
     var userId = req.params.id;
-    var clientId = req.params.clientid;
+    var clientId = req.session.user.clientId;
     userService.getUserById(userId, clientId).then(function (user) {
         var responseBody = utils.getUtils().buildSuccessResponse(user);
         res.status(200).json(responseBody);
@@ -618,7 +618,7 @@ router.get('/client/:clientid/qnr/:qnrId/questions', function (req, res, next) {
 
 router.get('/client/:clientid/qnr/:qnrId', function (req, res, next) {
 
-    var clientId = req.params.clientid;
+    var clientId = req.session.user.clientId;
     var questionnaireId = req.params.qnrId;
     var context = utils.getUtils().getContext(req);
     questionnaireService.getQuestionnaireById(questionnaireId, clientId).then(function (questionnaire) {

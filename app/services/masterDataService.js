@@ -1,6 +1,7 @@
 var utils;
 var daoFactory;
 var masterDataDao;
+var cacheService;
 var logger;
 var isInitialised = false;
 
@@ -10,8 +11,7 @@ module.exports = (function () {
         getAllMasterData: getAllMasterData,
         createMasterData: createMasterData,
         updateMasterData: updateMasterData,
-        getMasterDataByClientIdAndType: getMasterDataByClientIdAndType,
-        getMasterDataForQestion: getMasterDataForQestion
+        getMasterDataByClientIdAndType: getMasterDataByClientIdAndType
     }
 
     function init() {
@@ -19,6 +19,7 @@ module.exports = (function () {
             utils = require('../utils/utilFactory');
             daoFactory = require('../data_access/daoFactory');
             masterDataDao = daoFactory.getDataAccessObject(utils.getConstants().DAO_MASTERDATA);
+            cacheService = require('./cacheService')
             logger = utils.getLogger();
             isInitialised = true;
         }
@@ -73,34 +74,23 @@ module.exports = (function () {
         init();
         logger.debug(context.reqId + " : getMasterDataByClientIdAndType request recieved: " + context.data);
         var masterData = {
-            clientId: context.namedParam.clientId,
+            clientId: context.loggedInUser.clientId,
             dataName: context.namedParam.dataName
         }
         return new Promise((resolve, reject) => {
-            masterDataDao.getMasterDataByClientIdAndType(masterData)
-                .then(function (foundMasterData) {
-                    resolve(foundMasterData);
-                    logger.debug(context.reqId + " : sending response from getMasterDataByClientIdAndType: " + updatedMasterData);
-                })
-                .catch(
-                    err => reject(err)
-                    );
+            var clientMasterData = cacheService.getMasterData(masterData.clientId);
+                if(masterData.dataName==="section"){
+                    resolve(clientMasterData.section);
+                }
+                if(masterData.dataName==="category"){
+                    resolve(clientMasterData.category);
+                }
+                if(masterData.dataName==="subject"){
+                    resolve(clientMasterData.subject);
+                }  
+                              
         });
     }
 
-    function getMasterDataForQestion(clientId) {
-
-        var difficulties = ["Easy", "Medium", "Hard"];
-
-        var questionTypes = ["TRUE_FALSE", "MULTIPLE_CHOICE_SINGLE", "MULTIPLE_CHOICE_MULTI", "FILL_IN_THE_BLANK"];
-
-        var quesMasterData = {
-            sections: sections,
-            categories: categories,
-            difficulties: difficulties,
-            questionTypes: questionTypes
-        }
-        return quesMasterData;
-    }
-
+    
 }());

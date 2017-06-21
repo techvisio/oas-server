@@ -28,7 +28,7 @@ module.exports = (function () {
         logger.debug("getQuestions request recieved ");
         return new Promise((resolve, reject) => {
             var query = criteriaQueryBuilder(question);
-            questionModel.find(query).exec(function (err, foundQuestion) {
+            questionModel.find(query).lean().exec(function (err, foundQuestion) {
                 if (err) {
                     reject(err);
                 }
@@ -47,20 +47,13 @@ module.exports = (function () {
         return new Promise((resolve, reject) => {
 
             var queryFilter = criteriaQueryBuilder(context.data);
-            //populateFilterData(queryFilter, masterData)
+            queryFilter = populateFilterData(queryFilter)
             var pageSize = Number(context.data.pageSize);
             var pageNo = context.data.pageNo;
             var sortBy = context.data.sortBy;
             var skipQues = pageSize * (pageNo - 1);
-            var sections;
 
-            query = questionModel.find({
-              //  'section': { $in: queryFilter.sections },
-               // 'difficulty': { $in: queryFilter.difficulties },
-                //'questionType': { $in: queryFilter.questionTypes },
-                //'category': { $in: queryFilter.categories },
-                //"questionDesc": { "$regex": queryFilter.questionDesc, "$options": "i" }
-            }).sort(sortBy);
+            query = questionModel.find(queryFilter).sort(sortBy);
             query.count(function (err, count) {
                 query.skip(skipQues).limit(pageSize).exec('find', function (err, foundQuestions) {
                     if (err) {
@@ -78,20 +71,25 @@ module.exports = (function () {
 
     }
 
-    function populateFilterData(masterData, queryFilter) {
-        if (queryFilter.questionTypes.length <= 0) {
-            queryFilter.questionTypes = masterData.questionTypes;
+    function populateFilterData(queryFilter) {
+        var query = {};
+        if (queryFilter.questionTypes && queryFilter.questionTypes.length > 0) {
+            query.questionType = { $in: queryFilter.questionTypes };
         }
-        if (queryFilter.difficulties.length <= 0) {
-            queryFilter.difficulties = masterData.difficulties;
+        if (queryFilter.difficulties && queryFilter.difficulties.length > 0) {
+            query.difficulty = { $in: queryFilter.difficulties };
         }
-        if (queryFilter.categories.length <= 0) {
-            queryFilter.categories = masterData.categories;
+        if (queryFilter.categories && queryFilter.categories.length > 0) {
+            query.category = { $in: queryFilter.categories };
         }
-        if (queryFilter.sections.length <= 0) {
-            queryFilter.sections = masterData.sections;
+        if (queryFilter.sections && queryFilter.sections.length > 0) {
+            query.section = { $in: queryFilter.sections };
+        }
+        if (queryFilter.questionDesc) {
+            query.questionDesc = { "$regex": queryFilter.questionDesc, "$options": "i" };
         }
 
+        return query;
     }
     function createQuestion(context) {
         init();
@@ -195,8 +193,8 @@ module.exports = (function () {
             if (!utils.getUtils().isEmpty(question.questionId) && !utils.getUtils().isEmpty(question.clientId)) {
                 getQuestions(question)
                     .then(function (foundQuestion) {
-                        resolve(foundQuestion[0].toObject());
-                        logger.debug("sending response from getQuestionById: " + foundQuestion[0].toObject());
+                        resolve(foundQuestion[0]);
+                        logger.debug("sending response from getQuestionById: " + foundQuestion[0]);
                     })
                     .catch(err => reject(err));
             }

@@ -119,6 +119,7 @@ module.exports = (function () {
         init();
         var responseBody = {
             status: "failed",
+            errType: "INTERNAL_ERROR",
             errMsg: "some error has been occured, error code: " + errCode
         };
         return responseBody

@@ -210,8 +210,8 @@ module.exports = (function () {
                 }
                 clientDao.getClients(client)
                     .then(function (clients) {
-                        resolve(clients[0].toObject());
-                        logger.debug("sending response from getClientByHashCode: " + clients[0].toObject());
+                        resolve(clients[0]);
+                        logger.debug("sending response from getClientByHashCode: " + clients[0]);
                     })
                     .catch(err => reject(err));
             }
@@ -232,8 +232,8 @@ module.exports = (function () {
                 };
                 clientDao.getClients(client)
                     .then(function (foundClients) {
-                        resolve(foundClients[0].toObject());
-                        logger.debug("sending response from getClientById: " + foundClients[0].toObject());
+                        resolve(foundClients[0]);
+                        logger.debug("sending response from getClientById: " + foundClients[0]);
                     })
                     .catch(err => reject(err));
             }
@@ -255,7 +255,7 @@ module.exports = (function () {
                 clientDao.getClients(client)
                     .then(function (foundClients) {
                         if (foundClients.length > 0) {
-                            resolve(foundClients[0].toObject());
+                            resolve(foundClients[0]);
                             logger.debug("sending response from getClientByClientCode: " + foundClient[0]);
                         }
                     })

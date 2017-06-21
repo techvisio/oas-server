@@ -28,7 +28,7 @@ module.exports = (function () {
         logger.debug("getClients request recieved ");
         return new Promise((resolve, reject) => {
             var query = criteriaQueryBuilder(client);
-            clientModel.find(query).exec(function (err, foundClients) {
+            clientModel.find(query).lean().exec(function (err, foundClients) {
                 if (err) {
                     reject(err);
                 }
@@ -144,8 +144,8 @@ module.exports = (function () {
             if (!utils.getUtils().isEmpty(client.clientId)) {
                 getClients(client)
                     .then(function (foundClient) {
-                        resolve(foundClient[0].toObject());
-                        logger.debug("sending response from getClientById: " + foundClient[0].toObject());
+                        resolve(foundClient[0]);
+                        logger.debug("sending response from getClientById: " + foundClient[0]);
                     })
                     .catch(err => reject(err));
             }

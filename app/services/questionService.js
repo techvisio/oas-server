@@ -70,7 +70,7 @@ module.exports = (function () {
         function getQuestionnaireById(savedQuestion) {
             init();
             var questionnaireId = context.namedParam.id;
-            var clientId = context.namedParam.clientid;
+            var clientId = context.loggedInUser.clientId;
             return new Promise((resolve, reject) => {
                 questionnaireService.getQuestionnaireById(questionnaireId, clientId)
                     .then(function (questionnaire) {
@@ -126,8 +126,8 @@ module.exports = (function () {
                 questionDao.getQuestions(question)
                     .then(function (foundQuestion) {
                         if (foundQuestion) {
-                            resolve(foundQuestion[0].toObject());
-                            logger.debug("sending response from getQuestionById: " + foundQuestion[0].toObject());
+                            resolve(foundQuestion[0]);
+                            logger.debug("sending response from getQuestionById: " + foundQuestion[0]);
                         }
                     })
                     .catch(err => reject(err));
@@ -141,7 +141,6 @@ module.exports = (function () {
 
     function getFiltteredQuestions(context) {
         init();
-        //var masterData = masterDataService.getMasterDataForQestion(context.namedParam.clientid);
         logger.debug(context.reqId + " : getFiltteredQuestions request recieved for user : " + context.data);
 
         return new Promise((resolve, reject) => {

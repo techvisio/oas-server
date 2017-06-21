@@ -28,7 +28,7 @@ module.exports = (function () {
         logger.debug("getAllMasterData request recieved ");
         return new Promise((resolve, reject) => {
             var query = criteriaQueryBuilder(masterData);
-            masterDataModel.find(query).exec(function (err, foundMasterData) {
+            masterDataModel.find(query).lean().exec(function (err, foundMasterData) {
                 if (err) {
                     reject(err);
                 }
@@ -47,7 +47,7 @@ module.exports = (function () {
             var masterData = context.data;
             masterData.masterData=[];
             masterData.masterData.push(context.data.data);
-            masterData.clientId = context.namedParam.clientId;
+            masterData.clientId = context.loggedInUser.clientId;
             masterData.creationDate = new Date().toDateString();
             masterData.createdBy = context.loggedInUser.userName;
             masterData.updateDate = new Date();
@@ -82,7 +82,7 @@ module.exports = (function () {
         function getMasterData() {
             return new Promise((resolve, reject) => {
                 var masterData = {
-                    clientId: context.namedParam.clientId,
+                    clientId: context.loggedInUser.clientId,
                     dataName: context.namedParam.dataName
                 }
                 getMasterDataByClientIdAndType(masterData)
@@ -122,8 +122,8 @@ module.exports = (function () {
                 getAllMasterData(masterData)
                     .then(function (foundMasterData) {
                         if (foundMasterData.length > 0) {
-                            resolve(foundMasterData[0].toObject());
-                            logger.debug("sending response from getMasterDataById: " + foundMasterData[0].toObject());
+                            resolve(foundMasterData[0]);
+                            logger.debug("sending response from getMasterDataById: " + foundMasterData[0]);
                         }
                         else{
                             resolve({});

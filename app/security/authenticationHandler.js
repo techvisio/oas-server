@@ -4,6 +4,7 @@ var daoFactory;
 var utils;
 var userService;
 var clientService;
+var cacheService;
 var validationService;
 var isInitialised = false;
 
@@ -23,6 +24,7 @@ module.exports = (function () {
       userService = require('../services/userService');
       validationService = require('../validations/validationProcessor');
       clientService = require('../services/clientService');
+      cacheService = require('../services/cacheService');
       isInitialised = true;
     }
   }
@@ -72,6 +74,7 @@ module.exports = (function () {
 
   function login(context) {
     init();
+
     return new Promise((resolve, reject) => {
       var data = context.data;
 
@@ -80,10 +83,10 @@ module.exports = (function () {
         .then(getClientforUser)
         .then(authenticateUser)
         .catch(err => {
-          err.errType=utils.getErrorConstants().LOGIN_VALIDATION_ERROR;
+          err.errType = utils.getErrorConstants().LOGIN_VALIDATION_ERROR;
           reject(err)
         });
-      
+
       function getUserByUserNameAndClientCode() {
         return new Promise((resolve, reject) => {
           userService.getUserByUserNameAndClientCode(data.userName, data.clientCode).then(function (foundUser) {
@@ -101,7 +104,7 @@ module.exports = (function () {
           var errCode = utils.getErrorConstants().NO_USER_FOUND;
           errCodes.push(errCode);
           err.errorCodes = errCodes;
-          
+
           reject(err);
         }
         var userPassword = context.data.password;
@@ -123,7 +126,10 @@ module.exports = (function () {
           err.errorCodes = errCodes;
           reject(err);
         }
-
+        var masterData = cacheService.getMasterData(user.clientId)
+        if (!masterData || masterData.length < 0) {
+          cacheService.populdateMasterData(user.clientId);
+        }
         var responseData = createTokenAndAddItToSession(context, user);
         resolve(responseData);
 

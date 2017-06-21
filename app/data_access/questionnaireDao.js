@@ -30,7 +30,7 @@ module.exports = (function () {
         logger.debug("getQuestionnaires request recieved ");
         return new Promise((resolve, reject) => {
             var query = criteriaQueryBuilder(questionnaire);
-            questionnaireModel.find(query).exec(function (err, foundQuestionnaire) {
+            questionnaireModel.find(query).lean().exec(function (err, foundQuestionnaire) {
                 if (err) {
                     reject(err);
                 }
@@ -118,8 +118,8 @@ module.exports = (function () {
                 getQuestionnaires(questionnaire)
                     .then(function (foundQuestionnaire) {
                         if(foundQuestionnaire.length>0){
-                        resolve(foundQuestionnaire[0].toObject());
-                        logger.debug("sending response from getQuestionnaireById: " + foundQuestionnaire[0].toObject());
+                        resolve(foundQuestionnaire[0]);
+                        logger.debug("sending response from getQuestionnaireById: " + foundQuestionnaire[0]);
                     }
                     else{
                          var err={};
@@ -143,7 +143,7 @@ module.exports = (function () {
         init();
         var questionnaire = {
             questionnaireId: context.namedParam.qnrId,
-            clientId: context.namedParam.clientid,
+            clientId: context.loggedInUser.clientId,
         }
         return new Promise((resolve, reject) => {
             getQuestionnaireById(questionnaire)

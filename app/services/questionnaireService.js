@@ -110,8 +110,8 @@ module.exports = (function () {
                 questionnaireDao.getQuestionnaires(questionnaire)
                     .then(function (foundQuestionnaire) {
                         if (foundQuestionnaire.length > 0) {
-                            resolve(foundQuestionnaire[0].toObject());
-                            logger.debug("sending response from getQuestionnaireById: " + foundQuestionnaire[0].toObject());
+                            resolve(foundQuestionnaire[0]);
+                            logger.debug("sending response from getQuestionnaireById: " + foundQuestionnaire[0]);
                         }
                     })
                     .catch(err => reject(err));
@@ -136,7 +136,7 @@ module.exports = (function () {
         function getQuestionnaire() {
             return new Promise((resolve, reject) => {
                 var questionnaireId = context.namedParam.qnrId;
-                var clientId = context.namedParam.clientid;
+                var clientId = context.loggedInUser.clientId;
                 getQuestionnaireById(questionnaireId, clientId)
                     .then(function (foundQuestionnaire) {
                         resolve(foundQuestionnaire);
@@ -148,7 +148,7 @@ module.exports = (function () {
         function getQuestion(foundQuestionnaire) {
             return new Promise((resolve, reject) => {
                 var questionId = context.namedParam.quesId;
-                var clientId = context.namedParam.clientid;
+                var clientId = context.loggedInUser.clientId;
                 questionService.getQuestionById(questionId, clientId)
                     .then(function (foundQuestion) {
                         foundQuestionnaire.questions.forEach(function (questionId, index) {
@@ -188,7 +188,7 @@ module.exports = (function () {
         function getQuestionnaire() {
             init();
             var questionnaireId = context.namedParam.qnrId;
-            var clientId = context.namedParam.clientid;
+            var clientId = context.loggedInUser.clientId;
             var questions = context.data;
             return new Promise((resolve, reject) => {
                 getQuestionnaireById(questionnaireId, clientId)

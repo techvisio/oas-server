@@ -99,8 +99,8 @@ module.exports = (function () {
                 userDao.getUsers(user)
                     .then(function (foundUser) {
                         if (foundUser.length > 0) {
-                            resolve(foundUser[0].toObject());
-                            logger.debug("sending response from getUserById: " + foundUser[0].toObject());
+                            resolve(foundUser[0]);
+                            logger.debug("sending response from getUserById: " + foundUser[0]);
                         }
                         else {
                             var err = {};
@@ -133,8 +133,8 @@ module.exports = (function () {
                 userDao.getUsers(user)
                     .then(function (foundUser) {
                         if (foundUser.length > 0) {
-                            resolve(foundUser[0].toObject());
-                            logger.debug("sending response from getUserByUserName: " + foundUser[0].toObject());
+                            resolve(foundUser[0]);
+                            logger.debug("sending response from getUserByUserName: " + foundUser[0]);
                         }
                         else {
                             var err = {};
@@ -166,8 +166,8 @@ module.exports = (function () {
                 userDao.getUsers(user)
                     .then(function (foundUser) {
                         if (foundUser.length > 0) {
-                            resolve(foundUser[0].toObject());
-                            logger.debug("sending response from getUserByUserName: " + foundUser[0].toObject());
+                            resolve(foundUser[0]);
+                            logger.debug("sending response from getUserByUserName: " + foundUser[0]);
                         }
                         else {
                             var err = {};
@@ -200,8 +200,8 @@ module.exports = (function () {
                 userDao.getUsers(user)
                     .then(function (foundUser) {
                         if (foundUser.length > 0) {
-                            resolve(foundUser[0].toObject());
-                            logger.debug("sending response from getUserByEmailId: " + foundUser[0].toObject());
+                            resolve(foundUser[0]);
+                            logger.debug("sending response from getUserByEmailId: " + foundUser[0]);
                         }
                         else {
                             var err = {};
@@ -209,7 +209,7 @@ module.exports = (function () {
                             var errCode = utils.getErrorConstants().NO_USER_EMAIL_ID_FOUND;
                             errCodes.push(errCode);
                             err.errorCodes = errCodes;
-                            err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+                            err.errType = utils.getErrorConstants().LOGIN_VALIDATION_ERROR;
                             reject(err);
                         }
                     })
