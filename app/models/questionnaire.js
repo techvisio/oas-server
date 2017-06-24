@@ -10,6 +10,7 @@ var Questionnaire = new Schema({
     desc: String,
     marks: Number,
     duration: Number,
+    status: String,
     noOfQuestion: Number,
     questions: [{type: mongoose.Schema.Types.ObjectId, ref: 'question'}],
     creationDate: Date,

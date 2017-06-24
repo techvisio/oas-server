@@ -703,12 +703,37 @@ router.post('/client/:clientid/upload/img', function (req, res, next) {
 
     var form = new formidable.IncomingForm();
     form.uploadDir = "/my/dir";
-    form.parse(req, function(err, fields, files) {
-      res.writeHead(200, {'content-type': 'text/plain'});
-      res.write('received upload:\n\n');
-      res.end();
+    form.parse(req, function (err, fields, files) {
+        res.writeHead(200, { 'content-type': 'text/plain' });
+        res.write('received upload:\n\n');
+        res.end();
     });
 
 });
+
+router.post('/client/:clientid/filterquestionnaire', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    questionnaireService.getFiltteredQuestionnaires(context).then(function (questionnaires) {
+        var responseBody = utils.getUtils().buildSuccessResponse(questionnaires);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+
+});
+
+router.post('/client/:clientid/qnr/:qnrId/copyquestions', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    questionnaireService.copyQuestions(context).then(function (questionnaires) {
+        var responseBody = utils.getUtils().buildSuccessResponse(questionnaires);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+
+});
+
 
 module.exports = router;
