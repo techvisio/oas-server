@@ -40,6 +40,9 @@ module.exports = {
     SIGN_UP: "SIGN_UP",
     LOGIN: "LOGIN",
     SAVE_QUESTIONNAIRE: "SAVE_QUESTIONNAIRE",
-    SAVE_QUESTION: "SAVE_QUESTION"
+    SAVE_QUESTION: "SAVE_QUESTION",
 
+    //constants for questionnaire status
+    DRAFT: "Draft",
+    FINALISED: "Finalised"
 }

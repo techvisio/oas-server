@@ -55,7 +55,7 @@ module.exports = (function () {
 
             query = questionModel.find(queryFilter).sort(sortBy);
             query.count(function (err, count) {
-                query.skip(skipQues).limit(pageSize).exec('find', function (err, foundQuestions) {
+                query.skip(skipQues).limit(pageSize).lean().exec('find', function (err, foundQuestions) {
                     if (err) {
                         reject(err);
                     } else {

@@ -15,7 +15,9 @@ module.exports = (function () {
         getQuestionnaireById: getQuestionnaireById,
         getQuestionsByQuestionnaireId: getQuestionsByQuestionnaireId,
         deleteQuestionFromQuestionnaire: deleteQuestionFromQuestionnaire,
-        importQuestionsToQuestionnaire: importQuestionsToQuestionnaire
+        importQuestionsToQuestionnaire: importQuestionsToQuestionnaire,
+        getFiltteredQuestionnaires: getFiltteredQuestionnaires, 
+        copyQuestions: copyQuestions
     }
 
     function init() {
@@ -215,6 +217,56 @@ module.exports = (function () {
         }
     }
 
+    function getFiltteredQuestionnaires(context) {
+        init();
+        logger.debug(context.reqId + " : getFiltteredQuestions request recieved for user : " + context.data);
 
+        return new Promise((resolve, reject) => {
+            questionnaireDao.getFiltteredQuestionnaires(context)
+                .then(function (Questionnaires) {
+                    resolve(Questionnaires);
+                    logger.debug(context.reqId + " : sending response from getFiltteredQuestions: " + Questionnaires);
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    function copyQuestions(context) {
+
+        init();
+        logger.debug(context.reqId + " : createQuestionnaire request recieved for new user : " + context.data);
+
+        return new Promise((resolve, reject) => {
+            validationService.validate(utils.getConstants().QUESTIONNAIRE_VALIDATION, utils.getConstants().SAVE_QUESTIONNAIRE, context.data)
+                .then(getQuestionnaire)
+                .then(createQuestionnaire)
+                .then(savedQuestionnnaire => resolve(savedQuestionnnaire))
+                .catch(err => reject(err))
+        });
+
+        function getQuestionnaire() {
+            return new Promise((resolve, reject) => {
+                var questionnaireId = context.namedParam.qnrId;
+                var clientId = context.loggedInUser.clientId;
+                getQuestionnaireById(questionnaireId, clientId)
+                    .then(function (foundQuestionnaire) {
+                        resolve(foundQuestionnaire);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
+        function createQuestionnaire(foundQuestionnaire) {
+
+            return new Promise((resolve, reject) => {
+                context.data.questions = foundQuestionnaire.questions;
+                questionnaireDao.createQuestionnaire(context)
+                    .then(function (savedQuestionnnaire) {
+                        resolve(savedQuestionnnaire);
+                        logger.debug(context.reqId + " : sending response from createQuestion: " + savedQuestionnnaire);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
+    }
 
 }());

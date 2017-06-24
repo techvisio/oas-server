@@ -701,4 +701,29 @@ router.post('/client/:clientid/qnr/:qnrId/import', function (req, res, next) {
 
 router.use('/client/:clientid/util', utilRouteHandler);
 
+router.post('/client/:clientid/filterquestionnaire', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    questionnaireService.getFiltteredQuestionnaires(context).then(function (questionnaires) {
+        var responseBody = utils.getUtils().buildSuccessResponse(questionnaires);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+
+});
+
+router.post('/client/:clientid/qnr/:qnrId/copyquestions', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    questionnaireService.copyQuestions(context).then(function (questionnaires) {
+        var responseBody = utils.getUtils().buildSuccessResponse(questionnaires);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+
+});
+
+
 module.exports = router;
