@@ -3,6 +3,7 @@ var utils = require('./app/utils/utilFactory.js');
 var bodyParser = require('body-parser');
 var dbProvider=require('./app/providers/dbProvider.js');
 var frontRouteHandler = require('./app/routes/frontRouter');
+var env = utils.getConfiguration().getProperty('node.env') || 'development';
 //var jst = require('jst');
 
 //initialise the application
@@ -17,9 +18,9 @@ app.use(bodyParser.json());
 //set request headers for all requests
 app.all('/*', function(req, res, next) {
 // CORS headers
-res.header("Access-Control-Allow-Origin", "*"); // restrict it to the required domain
+res.header("Access-Control-Allow-Origin", utils.getConfiguration().getProperty(env)["corsOrigin"]); // restrict it to the required domain
 res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-//res.header('Access-Control-Allow-Credentials', 'true');
+res.header('Access-Control-Allow-Credentials', 'true');
 
 // Set custom headers for CORS
 res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');

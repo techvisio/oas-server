@@ -8,7 +8,9 @@
     "sendMailToWhiteListed": true,
     "whiteListedEmailIds": "sgusain91@gmail.com,gusain.pradeep1986@gmail.com,sonugusain10nov@gmail.com,nikhilsharma1992.006@gmail.com,sandeepgausain10oct@gmail.com,sandeegausain10oct@gmail.com,sandeegausain0oct@gmail.com",
     "isSupportBcc": true,
-    "supportEmailId": "noreply.techvisio@gmail.com"
+    "supportEmailId": "noreply.techvisio@gmail.com",
+    "serverUrl":"http://localhost",
+    "corsOrigin":"http://localhost:4200"
   },
   "QA": {
     "databaseUrl": "mongodb://heroku_mhpnt1wt:a6362faurjmal18aejritj7e0n@ds151917.mlab.com:51917/heroku_mhpnt1wt",
@@ -19,7 +21,8 @@
     "sendMailToWhiteListed": true,
     "whiteListedEmailIds": "sgusain91@gmail.com,gusain.pradeep1986@gmail.com,sonugusain10nov@gmail.com,nikhilsharma1992.006@gmail.com",
     "isSupportBcc": true,
-    "supportEmailId": "noreply.techvisio@gmail.com"
+    "supportEmailId": "noreply.techvisio@gmail.com",
+    "corsOrigin":"https://quiz-techvisio.herokuapp.com"
   },
   "production": {},
   "app.port": 3000,
@@ -32,5 +35,6 @@
   "mailFrom": "info.techvisio@gmail.com",
   "algorithm": "aes-256-ctr",
   "privateKey": "37LvDSm4XvjYOh9Y",
-  "forgetPwdExpire": "48"
+  "forgetPwdExpire": "48",
+  "imageDirectory":"/static/assets/images/"
 }

@@ -4,6 +4,7 @@ var clientDao = require('./clientDao.js');
 var questionDao = require('./questionDao');
 var questionnaireDao = require('./questionnaireDao');
 var masterDataDao = require('./masterDataDao');
+var utilDao =  require('./utilDao');
 
 module.exports = (function () {
     return {

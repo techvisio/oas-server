@@ -5,9 +5,9 @@ var userService = serviceLocator.getService(utils.getConstants().SERVICE_USER);
 var questionService = serviceLocator.getService(utils.getConstants().SERVICE_QUESTION);
 var questionnaireService = serviceLocator.getService(utils.getConstants().SERVICE_QUESTIONNAIRE);
 var masterDataService = serviceLocator.getService(utils.getConstants().SERVICE_MASTERDATA);
+var utilRouteHandler = require('./utilRouter');
 var router = express.Router();
 var logger = utils.getLogger();
-var formidable = require('formidable')
 
 /**
  * @api {post} /api/admin/client/:clientid/users with this api user can get all users or based on criteria. 
@@ -699,16 +699,6 @@ router.post('/client/:clientid/qnr/:qnrId/import', function (req, res, next) {
 
 });
 
-router.post('/client/:clientid/upload/img', function (req, res, next) {
-
-    var form = new formidable.IncomingForm();
-    form.uploadDir = "/my/dir";
-    form.parse(req, function(err, fields, files) {
-      res.writeHead(200, {'content-type': 'text/plain'});
-      res.write('received upload:\n\n');
-      res.end();
-    });
-
-});
+router.use('/client/:clientid/util', utilRouteHandler);
 
 module.exports = router;
