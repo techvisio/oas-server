@@ -6,7 +6,8 @@ var logger;
 
 module.exports = (function () {
     return {
-        createClientImage: createClientImage
+        createClientImage: createClientImage,
+        getClientImages: getClientImages
     }
 
     function init() {
@@ -39,6 +40,36 @@ module.exports = (function () {
             })
         });
 
+    }
+
+    function getClientImages(clientImage){
+        init();
+        logger.debug("getclientImage request recieved ");
+        return new Promise((resolve, reject) => {
+            var query = criteriaQueryBuilder(clientImage);
+            clientImageModel.find(query).lean().exec(function (err, foundClientImg) {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(foundClientImg);
+                    logger.debug("sending response from getClientImages: " + foundClientImg);
+                }
+            })
+        });
+    }
+
+    function criteriaQueryBuilder(data) {
+
+        var query = {};
+
+        if (!utils.getUtils().isEmpty(data.clientId)) {
+            query["clientId"] = data.clientId;
+        }
+        if (!utils.getUtils().isEmpty(data.isUsed)) {
+            query["isUsed"] = data.isUsed;
+        }
+        return query;
     }
 
 }())

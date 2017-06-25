@@ -12,13 +12,23 @@ router.post('/upload/img', function (req, res, next) {
     }, function (err) {
         next(err);
     })
-  
+ });
 
+router.get('/img/:file', function (req, res, next) {
+//TODO: Get img direcoty from config and build path for client
+res.contentType='image/jpeg';
+res.sendFile('/static/assets/images/1/'+req.params['file']);
 });
 
-router.get('upload/img/:file', function (req, res, next) {
-res.contentType='image/jpeg';
-res.sendFile('/my/dir/upload_53726b09cd285109247444d1e1b6f521');
+router.get('/img', function (req, res, next) {
+var context = utils.getUtils().getContext(req);
+   var utilService =  serviceLocator.getService(utils.getConstants().SERVICE_UTIL);
+   utilService.getClientImage(context).then(function (imageList) {
+        var responseBody = utils.getUtils().buildSuccessResponse(imageList);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
 });
 
 module.exports = router;

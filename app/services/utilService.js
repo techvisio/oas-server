@@ -8,7 +8,7 @@ var fs = require('fs');
 module.exports = (function () {
     return {
         uploadImage: uploadImage,
-        getImage: getImage
+        getClientImage: getClientImage
     }
 
     function init() {
@@ -16,6 +16,7 @@ module.exports = (function () {
             utils = require('../utils/utilFactory');
             logger = utils.getLogger();
             daoFactory = require('../data_access/daoFactory');
+            utilDao= daoFactory.getDataAccessObject(utils.getConstants().DAO_UTIL);
             isInitialised = true;
         }
     }
@@ -42,7 +43,7 @@ module.exports = (function () {
                     reject(err);
                 }
                 else {
-                    resolve({ "file": files });
+                    resolve(files);
                 }
             });
         });
@@ -50,9 +51,13 @@ module.exports = (function () {
     
     function saveImageMapping(file){
         return new Promise((resolve, reject) => {
-           var utilDao= daoFactory.getDataAccessObject(utils.getConstants().DAO_UTIL);
-           var daoContext= utils.getUtils().cloneContext(context, file);
-           utilDao.createClientImage(context)
+           var clientImageData={
+               clientId:context.loggedInUser.client.clientId,
+               imageName:file.file.path.substr(file.file.path.lastIndexOf('\\')+1),
+               isUsed: false,
+           }
+           var daoContext= utils.getUtils().cloneContext(context, clientImageData);
+           utilDao.createClientImage(daoContext)
            .then(clientImage => resolve(clientImage))
            .catch(err => reject(err));
         });
@@ -60,7 +65,28 @@ module.exports = (function () {
 
     }
 
-    function getImage(clientId) {
-
+    function getClientImage(context) {
+        init();
+        logger.debug("getClientImage request recieved for client: " + clientId);
+        var clientId=context.loggedInUser.client.clientId;
+        return new Promise((resolve, reject) => {
+                var clientImage = {
+                    isUsed: context.data.showAll?null:false,
+                    clientId: clientId
+                }
+                utilDao.getClientImages(clientImage)
+                    .then(function (foundclientImage) {
+                        if (foundclientImage) {
+                            resolve(foundclientImage);
+                            logger.debug("sending response from getClientImage: " + foundclientImage);
+                        }
+                        else
+                        {
+                            resolve([]);
+                        }
+                    })
+                    .catch(err => reject(err));
+            
+        });
     }
 }());

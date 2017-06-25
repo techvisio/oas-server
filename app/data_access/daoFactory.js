@@ -23,6 +23,8 @@ module.exports = (function () {
                 return questionnaireDao;
             case utils.getConstants().DAO_MASTERDATA:
                 return masterDataDao;
+            case utils.getConstants().DAO_UTIL:
+                return utilDao;
         }
     }
 })()
