@@ -5,6 +5,7 @@ var questionnaireService = require('./questionnaireService.js');
 var questionService = require('./questionService.js');
 var masterDataService = require('./masterDataService.js');
 var authenticationService = require('../security/authenticationHandler.js');
+var utilService= require('./utilService');
 
 module.exports = (function () {
     return {
@@ -25,6 +26,8 @@ module.exports = (function () {
                 return authenticationService;
             case constants.SERVICE_MASTERDATA:
                 return masterDataService;
+            case constants.SERVICE_UTIL:
+                return utilService;
         }
 
     }

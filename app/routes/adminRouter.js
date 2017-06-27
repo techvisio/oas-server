@@ -5,9 +5,9 @@ var userService = serviceLocator.getService(utils.getConstants().SERVICE_USER);
 var questionService = serviceLocator.getService(utils.getConstants().SERVICE_QUESTION);
 var questionnaireService = serviceLocator.getService(utils.getConstants().SERVICE_QUESTIONNAIRE);
 var masterDataService = serviceLocator.getService(utils.getConstants().SERVICE_MASTERDATA);
+var utilRouteHandler = require('./utilRouter');
 var router = express.Router();
 var logger = utils.getLogger();
-var formidable = require('formidable')
 
 /**
  * @api {post} /api/admin/client/:clientid/users with this api user can get all users or based on criteria. 
@@ -240,5 +240,6 @@ router.put('/client/:clientid/user', function (req, res, next) {
         next(err);
     })
 });
+
 
 module.exports = router;

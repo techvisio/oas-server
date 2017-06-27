@@ -4,7 +4,7 @@ var userModel = require('./user.js');
 var questionModel = require('./question.js');
 var questionnaireModel = require('./questionnaire.js');
 var masterDataModel = require('./masterData.js');
-
+var clientImageModel =  require('./clientImage');
 
 module.exports = (function () {
     return {
@@ -23,6 +23,8 @@ module.exports = (function () {
                 return questionModel;
             case constants.MODEL_MASTERDATA:
                 return masterDataModel;
+            case constants.MODEL_CLIENT_IMAGE:
+                return clientImageModel;
         }
 
     }

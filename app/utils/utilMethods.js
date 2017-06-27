@@ -127,13 +127,12 @@ module.exports = (function () {
 
     function getServerUrl(client) {
         init();
+        var serverUrl = utils.getConfiguration().getProperty(env)['hostName'];
         if (env === 'development') {
             var port = (process.env.PORT || utils.getConfiguration().getProperty('app.port'));
-            var hostName = utils.getConfiguration().getProperty(env)['hostName'];
-            var serverUrl = "http://" + hostName + ":" + port;
-            return serverUrl;
-        }
-        return utils.getConfiguration().getProperty(env)['serverUrl'];
+            serverUrl=serverUrl +":" + port;
+          }
+        return serverUrl;
     }
 
 }())
