@@ -4,15 +4,6 @@ var masterDataDao;
 var logger;
 var isInitialised = false;
 
-
-var cacheMasterData = [{
-    "clientId": "1", "data": {
-        "section": [{}, {}],
-        "category": [{}, {}],
-        "subject": [{}, {}]
-    }
-}];
-
 module.exports = (function () {
     return {
 
@@ -43,7 +34,7 @@ module.exports = (function () {
                 });
 
                 var clientMasterData = { "clientId": masterData.clientId, "data": data };
-                cacheMasterData = [];
+     
                 cacheMasterData.push(clientMasterData);
             })
 

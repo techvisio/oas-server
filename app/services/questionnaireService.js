@@ -16,7 +16,7 @@ module.exports = (function () {
         getQuestionsByQuestionnaireId: getQuestionsByQuestionnaireId,
         deleteQuestionFromQuestionnaire: deleteQuestionFromQuestionnaire,
         importQuestionsToQuestionnaire: importQuestionsToQuestionnaire,
-        getFiltteredQuestionnaires: getFiltteredQuestionnaires, 
+        getFiltteredQuestionnaires: getFiltteredQuestionnaires,
         copyQuestions: copyQuestions
     }
 
@@ -263,6 +263,30 @@ module.exports = (function () {
                     .then(function (savedQuestionnnaire) {
                         resolve(savedQuestionnnaire);
                         logger.debug(context.reqId + " : sending response from createQuestion: " + savedQuestionnnaire);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
+    }
+
+
+    function finalizeQuestionnaire(context) {
+        var questionnaireId = context.namedParam.qnrId;
+        var clientId = context.loggedInUser.clientId;
+        return new Promise((resolve, reject) => {
+            getQuestionnaireById(questionnaireId, clientId)
+                .then(updatingQuestionnaire)
+                .then(updQuestionnaire => resolve(updQuestionnaire))
+                .catch(err => reject(err))
+        });
+
+        function updatingQuestionnaire(foundQuestionnaire) {
+            foundQuestionnaire.status = utils.getConstants().FINALISED;
+            var questionContext = utils.getUtils().cloneContext(context, foundQuestionnaire);
+            return new Promise((resolve, reject) => {
+                questionnaireDao.updateQuestionnaire(questionContext)
+                    .then(function (updatedQuestionnnaire) {
+                        resolve(updatedQuestionnnaire);
                     })
                     .catch(err => reject(err));
             });
