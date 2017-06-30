@@ -30,6 +30,7 @@
     "nodemailer": "0.7.1",
     "nodemailer-smtp-transport": "^2.7.2",
     "q": "^1.4.1",
+    "shelljs": "^0.7.8",
     "winston": "2.3.1"
   },
   "jshintConfig": "dev_config/jshintrc.json"

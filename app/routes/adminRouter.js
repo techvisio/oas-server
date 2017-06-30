@@ -2,10 +2,6 @@ var express = require('express');
 var serviceLocator = require('../services/serviceLocator');
 var utils = require('../utils/utilFactory');
 var userService = serviceLocator.getService(utils.getConstants().SERVICE_USER);
-var questionService = serviceLocator.getService(utils.getConstants().SERVICE_QUESTION);
-var questionnaireService = serviceLocator.getService(utils.getConstants().SERVICE_QUESTIONNAIRE);
-var masterDataService = serviceLocator.getService(utils.getConstants().SERVICE_MASTERDATA);
-var utilRouteHandler = require('./utilRouter');
 var router = express.Router();
 var logger = utils.getLogger();
 

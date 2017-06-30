@@ -27,7 +27,8 @@ router.all('/*', function (req, res, next) {
     //check if security token exists
     if (req.headers['x-access-token']) {
         //get and populate session from store
-        var session = utils.getSessionStore().get(req.headers['x-access-token']);
+        var data = utils.getUtils().getDataFromCookie("loginData", req.headers.cookie);
+        var session = utils.getSessionStore().get(req.headers['x-access-token']) || data.token;
 
         if (session) {
             req.session = session;

@@ -13,7 +13,6 @@ var Client = new Schema({
     createdBy: String,
     updateDate: Date,
     updatedBy: String,
-    //TODO Populate this date when user is verified
     activationDate: Date,
     expirationDate: Date,
     primaryEmailId: String,

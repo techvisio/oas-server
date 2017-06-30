@@ -17,7 +17,8 @@ module.exports = (function () {
         buildFailedResponse: buildFailedResponse,
         buildSystemFailedResponse: buildSystemFailedResponse,
         cloneContext: cloneContext,
-        getServerUrl: getServerUrl
+        getServerUrl: getServerUrl,
+        getDataFromCookie: getDataFromCookie
     };
 
     function init() {
@@ -130,9 +131,22 @@ module.exports = (function () {
         var serverUrl = utils.getConfiguration().getProperty(env)['hostName'];
         if (env === 'development') {
             var port = (process.env.PORT || utils.getConfiguration().getProperty('app.port'));
-            serverUrl=serverUrl +":" + port;
-          }
+            serverUrl = serverUrl + ":" + port;
+        }
         return serverUrl;
     }
 
+    function getDataFromCookie(cname, cookie) {
+        if(cookie){
+        var name = cname + "=";
+        var ca = cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i].trim();
+            if (c.indexOf(name) == 0)
+                var data = JSON.parse(c.substring(name.length, c.length));
+            return data;
+        }
+    }
+        return "";
+    }
 }())

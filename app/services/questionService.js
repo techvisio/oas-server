@@ -5,6 +5,7 @@ var logger;
 var validationService;
 var questionnaireService;
 var masterDataService;
+var utilService;
 var isInitialised = false;
 
 
@@ -24,6 +25,7 @@ module.exports = (function () {
             daoFactory = require('../data_access/daoFactory');
             questionDao = daoFactory.getDataAccessObject(utils.getConstants().DAO_QUESTION);
             questionnaireService = require('./questionnaireService');
+            utilService = require('./utilService');
             masterDataService = require('./masterDataService');
             validationService = require('../validations/validationProcessor');
             logger = utils.getLogger();
@@ -51,6 +53,7 @@ module.exports = (function () {
         return new Promise((resolve, reject) => {
             validationService.validate(utils.getConstants().QUESTIONNAIRE_VALIDATION, utils.getConstants().SAVE_QUESTION, context.data)
                 .then(createQuestion)
+                .then(updateImgStatus)
                 .then(getQuestionnaireById)
                 .then(updateQuestionnaire)
                 .then(updQuestionnaire => resolve(updQuestionnaire))
@@ -66,7 +69,20 @@ module.exports = (function () {
                     .catch(err => reject(err));
             });
         }
-
+        if (context.data.imageURL) {
+            function updateImgStatus(context, savedQuestion) {
+                imageData = {
+                    clientId: context.loggedInUser.clientId,
+                    imageName: context.data.imageURL
+                }
+                var utilContext = utils.getUtils().cloneContext(context, imageData);
+                return new Promise((resolve, reject) => {
+                    utilService.updateImgStatus(context)
+                        .then(clientImage => resolve(savedQuestion))
+                        .catch(err => reject(err));
+                });
+            }
+        }
         function getQuestionnaireById(savedQuestion) {
             init();
             var questionnaireId = context.namedParam.id;
@@ -105,15 +121,54 @@ module.exports = (function () {
         logger.debug(context.reqId + " : updateQuestion request recieved for user : " + context.data);
 
         return new Promise((resolve, reject) => {
-            questionDao.updateQuestion(context)
-                .then(function (updatedQuestion) {
-                    resolve(updatedQuestion);
-                    logger.debug(context.reqId + " : sending response from updateQuestion: " + updatedQuestion);
-                })
-                .catch(err => reject(err));
+            validationService.validate(utils.getConstants().QUESTIONNAIRE_VALIDATION, utils.getConstants().SAVE_QUESTION, context.data)
+                .then(updateImgStatus)
+                .then(questionUpdate)
+                .then(updQuestion => resolve(updQuestion))
+                .catch(err => reject(err))
         });
+
+
+        function questionUpdate() {
+            return new Promise((resolve, reject) => {
+                questionDao.updateQuestion(context)
+                    .then(function (updatedQuestion) {
+                        resolve(updatedQuestion);
+                        logger.debug(context.reqId + " : sending response from updateQuestion: " + updatedQuestion);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
+
+        function updateImgStatus() {
+            var imageNames=getImageNames(context)
+            var clientId = context.loggedInUser.clientId;
+            imageData = {
+                clientId: clientId,
+                imageNames: imageNames
+            }
+            var utilContext = utils.getUtils().cloneContext(context, imageData);
+            return new Promise((resolve, reject) => {
+                utilService.updateImgStatus(utilContext)
+                    .then(clientImage => resolve(clientImage))
+                    .catch(err => reject(err));
+            });
+        }
     }
 
+    function getImageNames(context) {
+        var images = [];
+        if (context.data.imageURL) {
+            images.push(context.data.imageURL);
+        }
+
+        for (var i = 0; i < context.data.answer.length; i++) {
+            if (context.data.answer[i].imageURL) {
+                images.push(context.data.answer[i].imageURL);
+            }
+        }
+        return images
+    }
     function getQuestionById(questionId, clientId) {
         init();
         logger.debug("getQuestionById request recieved for questionnaireId : " + questionId);

@@ -7,7 +7,8 @@ var logger;
 module.exports = (function () {
     return {
         createClientImage: createClientImage,
-        getClientImages: getClientImages
+        getClientImages: getClientImages,
+        updateImgStatus: updateImgStatus
     }
 
     function init() {
@@ -42,7 +43,7 @@ module.exports = (function () {
 
     }
 
-    function getClientImages(clientImage){
+    function getClientImages(clientImage) {
         init();
         logger.debug("getclientImage request recieved ");
         return new Promise((resolve, reject) => {
@@ -59,6 +60,52 @@ module.exports = (function () {
         });
     }
 
+
+
+
+    function updateImgStatus(context) {
+        init();
+
+        logger.debug(context.reqId + " : updateImgStatus request recieved ");
+        var imageNames = context.data.imageNames;
+        var clientId  = context.loggedInUser.clientId;
+
+            return new Promise((resolve, reject) => {
+                clientImageModel.update( {imageName : {"$in":imageNames}, clientId:clientId}, {isUsed:true, updateDate:new Date,
+                updatedBy:context.loggedInUser.userName} , {multi: true}, function (err, updatedImg) {
+
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve('images updated');
+                        logger.debug(context.reqId + " : sending response from updateImgStatus: " + updatedImg);
+                    }
+                })
+            });
+
+    }
+
+    function getImgByImgNameAndClientId(imgName, clientId) {
+        init();
+        logger.debug("getImgByImgNameAndClientId request recieved: " + imgName);
+        return new Promise((resolve, reject) => {
+
+            var clientImg = {
+                imageName: imgName,
+                clientId: clientId
+            }
+
+            getClientImages(clientImg)
+                .then(function (foundClientImg) {
+                    resolve(foundClientImg[0]);
+                })
+                .catch(err => reject(err));
+
+        });
+    }
+
+
     function criteriaQueryBuilder(data) {
 
         var query = {};
@@ -66,9 +113,13 @@ module.exports = (function () {
         if (!utils.getUtils().isEmpty(data.clientId)) {
             query["clientId"] = data.clientId;
         }
-        if (!utils.getUtils().isEmpty(data.isUsed)) {
+        if (!utils.getUtils().isEmpty(data.isUsed) && !data.isUsed) {
             query["isUsed"] = data.isUsed;
         }
+        if (!utils.getUtils().isEmpty(data.imageName)) {
+            query["imageName"] = data.imageName;
+        }
+        
         return query;
     }
 

@@ -5,7 +5,7 @@ var questionService = serviceLocator.getService(utils.getConstants().SERVICE_QUE
 var questionnaireService = serviceLocator.getService(utils.getConstants().SERVICE_QUESTIONNAIRE);
 var router = express.Router();
 var logger = utils.getLogger();
-var formidable = require('formidable')
+var utilRouteHandler = require('./utilRouter');
 
 
 
@@ -171,14 +171,14 @@ router.post('/client/:clientid/qnr/:id/question', function (req, res, next) {
  *
  * 
  */
-router.put('/client/:clientid/qnr/:id/question', function (req, res) {
+router.put('/client/:clientid/qnr/:id/question', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
     questionService.updateQuestion(context).then(function (question) {
         var responseBody = utils.getUtils().buildSuccessResponse(question);
         res.status(200).json(responseBody);
     }, function (err) {
-        throw err;
+        next(err);
     })
 });
 
@@ -408,6 +408,7 @@ router.delete('/client/:clientid/qnr/:qnrId/question/:quesId', function (req, re
     })
 });
 
+
 router.post('/client/:clientid/filterquestion', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
@@ -432,17 +433,7 @@ router.post('/client/:clientid/qnr/:qnrId/import', function (req, res, next) {
 
 });
 
-router.post('/client/:clientid/upload/img', function (req, res, next) {
-
-    var form = new formidable.IncomingForm();
-    form.uploadDir = "/my/dir";
-    form.parse(req, function (err, fields, files) {
-        res.writeHead(200, { 'content-type': 'text/plain' });
-        res.write('received upload:\n\n');
-        res.end();
-    });
-
-});
+router.use('/client/:clientid/util', utilRouteHandler);
 
 router.post('/client/:clientid/filterquestionnaire', function (req, res, next) {
 
@@ -465,8 +456,8 @@ router.post('/client/:clientid/qnr/:qnrId/copyquestions', function (req, res, ne
     }, function (err) {
         next(err);
     })
-});
 
+});
 router.put('/client/:clientid/qnr/:qnrId/finalize', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);

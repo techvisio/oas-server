@@ -4,6 +4,9 @@ var masterDataDao;
 var logger;
 var isInitialised = false;
 
+
+var cacheMasterData = [];
+
 module.exports = (function () {
     return {
 
@@ -34,7 +37,7 @@ module.exports = (function () {
                 });
 
                 var clientMasterData = { "clientId": masterData.clientId, "data": data };
-     
+                cacheMasterData = [];
                 cacheMasterData.push(clientMasterData);
             })
 
