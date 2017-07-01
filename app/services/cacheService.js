@@ -4,7 +4,6 @@ var masterDataDao;
 var logger;
 var isInitialised = false;
 
-
 var cacheMasterData = [];
 
 module.exports = (function () {
