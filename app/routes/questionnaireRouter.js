@@ -432,6 +432,17 @@ router.post('/client/:clientid/qnr/:qnrId/import', function (req, res, next) {
     })
 
 });
+router.post('/client/:clientid/qnr/questions', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    questionnaireService.createQnrFromQuestions(context).then(function (questionnaire) {
+        var responseBody = utils.getUtils().buildSuccessResponse(questionnaire);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+
+});
 
 router.use('/client/:clientid/util', utilRouteHandler);
 

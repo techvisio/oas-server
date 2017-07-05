@@ -52,8 +52,8 @@ module.exports = (function () {
         var question;
         return new Promise((resolve, reject) => {
             validationService.validate(utils.getConstants().QUESTIONNAIRE_VALIDATION, utils.getConstants().SAVE_QUESTION, context.data)
-                .then(createQuestion)
                 .then(updateImgStatus)
+                .then(createQuestion)
                 .then(getQuestionnaireById)
                 .then(updateQuestionnaire)
                 .then(updQuestionnaire => resolve(updQuestionnaire))
@@ -69,20 +69,22 @@ module.exports = (function () {
                     .catch(err => reject(err));
             });
         }
-        if (context.data.imageURL) {
-            function updateImgStatus(context, savedQuestion) {
-                imageData = {
-                    clientId: context.loggedInUser.clientId,
-                    imageName: context.data.imageURL
-                }
-                var utilContext = utils.getUtils().cloneContext(context, imageData);
-                return new Promise((resolve, reject) => {
-                    utilService.updateImgStatus(context)
-                        .then(clientImage => resolve(savedQuestion))
-                        .catch(err => reject(err));
-                });
+
+        function updateImgStatus() {
+            var imageNames = getImageNames(context)
+            var clientId = context.loggedInUser.clientId;
+            imageData = {
+                clientId: clientId,
+                imageNames: imageNames
             }
+            var utilContext = utils.getUtils().cloneContext(context, imageData);
+            return new Promise((resolve, reject) => {
+                utilService.updateImgStatus(utilContext)
+                    .then(clientImage => resolve(clientImage))
+                    .catch(err => reject(err));
+            });
         }
+
         function getQuestionnaireById(savedQuestion) {
             init();
             var questionnaireId = context.namedParam.id;
@@ -122,7 +124,9 @@ module.exports = (function () {
 
         return new Promise((resolve, reject) => {
             validationService.validate(utils.getConstants().QUESTIONNAIRE_VALIDATION, utils.getConstants().SAVE_QUESTION, context.data)
-                .then(updateImgStatus)
+                .then(getQuestion)
+                .then(updateQuesImg)
+                .then(updateAnsImg)
                 .then(questionUpdate)
                 .then(updQuestion => resolve(updQuestion))
                 .catch(err => reject(err))
@@ -140,17 +144,30 @@ module.exports = (function () {
             });
         }
 
-        function updateImgStatus() {
-            var imageNames=getImageNames(context)
+        function getQuestion() {
+            var questionId = context.data.questionId;
             var clientId = context.loggedInUser.clientId;
-            imageData = {
-                clientId: clientId,
-                imageNames: imageNames
-            }
-            var utilContext = utils.getUtils().cloneContext(context, imageData);
             return new Promise((resolve, reject) => {
-                utilService.updateImgStatus(utilContext)
-                    .then(clientImage => resolve(clientImage))
+                getQuestionById(questionId, clientId)
+                    .then(foundQuestion => resolve(foundQuestion))
+                    .catch(err => reject(err));
+            });
+        }
+
+        function updateQuesImg(foundQuestion) {
+
+            return new Promise((resolve, reject) => {
+                compareQuestion(foundQuestion, context)
+                    .then(clientImage => resolve(foundQuestion))
+                    .catch(err => reject(err));
+            });
+        }
+
+        function updateAnsImg(foundQuestion) {
+
+            return new Promise((resolve, reject) => {
+                compareAnswers(foundQuestion, context)
+                    .then(clientImage => resolve(foundQuestion))
                     .catch(err => reject(err));
             });
         }
@@ -208,5 +225,140 @@ module.exports = (function () {
         });
     }
 
+
+
+    function compareQuestion(foundQuestion, context) {
+
+        //question update case
+
+        if (foundQuestion.imageURL && context.data.imageURL && foundQuestion.imageURL !== context.data.imageURL) {
+            return new Promise((resolve, reject) => {
+                getClientImage(foundQuestion.imageURL, context.loggedInUser.clientId)
+                    .then(updateClientImageForDeletedImg)
+                    .then(msg => resolve(msg))
+                    .catch(err => reject(err));
+            });
+
+            return new Promise((resolve, reject) => {
+                getClientImage(context.data.imageURL, context.loggedInUser.clientId)
+                    .then(updateClientImageForAddedImg)
+                    .then(msg => resolve(msg))
+                    .catch(err => reject(err));
+            });
+        }
+        if (!foundQuestion.imageURL && context.data.imageURL) {
+            return new Promise((resolve, reject) => {
+                getClientImage(context.data.imageURL, context.loggedInUser.clientId)
+                    .then(updateClientImageForAddedImg)
+                    .then(msg => resolve(msg))
+                    .catch(err => reject(err));
+            });
+        }
+
+        if (foundQuestion.imageURL && !context.data.imageURL) {
+            return new Promise((resolve, reject) => {
+                getClientImage(foundQuestion.imageURL, context.loggedInUser.clientId)
+                    .then(updateClientImageForDeletedImg)
+                    .then(msg => resolve(msg))
+                    .catch(err => reject(err));
+            });
+        }
+
+        function updateClientImageForDeletedImg(foundClientImage) {
+            return new Promise((resolve, reject) => {
+                if (foundClientImage.useCount == 1) {
+                    foundClientImage.isUsed = false;
+                }
+                foundClientImage.useCount = foundClientImage.useCount - 1;
+                clientImgContext = utils.getUtils().cloneContext(context, foundClientImage);
+                utilService.updateClientImage(clientImgContext)
+                    .then(clientImage => resolve("image updated"))
+                    .catch(err => reject(err));
+            });
+        }
+
+        function updateClientImageForAddedImg(foundClientImage) {
+            return new Promise((resolve, reject) => {
+                foundClientImage.useCount = foundClientImage.useCount + 1;
+                foundClientImage.isUsed = true;
+                clientImgContext = utils.getUtils().cloneContext(context, foundClientImage);
+                utilService.updateClientImage(clientImgContext)
+                    .then(clientImage => resolve("image updated"))
+                    .catch(err => reject(err));
+            });
+        }
+    }
+
+    function compareAnswers(foundQuestion, context) {
+
+        //answer update case
+
+        for (var i = 0; i < context.data.answer.length; i++) {
+            if (foundQuestion.answer[i].imageURL && context.data.answer[i].imageURL && foundQuestion.answer[i].imageURL !== context.data.answer[i].imageURL) {
+                return new Promise((resolve, reject) => {
+                    getClientImage(foundQuestion.imageURL, context.loggedInUser.clientId)
+                        .then(updateClientImageForDeletedImg)
+                        .then(msg => resolve(msg))
+                        .catch(err => reject(err));
+                });
+
+                return new Promise((resolve, reject) => {
+                    getClientImage(context.data.imageURL, context.loggedInUser.clientId)
+                        .then(updateClientImageForAddedImg)
+                        .then(msg => resolve(msg))
+                        .catch(err => reject(err));
+                });
+            }
+            if (!foundQuestion.answer[i].imageURL && context.data.answer[i].imageURL) {
+                return new Promise((resolve, reject) => {
+                    getClientImage(context.data.imageURL, context.loggedInUser.clientId)
+                        .then(updateClientImageForAddedImg)
+                        .then(msg => resolve(msg))
+                        .catch(err => reject(err));
+                });
+            }
+
+            if (foundQuestion.answer[i].imageURL && !context.data.answer[i].imageURL) {
+                return new Promise((resolve, reject) => {
+                    getClientImage(foundQuestion.imageURL, context.loggedInUser.clientId)
+                        .then(updateClientImageForDeletedImg)
+                        .then(msg => resolve(msg))
+                        .catch(err => reject(err));
+                });
+            }
+        }
+
+        function updateClientImageForDeletedImg(foundClientImage) {
+            return new Promise((resolve, reject) => {
+                if (foundClientImage.useCount == 1) {
+                    foundClientImage.isUsed = false;
+                }
+                foundClientImage.useCount = foundClientImage.useCount - 1;
+                clientImgContext = utils.getUtils().cloneContext(context, foundClientImage);
+                utilService.updateClientImage(clientImgContext)
+                    .then(clientImage => resolve("image updated"))
+                    .catch(err => reject(err));
+            });
+        }
+
+        function updateClientImageForAddedImg(foundClientImage) {
+            return new Promise((resolve, reject) => {
+                foundClientImage.useCount = foundClientImage.useCount + 1;
+                foundClientImage.isUsed = true;
+                clientImgContext = utils.getUtils().cloneContext(context, foundClientImage);
+                utilService.updateClientImage(clientImgContext)
+                    .then(clientImage => resolve("image updated"))
+                    .catch(err => reject(err));
+            });
+        }
+    }
+
+    function getClientImage(imgName, clientId) {
+        return new Promise((resolve, reject) => {
+            utilService.getImgByImgNameAndClientId(imgName, clientId)
+                .then(foundClientImage => resolve(foundClientImage))
+                .catch(err => reject(err));
+        });
+    }
 
 }());

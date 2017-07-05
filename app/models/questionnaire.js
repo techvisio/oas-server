@@ -12,7 +12,7 @@ var Questionnaire = new Schema({
     duration: Number,
     status: String,
     noOfQuestion: Number,
-    questions: [{type: mongoose.Schema.Types.ObjectId, ref: 'question'}],
+    questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'question' }],
     creationDate: Date,
     createdBy: String,
     updateDate: Date,
@@ -33,6 +33,9 @@ Questionnaire.pre('save', function (next) {
         }
 
         doc.questionnaireId = counter.seq;
+        if (!doc.desc) {
+            doc.desc = "Untitled " + doc.questionnaireId
+        }
         next();
     });
 });

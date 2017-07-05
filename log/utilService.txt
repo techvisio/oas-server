@@ -10,9 +10,7 @@ module.exports = (function () {
     return {
         uploadImage: uploadImage,
         getClientImage: getClientImage,
-        updateImgStatus: updateImgStatus,
-        getImgByImgNameAndClientId: getImgByImgNameAndClientId,
-        updateClientImage: updateClientImage
+        updateImgStatus: updateImgStatus
     }
 
     function init() {

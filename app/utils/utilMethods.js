@@ -142,7 +142,7 @@ module.exports = (function () {
         var ca = cookie.split(';');
         for (var i = 0; i < ca.length; i++) {
             var c = ca[i].trim();
-            if (c.indexOf(name) == 0)
+            if (c.indexOf(name) != -1)
                 var data = JSON.parse(c.substring(name.length, c.length));
             return data;
         }

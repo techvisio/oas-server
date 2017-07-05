@@ -17,7 +17,8 @@ module.exports = (function () {
         deleteQuestionFromQuestionnaire: deleteQuestionFromQuestionnaire,
         importQuestionsToQuestionnaire: importQuestionsToQuestionnaire,
         getFiltteredQuestionnaires: getFiltteredQuestionnaires,
-        copyQuestions: copyQuestions
+        copyQuestions: copyQuestions, 
+        createQnrFromQuestions: createQnrFromQuestions
     }
 
     function init() {
@@ -292,5 +293,24 @@ module.exports = (function () {
             });
         }
     }
+
+    function createQnrFromQuestions(context) {
+        init();
+        logger.debug(context.reqId + " : createQnrFromQuestions request recieved : " + context.data);
+        var questionnaire = {
+            clientId:context.loggedInUser.clientId,
+            questions: context.data
+        }
+        return new Promise((resolve, reject) => {
+            var qnrContext = utils.getUtils().cloneContext(context, questionnaire);
+            questionnaireDao.createQuestionnaire(qnrContext)
+                .then(function (savedQuestionnnaire) {
+                    resolve(savedQuestionnnaire);
+                    logger.debug(context.reqId + " : sending response from createQnrFromQuestions: " + savedQuestionnnaire);
+                })
+                .catch(err => reject(err));
+        });
+    }
+
 
 }());
