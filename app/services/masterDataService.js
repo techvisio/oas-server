@@ -50,6 +50,7 @@ module.exports = (function () {
             masterDataDao.createMasterData(context)
                 .then(function (savedMasterData) {
                     resolve(savedMasterData);
+                    cacheService.populdateMasterData(savedMasterData.clientId);
                     logger.debug(context.reqId + " : sending response from createMasterData: " + savedMasterData);
                 })
                 .catch(err => reject(err));
@@ -64,6 +65,7 @@ module.exports = (function () {
             masterDataDao.updateMasterData(context)
                 .then(function (updatedMasterData) {
                     resolve(updatedMasterData);
+                    cacheService.populdateMasterData(updatedMasterData.clientId);
                     logger.debug(context.reqId + " : sending response from updateMasterData: " + updatedMasterData);
                 })
                 .catch(err => reject(err));

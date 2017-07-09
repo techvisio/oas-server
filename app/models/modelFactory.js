@@ -4,7 +4,8 @@ var userModel = require('./user.js');
 var questionModel = require('./question.js');
 var questionnaireModel = require('./questionnaire.js');
 var masterDataModel = require('./masterData.js');
-var clientImageModel =  require('./clientImage');
+var clientImageModel = require('./clientImage');
+var cadidateModel = require('./candidate');
 
 module.exports = (function () {
     return {
@@ -25,6 +26,8 @@ module.exports = (function () {
                 return masterDataModel;
             case constants.MODEL_CLIENT_IMAGE:
                 return clientImageModel;
+            case constants.MODEL_CANDIDATE:
+                return cadidateModel;
         }
 
     }

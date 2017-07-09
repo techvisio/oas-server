@@ -163,7 +163,9 @@ module.exports = (function () {
             });
         }
 
+
         function updateAnsImg(foundQuestion) {
+
 
             return new Promise((resolve, reject) => {
                 compareAnswers(foundQuestion, context)
@@ -235,32 +237,34 @@ module.exports = (function () {
             return new Promise((resolve, reject) => {
                 getClientImage(foundQuestion.imageURL, context.loggedInUser.clientId)
                     .then(updateClientImageForDeletedImg)
-                    .then(msg => resolve(msg))
+                    .the(getClientImageToupdate)
+                    .then(updateClientImageForAddedImg)
+                    .then(msg => resolve(foundQuestion))
                     .catch(err => reject(err));
             });
 
-            return new Promise((resolve, reject) => {
-                getClientImage(context.data.imageURL, context.loggedInUser.clientId)
-                    .then(updateClientImageForAddedImg)
-                    .then(msg => resolve(msg))
-                    .catch(err => reject(err));
-            });
         }
-        if (!foundQuestion.imageURL && context.data.imageURL) {
+        else if (!foundQuestion.imageURL && context.data.imageURL) {
             return new Promise((resolve, reject) => {
                 getClientImage(context.data.imageURL, context.loggedInUser.clientId)
                     .then(updateClientImageForAddedImg)
-                    .then(msg => resolve(msg))
+                    .then(msg => resolve(foundQuestion))
                     .catch(err => reject(err));
             });
         }
 
-        if (foundQuestion.imageURL && !context.data.imageURL) {
+        else if (foundQuestion.imageURL && !context.data.imageURL) {
             return new Promise((resolve, reject) => {
                 getClientImage(foundQuestion.imageURL, context.loggedInUser.clientId)
                     .then(updateClientImageForDeletedImg)
-                    .then(msg => resolve(msg))
+                    .then(msg => resolve(foundQuestion))
                     .catch(err => reject(err));
+            });
+        }
+
+        else {
+            return new Promise((resolve, reject) => {
+                resolve(foundQuestion)
             });
         }
 
@@ -284,47 +288,68 @@ module.exports = (function () {
                 clientImgContext = utils.getUtils().cloneContext(context, foundClientImage);
                 utilService.updateClientImage(clientImgContext)
                     .then(clientImage => resolve("image updated"))
+                    .catch(err => reject(err));
+            });
+        }
+
+        function getClientImageToupdate() {
+            return new Promise((resolve, reject) => {
+                utilService.getImgByImgNameAndClientId(context.data.imageURL, context.loggedInUser.clientId)
+                    .then(foundClientImage => resolve(foundClientImage))
                     .catch(err => reject(err));
             });
         }
     }
 
+
     function compareAnswers(foundQuestion, context) {
 
         //answer update case
 
+        var imagesData = [];
+
         for (var i = 0; i < context.data.answer.length; i++) {
             if (foundQuestion.answer[i].imageURL && context.data.answer[i].imageURL && foundQuestion.answer[i].imageURL !== context.data.answer[i].imageURL) {
-                return new Promise((resolve, reject) => {
-                    getClientImage(foundQuestion.imageURL, context.loggedInUser.clientId)
-                        .then(updateClientImageForDeletedImg)
-                        .then(msg => resolve(msg))
-                        .catch(err => reject(err));
-                });
+                imagesData.push(
+                    new Promise((resolve, reject) => {
+                        getClientImage(foundQuestion.imageURL, context.loggedInUser.clientId)
+                            .then(updateClientImageForDeletedImg)
+                            .then(getClientImageToupdate)
+                            .then(updateClientImageForAddedImg)
+                            .then(msg => resolve(msg))
+                            .catch(err => reject(err));
+                    })
+                )
 
-                return new Promise((resolve, reject) => {
-                    getClientImage(context.data.imageURL, context.loggedInUser.clientId)
-                        .then(updateClientImageForAddedImg)
-                        .then(msg => resolve(msg))
-                        .catch(err => reject(err));
-                });
             }
-            if (!foundQuestion.answer[i].imageURL && context.data.answer[i].imageURL) {
-                return new Promise((resolve, reject) => {
-                    getClientImage(context.data.imageURL, context.loggedInUser.clientId)
-                        .then(updateClientImageForAddedImg)
-                        .then(msg => resolve(msg))
-                        .catch(err => reject(err));
-                });
+            else if (!foundQuestion.answer[i].imageURL && context.data.answer[i].imageURL) {
+                imagesData.push(
+                    new Promise((resolve, reject) => {
+                        getClientImage(context.data.imageURL, context.loggedInUser.clientId)
+                            .then(updateClientImageForAddedImg)
+                            .then(msg => resolve(msg))
+                            .catch(err => reject(err));
+                    })
+                )
+
             }
 
-            if (foundQuestion.answer[i].imageURL && !context.data.answer[i].imageURL) {
-                return new Promise((resolve, reject) => {
-                    getClientImage(foundQuestion.imageURL, context.loggedInUser.clientId)
-                        .then(updateClientImageForDeletedImg)
-                        .then(msg => resolve(msg))
-                        .catch(err => reject(err));
-                });
+            else if (foundQuestion.answer[i].imageURL && !context.data.answer[i].imageURL) {
+                imagesData.push(
+                    new Promise((resolve, reject) => {
+                        getClientImage(foundQuestion.imageURL, context.loggedInUser.clientId)
+                            .then(updateClientImageForDeletedImg)
+                            .then(msg => resolve(msg))
+                            .catch(err => reject(err));
+                    })
+                )
+            }
+            else {
+                imagesData.push(
+                    new Promise((resolve, reject) => {
+                        resolve(foundQuestion)
+                    })
+                )
             }
         }
 
@@ -351,6 +376,21 @@ module.exports = (function () {
                     .catch(err => reject(err));
             });
         }
+
+        function getClientImageToupdate() {
+            return new Promise((resolve, reject) => {
+                utilService.getImgByImgNameAndClientId(context.data.imageURL, context.loggedInUser.clientId)
+                    .then(foundClientImage => resolve(foundClientImage))
+                    .catch(err => reject(err));
+            });
+        }
+        var dataResult = new Promise((resolve, reject) => {
+            Promise.all(imagesData).then(values => {
+                resolve(values);
+            });
+        });
+
+        return dataResult;
     }
 
     function getClientImage(imgName, clientId) {

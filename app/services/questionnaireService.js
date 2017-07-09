@@ -17,8 +17,9 @@ module.exports = (function () {
         deleteQuestionFromQuestionnaire: deleteQuestionFromQuestionnaire,
         importQuestionsToQuestionnaire: importQuestionsToQuestionnaire,
         getFiltteredQuestionnaires: getFiltteredQuestionnaires,
-        copyQuestions: copyQuestions, 
-        createQnrFromQuestions: createQnrFromQuestions
+        copyQuestions: copyQuestions,
+        createQnrFromQuestions: createQnrFromQuestions,
+        finalizeQuestionnaire : finalizeQuestionnaire
     }
 
     function init() {
@@ -272,33 +273,22 @@ module.exports = (function () {
 
 
     function finalizeQuestionnaire(context) {
-        var questionnaireId = context.namedParam.qnrId;
-        var clientId = context.loggedInUser.clientId;
+        init();
         return new Promise((resolve, reject) => {
-            getQuestionnaireById(questionnaireId, clientId)
-                .then(updatingQuestionnaire)
-                .then(updQuestionnaire => resolve(updQuestionnaire))
-                .catch(err => reject(err))
+            questionnaireDao.updateQuestionnaire(context)
+                .then(function (updatedQuestionnnaire) {
+                    resolve(updatedQuestionnnaire);
+                })
+                .catch(err => reject(err));
         });
 
-        function updatingQuestionnaire(foundQuestionnaire) {
-            foundQuestionnaire.status = utils.getConstants().FINALISED;
-            var questionContext = utils.getUtils().cloneContext(context, foundQuestionnaire);
-            return new Promise((resolve, reject) => {
-                questionnaireDao.updateQuestionnaire(questionContext)
-                    .then(function (updatedQuestionnnaire) {
-                        resolve(updatedQuestionnnaire);
-                    })
-                    .catch(err => reject(err));
-            });
-        }
     }
 
     function createQnrFromQuestions(context) {
         init();
         logger.debug(context.reqId + " : createQnrFromQuestions request recieved : " + context.data);
         var questionnaire = {
-            clientId:context.loggedInUser.clientId,
+            clientId: context.loggedInUser.clientId,
             questions: context.data
         }
         return new Promise((resolve, reject) => {
