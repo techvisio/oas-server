@@ -31,7 +31,7 @@ module.exports = (function () {
 
         return new Promise((resolve, reject) => {
             var queryData = context.data;
-
+            queryData.clientId = context.loggedInUser.clientId;
             masterDataDao.getAllMasterData(queryData)
                 .then(function (masterData) {
                     resolve(masterData);
@@ -81,18 +81,18 @@ module.exports = (function () {
         }
         return new Promise((resolve, reject) => {
             var clientMasterData = cacheService.getMasterData(masterData.clientId);
-                if(masterData.dataName==="section"){
-                    resolve(clientMasterData.section);
-                }
-                if(masterData.dataName==="category"){
-                    resolve(clientMasterData.category);
-                }
-                if(masterData.dataName==="subject"){
-                    resolve(clientMasterData.subject);
-                }  
-                              
+            if (masterData.dataName === "section") {
+                resolve(clientMasterData.section);
+            }
+            if (masterData.dataName === "category") {
+                resolve(clientMasterData.category);
+            }
+            if (masterData.dataName === "subject") {
+                resolve(clientMasterData.subject);
+            }
+
         });
     }
 
-    
+
 }());

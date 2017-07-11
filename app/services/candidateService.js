@@ -3,6 +3,8 @@ var daoFactory;
 var candidateDao;
 var userService;
 var logger;
+var passwordGenerator;
+var emailService;
 var isInitialised = false;
 
 
@@ -21,8 +23,10 @@ module.exports = (function () {
             utils = require('../utils/utilFactory');
             daoFactory = require('../data_access/daoFactory');
             userService = require('./userService');
+            emailService = require('./emailService');
             candidateDao = daoFactory.getDataAccessObject(utils.getConstants().DAO_CANDIDATE);
             logger = utils.getLogger();
+            passwordGenerator = require('generate-password');
             isInitialised = true;
         }
     }
@@ -33,7 +37,7 @@ module.exports = (function () {
 
         return new Promise((resolve, reject) => {
             var queryData = context.data;
-
+            queryData.clientId = context.loggedInUser.clientId;
             candidateDao.getCandidates(queryData)
                 .then(function (candidates) {
                     resolve(candidates);
@@ -45,7 +49,9 @@ module.exports = (function () {
 
     function createCandidate(context) {
         init();
-
+        var userPassword;
+        logger.debug(context.reqId + " : createCandidate request recieved for new candidate : " + context.data);
+        var candidate;
         return new Promise((resolve, reject) => {
             creatingCandidate()
                 .then(creatingUser)
@@ -53,36 +59,53 @@ module.exports = (function () {
                 .catch(err => reject(err))
         });
 
-        logger.debug(context.reqId + " : createCandidate request recieved for new candidate : " + context.data);
-
         function creatingCandidate() {
             return new Promise((resolve, reject) => {
                 candidateDao.createCandidate(context)
                     .then(function (savedCandidate) {
                         resolve(savedCandidate);
+                        candidate = savedCandidate;
                         logger.debug(context.reqId + " : sending response from createCandidate: " + savedCandidate);
                     })
                     .catch(err => reject(err));
             });
         }
-        if (context.data.createUser) {
-            function creatingUser(savedCandidate) {
+
+        function creatingUser(savedCandidate) {
+            if (context.data.createUser) {
+                userPassword = passwordGenerator.generate({
+                    length: 8,
+                    numbers: true
+                });
                 var user = {
                     userName: savedCandidate.emailId,
                     emailId: savedCandidate.emailId,
                     fullName: savedCandidate.firstName + ' ' + savedCandidate.lastName,
                     mobileNo: savedCandidate.contactNo,
-                    clientId: savedCandidate.clientId,
+                    password: userPassword,
+                    clientId: context.loggedInUser.client.clientId,
+                    clientCode: context.loggedInUser.client.clientCode,
                     role: "candidate"
                 }
                 var userContext = utils.getUtils().cloneContext(context, user);
                 return new Promise((resolve, reject) => {
                     userService.createUser(userContext)
-                        .then(function (savedUser) {
-                            resolve(savedCandidate);
-                        })
-                        .catch(err => reject(err));
+                        .then(mailLoginDetails)
+                        .then(savedCandidate => resolve(savedCandidate))
+                        .catch(err => reject(err))
                 });
+
+                function mailLoginDetails(savedUser) {
+                    savedUser.password = userPassword;
+                    return new Promise((resolve, reject) => {
+                        emailService.sendCandidateUserMail(savedUser)
+                            .then(data => resolve(candidate))
+                            .catch(err => reject(err));
+                    });
+                }
+            }
+            else {
+                return Promise.resolve(candidate);
             }
         }
     }

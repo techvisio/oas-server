@@ -7,6 +7,11 @@
   "resetPasswordMailTemplate":{
       "subject":"[Techvisio] New password generated",
       "body":"<!DOCTYPE html> <html><body><p>Hi,</p><p>{{ fullName }}</p><p>You recently requested to reset your password for your techvisio account.</p><p>your new password provided below you can change it after login.</p> <p><b> Password - {{ password }}</b></p><p><b>User Name - {{ userName }}</b></p><p><b>Client Code - {{ clientCode }}</b></p><p>Thanks,</p><p>The Techvisio Team</p></body></html>      "
+  },
+
+  "candidateUserMailTemplate":{
+      "subject":"[Techvisio] Login details for candidate",
+      "body":"<!DOCTYPE html> <html><body><p>Hi,</p><p>{{ fullName }}</p><p>Your new account has been created.</p><p>your account details provided below, use for login.</p> <p><b> Password - {{ password }}</b></p><p><b>User Name - {{ userName }}</b></p><p><b>Client Code - {{ clientCode }}</b></p><p>Thanks,</p><p>The Techvisio Team</p></body></html>      "
   }
 
 }

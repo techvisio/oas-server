@@ -4,7 +4,7 @@ var daoFactory;
 var userDao;
 var userModel;
 var logger;
-var uuid;
+
 var passwordGenerator;
 var emailService;
 var isInitialised = false;
@@ -31,7 +31,6 @@ module.exports = (function () {
             userDao = daoFactory.getDataAccessObject(utils.getConstants().DAO_USER);
             userModel = modelFactory.getModel(utils.getConstants().MODEL_USER);
             logger = utils.getLogger();
-            uuid = require('node-uuid');
             emailService = require('./emailService');
             passwordGenerator = require('generate-password');
             isInitialised = true;
@@ -44,7 +43,7 @@ module.exports = (function () {
 
         return new Promise((resolve, reject) => {
             var queryData = context.data;
-
+            queryData.clientId = context.loggedInUser.clientId;
             userDao.getUsers(queryData)
                 .then(function (users) {
                     resolve(users);

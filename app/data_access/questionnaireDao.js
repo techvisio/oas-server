@@ -162,7 +162,7 @@ module.exports = (function () {
         init();
         logger.debug("getFiltteredQuestionnaires request recieved ");
         return new Promise((resolve, reject) => {
-
+            context.data.clientId = context.loggedInUser.clientId;
             var queryFilter = criteriaQueryBuilder(context.data);
             queryFilter = populateFilterData(queryFilter)
             var pageSize = Number(context.data.pageSize);

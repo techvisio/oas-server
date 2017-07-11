@@ -38,6 +38,7 @@ module.exports = (function () {
         logger.debug(context.reqId + " : getQuestions request recieved ");
         return new Promise((resolve, reject) => {
             var queryData = context.data;
+            queryData.clientId= context.loggedInUser.clientId;
             questionDao.getQuestions(queryData).then(function (questions) {
                 resolve(questions);
                 logger.debug(context.reqId + " : sending response : " + questions);

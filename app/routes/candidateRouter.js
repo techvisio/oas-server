@@ -1,17 +1,17 @@
 var express = require('express');
 var serviceLocator = require('../services/serviceLocator');
 var utils = require('../utils/utilFactory');
-var candidateService = serviceLocator.getService(utils.getConstants().SERVICE_USER);
+var candidateService = serviceLocator.getService(utils.getConstants().SERVICE_CANDIDATE);
 var router = express.Router();
 var logger = utils.getLogger();
 
 
-router.post('/client/:clientid/users', function (req, res, next) {
+router.post('/client/:clientid/candidates', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
 
-    userService.getUsers(context).then(function (users) {
-        var responseBody = utils.getUtils().buildSuccessResponse(users);
+    candidateService.getCandidates(context).then(function (candidates) {
+        var responseBody = utils.getUtils().buildSuccessResponse(candidates);
         res.status(200).json(responseBody);
     }, function (err) {
         next(err);
@@ -19,12 +19,12 @@ router.post('/client/:clientid/users', function (req, res, next) {
 });
 
 
-router.get('/client/:clientid/user/:id', function (req, res, next) {
+router.get('/client/:clientid/candidate/:id', function (req, res, next) {
 
-    var userId = req.params.id;
+    var candidateId = req.params.id;
     var clientId = req.session.user.clientId;
-    userService.getUserById(userId, clientId).then(function (user) {
-        var responseBody = utils.getUtils().buildSuccessResponse(user);
+    candidateService.getCandidateById(candidateId, clientId).then(function (candidate) {
+        var responseBody = utils.getUtils().buildSuccessResponse(candidate);
         res.status(200).json(responseBody);
     }, function (err) {
         next(err);
@@ -32,12 +32,12 @@ router.get('/client/:clientid/user/:id', function (req, res, next) {
 });
 
 
-router.post('/client/:clientid/user', function (req, res, next) {
+router.post('/client/:clientid/candidate', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
 
-    userService.createUser(context).then(function (user) {
-        var responseBody = utils.getUtils().buildSuccessResponse(user);
+    candidateService.createCandidate(context).then(function (candidate) {
+        var responseBody = utils.getUtils().buildSuccessResponse(candidate);
         res.status(200).json(responseBody);
     }, function (err) {
         next(err);
@@ -45,12 +45,12 @@ router.post('/client/:clientid/user', function (req, res, next) {
 });
 
 
-router.put('/client/:clientid/user', function (req, res, next) {
+router.put('/client/:clientid/candidate', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
 
-    userService.updateUser(context).then(function (user) {
-        var responseBody = utils.getUtils().buildSuccessResponse(user);
+    candidateService.updateCandidate(context).then(function (candidate) {
+        var responseBody = utils.getUtils().buildSuccessResponse(candidate);
         res.status(200).json(responseBody);
     }, function (err) {
         next(err);

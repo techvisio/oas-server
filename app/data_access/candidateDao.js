@@ -48,7 +48,7 @@ module.exports = (function () {
             candidate.updateDate = new Date();
             candidate.updatedBy = context.loggedInUser.userName;
 
-            candidateModel.create(user, function (err, savedCandidate) {
+            candidateModel.create(candidate, function (err, savedCandidate) {
                 if (err) {
                     reject(err);
                 }
