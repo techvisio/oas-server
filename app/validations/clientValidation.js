@@ -96,7 +96,7 @@ module.exports = (function () {
 
     function checkPasswordFormat(signupData) {
         init();
-        var passFormat = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,}$/;
+        var passFormat = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#\$%\^&\*])^\D.{7,}$/;
         if (!(passFormat.test(signupData.password))) {
             return Promise.resolve(utils.getErrorConstants().INVALID_PASS_FORMAT);
         }

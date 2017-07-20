@@ -21,6 +21,7 @@ module.exports = {
 
     //candidate error codes
     NO_CANDIDATE_FOUND: "NO_CANDIDATE_FOUND",
+    NO_CANDIDATE_GROUP_FOUND: "NO_CANDIDATE_GROUP_FOUND",
     //login error constants
     NO_USER_FOUND: "NO_USER_FOUND",
     INVALID_CREDENTIAL: "INVALID_CREDENTIAL",

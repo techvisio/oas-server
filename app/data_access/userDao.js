@@ -76,7 +76,7 @@ module.exports = (function () {
         function userUpdate() {
             return new Promise((resolve, reject) => {
                 var user = context.data;
-                user.updateDate = new Date;
+                user.updateDate = new Date();
                 user.updatedBy = context.loggedInUser.userName;
 
                 userModel.update({ _id: user._id }, user, function (err, updatedUser) {

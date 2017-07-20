@@ -18,7 +18,6 @@ router.post('/client/:clientid/candidates', function (req, res, next) {
     })
 });
 
-
 router.get('/client/:clientid/candidate/:id', function (req, res, next) {
 
     var candidateId = req.params.id;
@@ -57,5 +56,40 @@ router.put('/client/:clientid/candidate', function (req, res, next) {
     })
 });
 
+router.post('/client/:clientid/candidategroups', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+
+    candidateService.getCandidateGroups(context).then(function (candidateGroups) {
+        var responseBody = utils.getUtils().buildSuccessResponse(candidateGroups);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+});
+
+router.post('/client/:clientid/candidategroup', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+
+    candidateService.createCandidateGroup(context).then(function (candidateGroup) {
+        var responseBody = utils.getUtils().buildSuccessResponse(candidateGroup);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+});
+
+router.put('/client/:clientid/candidategroup', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+
+    candidateService.updateCandidateGroup(context).then(function (candidateGroup) {
+        var responseBody = utils.getUtils().buildSuccessResponse(candidateGroup);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+});
 
 module.exports = router;

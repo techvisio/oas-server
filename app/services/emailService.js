@@ -14,8 +14,8 @@ module.exports = (function () {
     return {
         sendMail: sendMail,
         sendVerificationMail: sendVerificationMail,
-        sendResetPasswordMail: sendResetPasswordMail,
-        sendCandidateUserMail: sendCandidateUserMail
+        sendResetPasswordMail: sendResetPasswordMail
+//        sendCandidateUserMail: sendCandidateUserMail
     }
 
     function init() {
@@ -134,7 +134,7 @@ module.exports = (function () {
         return Promise.resolve(user);
     }
 
-    function sendCandidateUserMail(user) {
+    /*function sendCandidateUserMail(user) {
         init();
         var subject = utils.getTemplate().getProperty('candidateUserMailTemplate')['subject'];
         var bodyTemplate = utils.getTemplate().getProperty('candidateUserMailTemplate')['body']
@@ -149,6 +149,7 @@ module.exports = (function () {
         sendMail(mailContent);
         return Promise.resolve(user);
     }
+    */
 }());
 
 

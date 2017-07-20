@@ -48,7 +48,7 @@ module.exports = (function () {
             masterData.masterData=[];
             masterData.masterData.push(context.data.data);
             masterData.clientId = context.loggedInUser.clientId;
-            masterData.creationDate = new Date().toDateString();
+            masterData.creationDate = new Date();
             masterData.createdBy = context.loggedInUser.userName;
             masterData.updateDate = new Date();
             masterData.updatedBy = context.loggedInUser.userName;
@@ -96,7 +96,7 @@ module.exports = (function () {
 
         function masterDataUpdate(foundMasterData) {
             return new Promise((resolve, reject) => {
-                foundMasterData.updateDate = new Date;
+                foundMasterData.updateDate = new Date();
                 foundMasterData.updatedBy = context.loggedInUser.userName;
 
                 masterDataModel.update({ _id: foundMasterData._id }, foundMasterData, function (err, updatedMasterData) {

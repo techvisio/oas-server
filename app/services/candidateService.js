@@ -14,8 +14,10 @@ module.exports = (function () {
         createCandidate: createCandidate,
         updateCandidate: updateCandidate,
         deleteCandidate: deleteCandidate,
-        getCandidateById: getCandidateById
-
+        getCandidateById: getCandidateById,
+        getCandidateGroups: getCandidateGroups,
+        createCandidateGroup: createCandidateGroup,
+        updateCandidateGroup: updateCandidateGroup
     }
 
     function init() {
@@ -95,7 +97,7 @@ module.exports = (function () {
                         .catch(err => reject(err))
                 });
 
-                function mailLoginDetails(savedUser) {
+/*                function mailLoginDetails(savedUser) {
                     savedUser.password = userPassword;
                     return new Promise((resolve, reject) => {
                         emailService.sendCandidateUserMail(savedUser)
@@ -103,6 +105,7 @@ module.exports = (function () {
                             .catch(err => reject(err));
                     });
                 }
+                */
             }
             else {
                 return Promise.resolve(candidate);
@@ -168,6 +171,48 @@ module.exports = (function () {
                 .then(function (msg) {
                     resolve(msg);
                     logger.debug("sending response from deleteCandidate: " + msg);
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    function getCandidateGroups(context) {
+        init();
+        logger.debug(context.reqId + " : getCandidateGroups request recieved ");
+        return new Promise((resolve, reject) => {
+            var queryData = context.data;
+            queryData.clientId = context.loggedInUser.clientId;
+            candidateDao.getCandidateGroups(queryData).then(function (candidateGroup) {
+                resolve(candidateGroup);
+                logger.debug(context.reqId + " : sending response : " + candidateGroup);
+            })
+                .catch(err => reject(err));
+        });
+    }
+
+    function createCandidateGroup(context) {
+        init();
+        logger.debug(context.reqId + " : createCandidateGroup request recieved for new user : " + context.data);
+        
+            return new Promise((resolve, reject) => {
+                candidateDao.createCandidateGroup(context)
+                    .then(function (savedCandidateGroup) {
+                        resolve(savedCandidateGroup);
+                        logger.debug(context.reqId + " : sending response from createCandidateGroup: " + savedCandidateGroup);
+                    })
+                    .catch(err => reject(err));
+            });
+        
+    }
+
+    function updateCandidateGroup(context) {
+        init();
+        logger.debug(context.reqId + " : updateCandidateGroup request recieved for user : " + context.data);
+        return new Promise((resolve, reject) => {
+            candidateDao.updateCandidateGroup(context)
+                .then(function (updatedCandidateGroup) {
+                    resolve(updatedCandidateGroup);
+                    logger.debug(context.reqId + " : sending response from updateCandidateGroup: " + updatedCandidateGroup);
                 })
                 .catch(err => reject(err));
         });

@@ -128,25 +128,26 @@ module.exports = (function () {
 
     function getServerUrl(client) {
         init();
-        var serverUrl = utils.getConfiguration().getProperty(env)['hostName'];
+        var serverUrl = utils.getConfiguration().getProperty(env)['serverUrl'];
         if (env === 'development') {
+            serverUrl = utils.getConfiguration().getProperty(env)['hostName'];
             var port = (process.env.PORT || utils.getConfiguration().getProperty('app.port'));
-            serverUrl = serverUrl + ":" + port;
+            serverUrl = "http://" + serverUrl + ":" + port;
         }
         return serverUrl;
     }
 
     function getDataFromCookie(cname, cookie) {
-        if(cookie){
-        var name = cname + "=";
-        var ca = cookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i].trim();
-            if (c.indexOf(name) != -1)
-                var data = JSON.parse(c.substring(name.length, c.length));
-            return data;
+        if (cookie) {
+            var name = cname + "=";
+            var ca = cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i].trim();
+                if (c.indexOf(name) != -1)
+                    var data = JSON.parse(c.substring(name.length, c.length));
+                return data;
+            }
         }
-    }
         return "";
     }
 }())

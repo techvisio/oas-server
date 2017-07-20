@@ -16,7 +16,9 @@ var Candidate = new Schema({
     gender: String,
     contactNo: String,
     emailId: String,
-    createUser: Boolean
+    createUser: Boolean,
+    identifier:String,
+    candidateGroups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'candidateGroup' }],
 });
 
 Candidate.pre('save', function (next) {
@@ -26,12 +28,16 @@ Candidate.pre('save', function (next) {
             return next(error);
         }
         if (!counter) {
-            counterModel.create({ _id: 'client', seq: 2 });
+            counterModel.create({ _id: 'candidate', seq: 2 });
             counter = { seq: 1 };
         }
+        doc.emailId = doc.emailId.toLowerCase();
+        doc.firstName = doc.firstName.toLowerCase();
+        doc.lastName = doc.lastName.toLowerCase();
         doc.candidateId = counter.seq;
         next();
     });
 });
+
 
 module.exports = mongoose.model('candidate', Candidate);

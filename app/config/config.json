@@ -6,7 +6,7 @@
     "logPayload": true,
     "hostName": "localhost",
     "sendMailToWhiteListed": true,
-    "whiteListedEmailIds": "sgusain91@gmail.com,gusain.pradeep1986@gmail.com,sonugusain10nov@gmail.com,nikhilsharma1992.006@gmail.com,sandeepgausain10oct@gmail.com,sandeegausain10oct@gmail.com,sandeegausain0oct@gmail.com",
+    "whiteListedEmailIds": "sgusain91@gmail.com,gusain.pradeep1986@gmail.com,sonugusain10nov@gmail.com,nikhilsharma1992.006@gmail.com,sandeepgausain10oct@gmail.com,sandeegausain10oct@gmail.com,sandeegausain0oct@gmail.com,nikhil.sharma@techvisio.co.in",
     "isSupportBcc": true,
     "supportEmailId": "noreply.techvisio@gmail.com",
     "serverUrl":"http://localhost",

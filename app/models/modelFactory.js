@@ -6,6 +6,7 @@ var questionnaireModel = require('./questionnaire.js');
 var masterDataModel = require('./masterData.js');
 var clientImageModel = require('./clientImage');
 var cadidateModel = require('./candidate');
+var cadidateGroupModel = require('./candidateGroup');
 
 module.exports = (function () {
     return {
@@ -28,6 +29,8 @@ module.exports = (function () {
                 return clientImageModel;
             case constants.MODEL_CANDIDATE:
                 return cadidateModel;
+            case constants.MODEL_CANDIDATE_GROUP:
+                return cadidateGroupModel;
         }
 
     }
