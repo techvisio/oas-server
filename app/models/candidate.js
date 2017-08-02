@@ -17,6 +17,7 @@ var Candidate = new Schema({
     contactNo: String,
     emailId: String,
     createUser: Boolean,
+    isActive:Boolean,
     identifier:String,
     candidateGroups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'candidateGroup' }],
 });

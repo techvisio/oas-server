@@ -15,7 +15,8 @@ module.exports = (function () {
         getQuestions: getQuestions,
         updateQuestion: updateQuestion,
         getQuestionById: getQuestionById,
-        getFiltteredQuestions: getFiltteredQuestions
+        getFiltteredQuestions: getFiltteredQuestions,
+        createSingleQuestion: createSingleQuestion
     }
 
     function init() {
@@ -38,7 +39,7 @@ module.exports = (function () {
         logger.debug(context.reqId + " : getQuestions request recieved ");
         return new Promise((resolve, reject) => {
             var queryData = context.data;
-            queryData.clientId= context.loggedInUser.clientId;
+            queryData.clientId = context.loggedInUser.clientId;
             questionDao.getQuestions(queryData).then(function (questions) {
                 resolve(questions);
                 logger.debug(context.reqId + " : sending response : " + questions);
@@ -402,4 +403,14 @@ module.exports = (function () {
         });
     }
 
+    function createSingleQuestion(context) {
+        init();
+        return new Promise((resolve, reject) => {
+            questionDao.createQuestion(context)
+                .then(function (savedQuestion) {
+                    resolve(savedQuestion);
+                })
+                .catch(err => reject(err));
+        });
+    }
 }());

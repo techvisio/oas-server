@@ -133,6 +133,56 @@ router.post('/client/:clientid/qnr/:id/question', function (req, res, next) {
 });
 
 /**
+ * @api {post} /api/admin/client/:clientid/qnr/:id/question with this api user can create a new question for a particular questionnaire.
+ * @apiName createSingleQuestion
+ *
+ * @apiParam {Number} clientid    client's unique ID.
+ * @apiParam {Number} questionId  question's unique ID.
+ * @apiParam {String} QuestionDesc  decription of the question.
+ * @apiParam {String} ImageURL  image url of the question.
+ * @apiParam {String} Section  in which section ques.
+ * @apiParam {String} Difficulty  Difficulty level of a question.
+ * @apiParam {Boolean} ResponseType  response type of question
+ * @apiParam {Boolean} isActive  question is active or not
+ * @apiParam {Date} creationDate  question's creation date.
+ * @apiParam {String} createdBy  question is created by.
+ * @apiParam {Date} updateDate  question's updated date.
+ * @apiParam {String} updatedBy question is updated By.
+ * 
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *        "status": "success",
+ *        "data": {
+ *        "__v": 0,
+ *        "questionId": 7,
+ *        "clientId": 1,
+ *        "QuestionDesc": "what is your mother name?",
+ *        "Section": "english",
+ *        "Difficulty": "easy",
+ *        "isActive": true,
+ *        "creationDate": "2017-05-04T17:55:34.358Z",
+ *        "createdBy": "SYSTEM",
+ *        "updateDate": "2017-05-04T17:55:34.358Z",
+ *        "updatedBy": "SYSTEM",
+ *        "_id": "590b6b16f6c54c32ccba1814"
+ *         }
+ *      }
+ *
+ * 
+ */
+router.post('/client/:clientid/question/new', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    questionService.createSingleQuestion(context).then(function (question) {
+        var responseBody = utils.getUtils().buildSuccessResponse(question);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+});
+
+/**
  * @api {put} /api/admin/client/:clientid/qnr/:id/question with this api user can update an existing question for a particular questionnaire.
  * @apiName updateQuestion
  *

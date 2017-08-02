@@ -200,7 +200,7 @@ module.exports = (function () {
             query.desc = { "$regex": queryFilter.questionnaireDesc, "$options": "i" };
         }
         if (queryFilter.pageFrom && queryFilter.pageTo) {
-            query.noOfQuestion = {
+            query.marks = {
                 $gte: queryFilter.pageFrom,
                 $lt: queryFilter.pageTo
             }

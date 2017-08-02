@@ -13,7 +13,8 @@ module.exports = (function () {
         deleteCandidate: deleteCandidate,
         getCandidateGroups: getCandidateGroups,
         createCandidateGroup: createCandidateGroup,
-        updateCandidateGroup: updateCandidateGroup
+        updateCandidateGroup: updateCandidateGroup,
+        getFiltteredCandidates: getFiltteredCandidates
     }
 
     function init() {
@@ -102,21 +103,18 @@ module.exports = (function () {
     function deleteCandidate(candidate) {
         init();
         logger.debug("delete request recieved for candidate : " + candidate);
+        candidate.isActive = false;
         return new Promise((resolve, reject) => {
-            candidateModel.findOneAndRemove({ _id: candidate._id }, function (err, foundCandidate) {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    foundCandidate.remove();
-                    resolve("candidate deleted");
-                    logger.debug("sending response from deleteCandidate: " + msg);
-                }
-            })
+            updateCandidate(context)
+                .then(function (updatedCandidate) {
+                    resolve(updatedCandidate);
+                    logger.debug(context.reqId + " : sending response from deleteCandidate: " + updatedCandidate);
+                })
+                .catch(err => reject(err));
         });
     }
 
-function getCandidateById(candidate) {
+    function getCandidateById(candidate) {
         init();
         logger.debug("getCandidateById request recieved for candidateId : " + candidate.candidateId);
         return new Promise((resolve, reject) => {
@@ -146,7 +144,7 @@ function getCandidateById(candidate) {
 
     }
 
-function getCandidateGroups(candidateGroup) {
+    function getCandidateGroups(candidateGroup) {
         init();
         logger.debug("getCandidateGroups request recieved ");
         return new Promise((resolve, reject) => {
@@ -218,7 +216,7 @@ function getCandidateGroups(candidateGroup) {
         }
     }
 
-function getCandidateGroupById(candidateGroup) {
+    function getCandidateGroupById(candidateGroup) {
         init();
         logger.debug("getCandidateGroupById request recieved for candidateGroupId : " + candidateGroup.candidateGroupId);
         return new Promise((resolve, reject) => {
@@ -248,6 +246,60 @@ function getCandidateGroupById(candidateGroup) {
 
     }
 
+    function getFiltteredCandidates(context) {
+        init();
+        logger.debug("getFiltteredCandidates request recieved ");
+        return new Promise((resolve, reject) => {
+            context.data.clientId = context.loggedInUser.clientId;
+            var queryFilter = criteriaQueryBuilder(context.data);
+            queryFilter = populateFilterData(queryFilter)
+            var pageSize = Number(context.data.pageSize);
+            var pageNo = context.data.pageNo;
+            var sortBy = context.data.sortBy;
+            var skipQues = pageSize * (pageNo - 1);
+
+            query = candidateModel.find(queryFilter).sort(sortBy);
+            query.count(function (err, count) {
+                query.skip(skipQues).limit(pageSize).lean().exec('find', function (err, foundCandidates) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        var response = {
+                            count: count,
+                            foundCandidates: foundCandidates
+                        }
+                        resolve(response);
+                    }
+                });
+            });
+        });
+
+    }
+
+    function populateFilterData(queryFilter) {
+        var query = {};
+
+        if (queryFilter.firstName) {
+            query.firstName = { "$regex": queryFilter.firstName.toLowerCase(), "$options": "i" };
+        }
+        if (queryFilter.lastName) {
+            query.lastName = { "$regex": queryFilter.lastName.toLowerCase(), "$options": "i" };
+        }
+        if (queryFilter.contactNo) {
+            query.contactNo = queryFilter.contactNo;
+        }
+        if (queryFilter.emailId) {
+            query.emailId = queryFilter.emailId.toLowerCase();
+        }
+        if (queryFilter.identifier) {
+            query.identifier = queryFilter.identifier;
+        }
+        if (queryFilter.gender && queryFilter.gender.length > 0) {
+            query.gender = { $in: queryFilter.gender };
+        }
+        return query;
+    }
+
 
     function criteriaQueryBuilder(data) {
 
@@ -266,14 +318,28 @@ function getCandidateGroupById(candidateGroup) {
             query["lastName"] = data.lastName.toLowerCase();
         }
         if (!utils.getUtils().isEmpty(data.emailId)) {
+            query["emailId"] = data.emailId.toLowerCase();
+        }
+        if (!utils.getUtils().isEmpty(data.contactNo)) {
+            query["contactNo"] = data.contactNo.toLowerCase();
+        }
+        if (!utils.getUtils().isEmpty(data.identifier)) {
+            query["identifier"] = data.identifier;
+        }
+        if (data.gender && data.gender.length > 0) {
+            query["gender"] = data.gender;
+        }
+        if (!utils.getUtils().isEmpty(data.candidateGroupId)) {
             query["candidateGroupId"] = data.candidateGroupId;
         }
 
         if (!utils.getUtils().isEmpty(data.groupName)) {
             query["groupName"] = data.groupName;
         }
+
+        query["isActive"] = true;
         return query;
     }
 
-    
+
 }())

@@ -92,4 +92,28 @@ router.put('/client/:clientid/candidategroup', function (req, res, next) {
     })
 });
 
+router.post('/client/:clientid/filtercandidate', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    candidateService.getFiltteredCandidates(context).then(function (candidates) {
+        var responseBody = utils.getUtils().buildSuccessResponse(candidates);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+
+});
+
+router.put('/client/:clientid/candidate/candidateId/delete', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    candidateService.deleteCandidate(context).then(function (candidate) {
+        var responseBody = utils.getUtils().buildSuccessResponse(candidate);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+
+});
+
 module.exports = router;

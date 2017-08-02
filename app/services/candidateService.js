@@ -17,7 +17,8 @@ module.exports = (function () {
         getCandidateById: getCandidateById,
         getCandidateGroups: getCandidateGroups,
         createCandidateGroup: createCandidateGroup,
-        updateCandidateGroup: updateCandidateGroup
+        updateCandidateGroup: updateCandidateGroup,
+        getFiltteredCandidates : getFiltteredCandidates
     }
 
     function init() {
@@ -97,15 +98,15 @@ module.exports = (function () {
                         .catch(err => reject(err))
                 });
 
-/*                function mailLoginDetails(savedUser) {
-                    savedUser.password = userPassword;
-                    return new Promise((resolve, reject) => {
-                        emailService.sendCandidateUserMail(savedUser)
-                            .then(data => resolve(candidate))
-                            .catch(err => reject(err));
-                    });
-                }
-                */
+                     function mailLoginDetails(savedUser) {
+                                    savedUser.password = userPassword;
+                                    return new Promise((resolve, reject) => {
+                                        emailService.sendCandidateUserMail(savedUser)
+                                            .then(data => resolve(candidate))
+                                            .catch(err => reject(err));
+                                    });
+                                }
+     
             }
             else {
                 return Promise.resolve(candidate);
@@ -193,16 +194,16 @@ module.exports = (function () {
     function createCandidateGroup(context) {
         init();
         logger.debug(context.reqId + " : createCandidateGroup request recieved for new user : " + context.data);
-        
-            return new Promise((resolve, reject) => {
-                candidateDao.createCandidateGroup(context)
-                    .then(function (savedCandidateGroup) {
-                        resolve(savedCandidateGroup);
-                        logger.debug(context.reqId + " : sending response from createCandidateGroup: " + savedCandidateGroup);
-                    })
-                    .catch(err => reject(err));
-            });
-        
+
+        return new Promise((resolve, reject) => {
+            candidateDao.createCandidateGroup(context)
+                .then(function (savedCandidateGroup) {
+                    resolve(savedCandidateGroup);
+                    logger.debug(context.reqId + " : sending response from createCandidateGroup: " + savedCandidateGroup);
+                })
+                .catch(err => reject(err));
+        });
+
     }
 
     function updateCandidateGroup(context) {
@@ -213,6 +214,20 @@ module.exports = (function () {
                 .then(function (updatedCandidateGroup) {
                     resolve(updatedCandidateGroup);
                     logger.debug(context.reqId + " : sending response from updateCandidateGroup: " + updatedCandidateGroup);
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    function getFiltteredCandidates(context) {
+        init();
+        logger.debug(context.reqId + " : getFiltteredCandidates request recieved for user : " + context.data);
+
+        return new Promise((resolve, reject) => {
+            candidateDao.getFiltteredCandidates(context)
+                .then(function (candidates) {
+                    resolve(candidates);
+                    logger.debug(context.reqId + " : sending response from getFiltteredCandidates: " + candidates);
                 })
                 .catch(err => reject(err));
         });
