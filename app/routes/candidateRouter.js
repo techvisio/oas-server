@@ -104,7 +104,7 @@ router.post('/client/:clientid/filtercandidate', function (req, res, next) {
 
 });
 
-router.put('/client/:clientid/candidate/candidateId/delete', function (req, res, next) {
+router.put('/client/:clientid/candidate/:candidateId/delete', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
     candidateService.deleteCandidate(context).then(function (candidate) {
@@ -114,6 +114,42 @@ router.put('/client/:clientid/candidate/candidateId/delete', function (req, res,
         next(err);
     })
 
+});
+
+router.post('/client/:clientid/filtercandidategroup', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    candidateService.getFiltteredCandidateGroups(context).then(function (candidateGroups) {
+        var responseBody = utils.getUtils().buildSuccessResponse(candidateGroups);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+
+});
+
+router.put('/client/:clientid/candidategroup/:candgrpid/delete', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    candidateService.deleteCandidateGroup(context).then(function (candidateGroup) {
+        var responseBody = utils.getUtils().buildSuccessResponse(candidateGroup);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+
+});
+
+router.get('/client/:clientid/candidategroup/:id', function (req, res, next) {
+
+    var candidateGroupId = req.params.id;
+    var clientId = req.session.user.clientId;
+    candidateService.getCandidateGroupById(candidateGroupId, clientId).then(function (candidateGroup) {
+        var responseBody = utils.getUtils().buildSuccessResponse(candidateGroup);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
 });
 
 module.exports = router;

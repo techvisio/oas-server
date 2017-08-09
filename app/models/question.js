@@ -17,6 +17,7 @@ var Question = new Schema({
     createdBy: String,
     updateDate: Date,
     updatedBy: String,
+    questionView: String,
     answer:[{
         description:String,
         imageURL: String,

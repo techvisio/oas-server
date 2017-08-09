@@ -18,7 +18,10 @@ module.exports = (function () {
         getCandidateGroups: getCandidateGroups,
         createCandidateGroup: createCandidateGroup,
         updateCandidateGroup: updateCandidateGroup,
-        getFiltteredCandidates : getFiltteredCandidates
+        getCandidateGroupById: getCandidateGroupById,
+        getFiltteredCandidates: getFiltteredCandidates,
+        getFiltteredCandidateGroups: getFiltteredCandidateGroups,
+        deleteCandidateGroup: deleteCandidateGroup
     }
 
     function init() {
@@ -53,6 +56,7 @@ module.exports = (function () {
     function createCandidate(context) {
         init();
         var userPassword;
+        context.data.isActive = true;
         logger.debug(context.reqId + " : createCandidate request recieved for new candidate : " + context.data);
         var candidate;
         return new Promise((resolve, reject) => {
@@ -98,15 +102,15 @@ module.exports = (function () {
                         .catch(err => reject(err))
                 });
 
-                     function mailLoginDetails(savedUser) {
-                                    savedUser.password = userPassword;
-                                    return new Promise((resolve, reject) => {
-                                        emailService.sendCandidateUserMail(savedUser)
-                                            .then(data => resolve(candidate))
-                                            .catch(err => reject(err));
-                                    });
-                                }
-     
+                function mailLoginDetails(savedUser) {
+                    savedUser.password = userPassword;
+                    return new Promise((resolve, reject) => {
+                        emailService.sendCandidateUserMail(savedUser)
+                            .then(data => resolve(candidate))
+                            .catch(err => reject(err));
+                    });
+                }
+
             }
             else {
                 return Promise.resolve(candidate);
@@ -163,9 +167,43 @@ module.exports = (function () {
 
     }
 
-    function deleteCandidate(candidate) {
+    function getCandidateGroupById(candidateGroupId, clientId) {
         init();
-        logger.debug("delete request recieved for candidate : " + candidate);
+        logger.debug("getCandidateGroupById request recieved for candidateGroupId : " + candidateGroupId);
+        return new Promise((resolve, reject) => {
+            if (!utils.getUtils().isEmpty(candidateGroupId) && !utils.getUtils().isEmpty(clientId)) {
+                var candidateGroup = {
+                    candidateGroupId: candidateGroupId,
+                    clientId: clientId
+                };
+                candidateDao.getCandidateGroups(candidateGroup)
+                    .then(function (foundCandidateGroup) {
+                        if (foundCandidateGroup.length > 0) {
+                            resolve(foundCandidateGroup[0]);
+                            logger.debug("sending response from getCandidateGroupById: " + foundCandidateGroup[0]);
+                        }
+                        else {
+                            var err = {};
+                            var errCodes = [];
+                            var errCode = utils.getErrorConstants().NO_CANDIDATE_FOUND;
+                            errCodes.push(errCode);
+                            err.errorCodes = errCodes;
+                            err.errType = utils.getErrorConstants().VALIDATION_ERROR;
+                            reject(err);
+                        }
+                    })
+                    .catch(err => reject(err));
+            }
+            else {
+                resolve(undefined);
+            }
+        });
+
+    }
+
+    function deleteCandidate(context) {
+        init();
+        logger.debug("delete request recieved for candidate : " + context.data.firstName);
 
         return new Promise((resolve, reject) => {
             candidateDao.deleteCandidate(context)
@@ -194,7 +232,7 @@ module.exports = (function () {
     function createCandidateGroup(context) {
         init();
         logger.debug(context.reqId + " : createCandidateGroup request recieved for new user : " + context.data);
-
+        context.data.isActive = true;
         return new Promise((resolve, reject) => {
             candidateDao.createCandidateGroup(context)
                 .then(function (savedCandidateGroup) {
@@ -233,5 +271,32 @@ module.exports = (function () {
         });
     }
 
+    function deleteCandidateGroup(context) {
+        init();
+        logger.debug("delete request recieved for candidateGroup : " + context.data.groupName);
+
+        return new Promise((resolve, reject) => {
+            candidateDao.deleteCandidateGroup(context)
+                .then(function (candidateGroup) {
+                    resolve(candidateGroup);
+                    logger.debug("sending response from deleteCandidateGroup: " + candidateGroup);
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    function getFiltteredCandidateGroups(context) {
+        init();
+        logger.debug(context.reqId + " : getFiltteredCandidateGroups request recieved for user : " + context.data);
+
+        return new Promise((resolve, reject) => {
+            candidateDao.getFiltteredCandidateGroups(context)
+                .then(function (candidateGroups) {
+                    resolve(candidateGroups);
+                    logger.debug(context.reqId + " : sending response from getFiltteredCandidateGroups: " + candidateGroups);
+                })
+                .catch(err => reject(err));
+        });
+    }
 
 }());

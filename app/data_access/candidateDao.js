@@ -14,7 +14,9 @@ module.exports = (function () {
         getCandidateGroups: getCandidateGroups,
         createCandidateGroup: createCandidateGroup,
         updateCandidateGroup: updateCandidateGroup,
-        getFiltteredCandidates: getFiltteredCandidates
+        getFiltteredCandidates: getFiltteredCandidates,
+        getFiltteredCandidateGroups: getFiltteredCandidateGroups,
+        deleteCandidateGroup: deleteCandidateGroup
     }
 
     function init() {
@@ -92,7 +94,7 @@ module.exports = (function () {
                         reject(err);
                     }
                     else {
-                        resolve(updCandidate);
+                        resolve(candidate);
                         logger.debug(context.reqId + " : sending response from updateCandidate: " + updCandidate);
                     }
                 })
@@ -100,10 +102,10 @@ module.exports = (function () {
         }
     }
 
-    function deleteCandidate(candidate) {
+    function deleteCandidate(context) {
         init();
-        logger.debug("delete request recieved for candidate : " + candidate);
-        candidate.isActive = false;
+        logger.debug("delete request recieved for candidate : " + context.data.firstName);
+        context.data.isActive = false;
         return new Promise((resolve, reject) => {
             updateCandidate(context)
                 .then(function (updatedCandidate) {
@@ -119,7 +121,7 @@ module.exports = (function () {
         logger.debug("getCandidateById request recieved for candidateId : " + candidate.candidateId);
         return new Promise((resolve, reject) => {
             if (!utils.getUtils().isEmpty(candidate.candidateId) && !utils.getUtils().isEmpty(candidate.clientId)) {
-                getUsers(candidate)
+                getCandidates(candidate)
                     .then(function (foundCandidate) {
                         if (foundCandidate.length > 0) {
                             resolve(foundCandidate[0]);
@@ -276,6 +278,50 @@ module.exports = (function () {
 
     }
 
+    function deleteCandidateGroup(context) {
+        init();
+        logger.debug("delete request recieved for candidate : " + context.data.groupName);
+        context.data.isActive = false;
+        return new Promise((resolve, reject) => {
+            updateCandidateGroup(context)
+                .then(function (updatedCandidateGroup) {
+                    resolve(updatedCandidateGroup);
+                    logger.debug(context.reqId + " : sending response from deleteCandidateGroup: " + updatedCandidateGroup);
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    function getFiltteredCandidateGroups(context) {
+        init();
+        logger.debug("getFiltteredCandidateGroups request recieved ");
+        return new Promise((resolve, reject) => {
+            context.data.clientId = context.loggedInUser.clientId;
+            var queryFilter = criteriaQueryBuilder(context.data);
+            queryFilter = populateFilterData(queryFilter)
+            var pageSize = Number(context.data.pageSize);
+            var pageNo = context.data.pageNo;
+            var sortBy = context.data.sortBy;
+            var skipQues = pageSize * (pageNo - 1);
+
+            query = candidateGroupModel.find(queryFilter).sort(sortBy);
+            query.count(function (err, count) {
+                query.skip(skipQues).limit(pageSize).lean().exec('find', function (err, foundCandidateGroups) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        var response = {
+                            count: count,
+                            foundCandidateGroups: foundCandidateGroups
+                        }
+                        resolve(response);
+                    }
+                });
+            });
+        });
+
+    }
+
     function populateFilterData(queryFilter) {
         var query = {};
 
@@ -297,6 +343,14 @@ module.exports = (function () {
         if (queryFilter.gender && queryFilter.gender.length > 0) {
             query.gender = { $in: queryFilter.gender };
         }
+        if (queryFilter.groupName) {
+            query.groupName = queryFilter.groupName;
+        }
+        
+        if (queryFilter.isActive === true) {
+            query.isActive = queryFilter.isActive;
+        }
+
         return query;
     }
 
@@ -321,7 +375,7 @@ module.exports = (function () {
             query["emailId"] = data.emailId.toLowerCase();
         }
         if (!utils.getUtils().isEmpty(data.contactNo)) {
-            query["contactNo"] = data.contactNo.toLowerCase();
+            query["contactNo"] = data.contactNo;
         }
         if (!utils.getUtils().isEmpty(data.identifier)) {
             query["identifier"] = data.identifier;
@@ -337,7 +391,10 @@ module.exports = (function () {
             query["groupName"] = data.groupName;
         }
 
-        query["isActive"] = true;
+        if (data.isActive === true) {
+            query["isActive"] = data.isActive;
+        }
+
         return query;
     }
 

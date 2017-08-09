@@ -8,6 +8,7 @@ var CandidateGroup = new Schema({
     groupName: String,
     candidateGroupId: Number,
     clientId: Number,
+    isActive: Boolean,
     creationDate: Date,
     createdBy: String,
     updateDate: Date,

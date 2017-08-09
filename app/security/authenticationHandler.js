@@ -116,6 +116,7 @@ module.exports = (function () {
           var errCode = utils.getErrorConstants().INVALID_CREDENTIAL;
           errCodes.push(errCode);
           err.errorCodes = errCodes;
+          err.errType = utils.getErrorConstants().LOGIN_VALIDATION_ERROR;
           reject(err);
         }
         if (!user.isActive) {

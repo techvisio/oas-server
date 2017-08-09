@@ -60,7 +60,7 @@ module.exports = (function () {
         return new Promise((resolve, reject) => {
             var encryptedPassword = utils.getUtils().encrypt(context.data.password);
             context.data.password = encryptedPassword;
-            context.data.isActive = true;;
+            context.data.isActive = true;
 
             userDao.createUser(context)
                 .then(function (savedUser) {
