@@ -23,7 +23,8 @@ var Question = new Schema({
         imageURL: String,
         isCorrect: Boolean
     }],
-    category:[]
+    category:[],
+    quesExplaination:String
 
     
 });
