@@ -90,6 +90,21 @@ module.exports = (function () {
             if (masterData.dataName === "subject") {
                 resolve(clientMasterData.subject);
             }
+            if (masterData.dataName === "examduration") {
+                resolve(clientMasterData.examduration);
+            }
+            if (masterData.dataName === "examavailability") {
+                resolve(clientMasterData.examavailability);
+            }
+            if (masterData.dataName === "resulttype") {
+                resolve(clientMasterData.resulttype);
+            }
+            if (masterData.dataName === "orderofquestions") {
+                resolve(clientMasterData.orderofquestions);
+            }
+            if (masterData.dataName === "resultreporttype") {
+                resolve(clientMasterData.resultreporttype);
+            }
 
         });
     }

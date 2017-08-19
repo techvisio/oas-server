@@ -14,6 +14,7 @@ module.exports = {
     MODEL_CANDIDATE: "MODELCANDIDATE",
     MODEL_CANDIDATE_GROUP: "MODELCANDIDATEGROUP",
     MODEL_CLIENT_IMAGE:"CLIENTIMAGE",
+    MODEL_CANDIDATE_EXAM: "MODELCANDIDATEEXAM",
     //constants for Services
     SERVICE_USER: "USERSERVICE",
     SERVICE_CLIENT: "CLIENTSERVICE",
@@ -24,6 +25,7 @@ module.exports = {
     SERVICE_CANDIDATE: "CANDIDATESERVICE",
     SERVICE_MASTERDATA: "MASTERDATASERVICE",
     SERVICE_UTIL:"UTILSERVICE",
+    SERVICE_CANDIDATE_EXAM: "CANDIDATEEXAMSERVICE",
     //constant for dao
     DAO_CLIENT: "CLIENTDAO",
     DAO_USER: "USERDAO",
@@ -31,6 +33,7 @@ module.exports = {
     DAO_QUESTIONNAIRE: "QUESTIONNAIREDAO",
     DAO_MASTERDATA: "MASTERDATADAO",
     DAO_CANDIDATE: "CANDIDATEDAO",
+    DAO_CANDIDATE_EXAM: "CANDIDATEEXAMDAO",
     DAO_UTIL:"UTILDAO",
     //constants for mappings
     MAPPING_USER: "USER",
@@ -48,5 +51,6 @@ module.exports = {
 
     //constants for questionnaire status
     DRAFT: "Draft",
-    FINALISED: "Finalised"
+    FINALISED: "Finalised",
+    INACTIVE: "Inactive"
 }
