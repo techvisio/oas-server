@@ -6,6 +6,7 @@ var publicRouteHandler = require('./publicRouter');
 var masterDataRouteHandler = require('./masterDataRouter');
 var questionnaireRouteHandler = require('./questionnaireRouter');
 var candidateRouteHandler = require('./candidateRouter');
+var examRouteHandler = require('./examRouter');
 var router = express.Router();
 
 var logger = utils.getLogger();
@@ -58,6 +59,7 @@ router.use('/admin', adminRouteHandler);
 router.use('/admin', masterDataRouteHandler);
 router.use('/admin', questionnaireRouteHandler);
 router.use('/admin', candidateRouteHandler);
+router.use('/admin', examRouteHandler);
 
 router.use(errorHandler);
 

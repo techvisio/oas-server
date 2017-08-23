@@ -15,7 +15,7 @@ module.exports = (function () {
         if (!isInitialised) {
             modelFactory = require('../models/modelFactory');
             utils = require('../utils/utilFactory');
-            candidateModel = modelFactory.getModel(utils.getConstants().MODEL_CANDIDATE_EXAM);
+            candidateExamModel = modelFactory.getModel(utils.getConstants().MODEL_CANDIDATE_EXAM);
             logger = utils.getLogger();
             isInitialised = true;
         }
@@ -56,7 +56,7 @@ module.exports = (function () {
                 }
                 else {
                     resolve(savedExam.toObject());
-                    logger.debug(context.reqId + " : sending response from createCandidateExam: " + savedQuestion.toObject());
+                    logger.debug(context.reqId + " : sending response from createCandidateExam: " + savedExam.toObject());
                 }
             })
         });
@@ -79,7 +79,7 @@ module.exports = (function () {
                 var exam = context.data;
                 exam.updateDate = new Date();
                 exam.updatedBy = context.loggedInUser.userName;
-                exam.update({ _id: exam._id }, exam, function (err, updatedExam) {
+                candidateExamModel.update({ _id: exam._id }, exam, function (err, updatedExam) {
                     if (err) {
                         reject(err);
                     }

@@ -56,5 +56,17 @@ router.put('/client/:clientid/exam', function (req, res, next) {
     })
 });
 
+router.post('/client/:clientid/quickaddcandidate', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+
+    candidateExamService.quickAddCandidate(context).then(function (candidates) {
+        var responseBody = utils.getUtils().buildSuccessResponse(candidates);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+});
+
 
 module.exports = router;

@@ -3,14 +3,15 @@ var daoFactory;
 var candidateExamDao;
 var logger;
 var isInitialised = false;
-
+var candidateService;
 
 module.exports = (function () {
     return {
         createCandidateExam: createCandidateExam,
         getCandidateExams: getCandidateExams,
         updateCandidateExam: updateCandidateExam,
-        getExamById: getExamById
+        getExamById: getExamById,
+        quickAddCandidate: quickAddCandidate
     }
 
     function init() {
@@ -20,6 +21,7 @@ module.exports = (function () {
             daoFactory = require('../data_access/daoFactory');
             candidateExamDao = daoFactory.getDataAccessObject(utils.getConstants().DAO_CANDIDATE_EXAM);
             logger = utils.getLogger();
+            candidateService = require('./candidateService');
             isInitialised = true;
         }
     }
@@ -65,6 +67,37 @@ module.exports = (function () {
         });
     }
 
+    function quickAddCandidate(context) {
+        init();
+        logger.debug(context.reqId + " : quickAddCandidate request recieved : " + context.data);
+        var candidateContext;
+        var candidate;
+        var candidateList = context.data;
+        var savedCandidates = [];
+        for (var i = 0; i < candidateList.length; i++) {
+            savedCandidates.push(
+                new Promise((resolve, reject) => {
+                    candidate = candidateList[i];
+                    candidateContext = utils.getUtils().cloneContext(context, candidate);
+                    candidateService.createCandidate(candidateContext)
+                        .then(function (savedExam) {
+                            resolve(savedExam);
+                            logger.debug(context.reqId + " : sending response from quickAddCandidate: " + savedExam);
+                        })
+                        .catch(err => reject(err));
+                })
+            )
+        }
+
+        var resolvedCandidates = new Promise((resolve, reject) => {
+            Promise.all(savedCandidates).then(values => {
+                resolve(values);
+            });
+        });
+
+        return resolvedCandidates;
+
+    }
 
     function getExamById(examId, clientId) {
         init();
