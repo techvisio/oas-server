@@ -18,6 +18,7 @@ var Question = new Schema({
     updateDate: Date,
     updatedBy: String,
     questionView: String,
+    marks: Number,
     answer:[{
         description:String,
         imageURL: String,
