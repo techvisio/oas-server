@@ -182,6 +182,17 @@ router.post('/client/:clientid/question/new', function (req, res, next) {
     })
 });
 
+router.put('/client/:clientid/question', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    questionService.updateQuestion(context).then(function (question) {
+        var responseBody = utils.getUtils().buildSuccessResponse(question);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+});
+
 /**
  * @api {put} /api/admin/client/:clientid/qnr/:id/question with this api user can update an existing question for a particular questionnaire.
  * @apiName updateQuestion
@@ -447,17 +458,17 @@ router.get('/client/:clientid/qnr/:qnrId', function (req, res, next) {
 });
 
 router.get('/client/:clientid/question/:quesId', function (req, res, next) {
-    
-        var clientId = req.session.user.clientId;
-        var questionId = req.params.quesId;
-        var context = utils.getUtils().getContext(req);
-        questionService.getQuestionById(questionId, clientId).then(function (question) {
-            var responseBody = utils.getUtils().buildSuccessResponse(question);
-            res.status(200).json(responseBody);
-        }, function (err) {
-            next(err);
-        })
-    });
+
+    var clientId = req.session.user.clientId;
+    var questionId = req.params.quesId;
+    var context = utils.getUtils().getContext(req);
+    questionService.getQuestionById(questionId, clientId).then(function (question) {
+        var responseBody = utils.getUtils().buildSuccessResponse(question);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+});
 
 router.delete('/client/:clientid/qnr/:qnrId/question/:quesId', function (req, res, next) {
 
