@@ -78,6 +78,7 @@ module.exports = (function () {
             savedCandidates.push(
                 new Promise((resolve, reject) => {
                     candidate = candidateList[i];
+                    candidate.clientId = context.loggedInUser.clientId;
                     candidateContext = utils.getUtils().cloneContext(context, candidate);
                     candidateService.createCandidate(candidateContext)
                         .then(function (savedExam) {

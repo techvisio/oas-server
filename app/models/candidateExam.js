@@ -20,7 +20,8 @@ var CandidateExam = new Schema({
     mailToCandidate: Boolean,
     documentMailToExamTaker: String,
     documentMailToCandidate: String,
-    candidates: []
+    candidates: [],
+    questions:[]
 
 });
 
