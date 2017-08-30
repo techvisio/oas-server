@@ -28,7 +28,7 @@ MasterData.pre('save', function (next) {
             counterModel.create({ _id: 'masterData', seq: 2 });
             counter = { seq: 1 };
         }
-
+        doc.dataName = doc.dataName.toLowerCase();
         doc.masterDataId = counter.seq;
         next();
     });

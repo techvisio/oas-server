@@ -105,6 +105,12 @@ module.exports = (function () {
             if (masterData.dataName === "resultreporttype") {
                 resolve(clientMasterData.resultreporttype);
             }
+            if (masterData.dataName === "scoring") {
+                resolve(clientMasterData.scoring);
+            }
+            if (masterData.dataName === "minimumpassingscore") {
+                resolve(clientMasterData.minimumpassingscore);
+            }
 
         });
     }

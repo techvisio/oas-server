@@ -20,6 +20,8 @@ var CandidateExam = new Schema({
     mailToCandidate: Boolean,
     documentMailToExamTaker: String,
     documentMailToCandidate: String,
+    scoring: String,
+    minimumPassingScore:String,
     candidates: [],
     questions:[]
 
