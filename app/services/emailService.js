@@ -14,8 +14,8 @@ module.exports = (function () {
     return {
         sendMail: sendMail,
         sendVerificationMail: sendVerificationMail,
-        sendResetPasswordMail: sendResetPasswordMail
-//        sendCandidateUserMail: sendCandidateUserMail
+        sendResetPasswordMail: sendResetPasswordMail,
+        sendCandidateUserMail: sendCandidateUserMail
     }
 
     function init() {
@@ -122,7 +122,7 @@ module.exports = (function () {
         init();
         var subject = utils.getTemplate().getProperty('resetPasswordMailTemplate')['subject'];
         var bodyTemplate = utils.getTemplate().getProperty('resetPasswordMailTemplate')['body']
-               
+
         var emailContent = jst.render(bodyTemplate, user);
 
         var mailContent = {
@@ -134,11 +134,11 @@ module.exports = (function () {
         return Promise.resolve(user);
     }
 
-    /*function sendCandidateUserMail(user) {
+    function sendCandidateUserMail(user) {
         init();
         var subject = utils.getTemplate().getProperty('candidateUserMailTemplate')['subject'];
         var bodyTemplate = utils.getTemplate().getProperty('candidateUserMailTemplate')['body']
-               
+
         var emailContent = jst.render(bodyTemplate, user);
 
         var mailContent = {
@@ -149,7 +149,7 @@ module.exports = (function () {
         sendMail(mailContent);
         return Promise.resolve(user);
     }
-    */
+
 }());
 
 

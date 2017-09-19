@@ -22,7 +22,6 @@ module.exports = (function () {
         }
     }
 
-
     function getAllMasterData(masterData) {
         init();
         logger.debug("getAllMasterData request recieved ");
@@ -45,7 +44,7 @@ module.exports = (function () {
         logger.debug(context.reqId + " : createMasterData request recieved ");
         return new Promise((resolve, reject) => {
             var masterData = context.data;
-            masterData.masterData=[];
+            masterData.masterData = [];
             masterData.masterData.push(context.data.data);
             masterData.clientId = context.loggedInUser.clientId;
             masterData.creationDate = new Date();
@@ -125,7 +124,7 @@ module.exports = (function () {
                             resolve(foundMasterData[0]);
                             logger.debug("sending response from getMasterDataById: " + foundMasterData[0]);
                         }
-                        else{
+                        else {
                             resolve({});
                         }
                     })

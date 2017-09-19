@@ -13,7 +13,7 @@ module.exports = {
     MODEL_SEQUENCE: "MODELSEQUENCE",
     MODEL_CANDIDATE: "MODELCANDIDATE",
     MODEL_CANDIDATE_GROUP: "MODELCANDIDATEGROUP",
-    MODEL_CLIENT_IMAGE:"CLIENTIMAGE",
+    MODEL_CLIENT_IMAGE: "CLIENTIMAGE",
     MODEL_CANDIDATE_EXAM: "MODELCANDIDATEEXAM",
     //constants for Services
     SERVICE_USER: "USERSERVICE",
@@ -24,7 +24,7 @@ module.exports = {
     SERVICE_QUESTION: "QUESTIONSERVICE",
     SERVICE_CANDIDATE: "CANDIDATESERVICE",
     SERVICE_MASTERDATA: "MASTERDATASERVICE",
-    SERVICE_UTIL:"UTILSERVICE",
+    SERVICE_UTIL: "UTILSERVICE",
     SERVICE_CANDIDATE_EXAM: "CANDIDATEEXAMSERVICE",
     //constant for dao
     DAO_CLIENT: "CLIENTDAO",
@@ -34,7 +34,7 @@ module.exports = {
     DAO_MASTERDATA: "MASTERDATADAO",
     DAO_CANDIDATE: "CANDIDATEDAO",
     DAO_CANDIDATE_EXAM: "CANDIDATEEXAMDAO",
-    DAO_UTIL:"UTILDAO",
+    DAO_UTIL: "UTILDAO",
     //constants for mappings
     MAPPING_USER: "USER",
 
@@ -52,5 +52,18 @@ module.exports = {
     //constants for questionnaire status
     DRAFT: "Draft",
     FINALISED: "Finalised",
-    INACTIVE: "Inactive"
+    INACTIVE: "Inactive",
+
+    // master data constants
+
+    SECTION: "section",
+    CATEGORY: "category",
+    SUBJECT: "subject",
+    EXAM_DURATION: "exam duration",
+    EXAM_AVAILABILITY: "exam availability",
+    RESULT_TYPE: "result type",
+    ORDER_OF_QUES: "order of questions",
+    RESULT_REPORT_TYPE: "result report type",
+    SCORING: "scoring",
+    MINIMUM_PASSING_SCORE: "minimum_passing_score"
 }

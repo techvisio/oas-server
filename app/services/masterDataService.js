@@ -11,7 +11,8 @@ module.exports = (function () {
         getAllMasterData: getAllMasterData,
         createMasterData: createMasterData,
         updateMasterData: updateMasterData,
-        getMasterDataByClientIdAndType: getMasterDataByClientIdAndType
+        getMasterDataByClientIdAndType: getMasterDataByClientIdAndType,
+        getMasterDataNames: getMasterDataNames
     }
 
     function init() {
@@ -108,11 +109,40 @@ module.exports = (function () {
             if (masterData.dataName === "scoring") {
                 resolve(clientMasterData.scoring);
             }
-            if (masterData.dataName === "minimumpassingscore") {
+            if (masterData.dataName === "minimum_passing_score") {
                 resolve(clientMasterData.minimumpassingscore);
             }
 
         });
+    }
+
+    function getMasterDataNames() {
+        init();
+        return new Promise((resolve, reject) => {
+            try{
+            var masterDataNames = "Section, Category, Subject, Scoring, Exam Availability, Exam Duration, Order of Questions, Result Type, Documents to Mail";
+            masterDataNames = masterDataNames.split(',');
+            resolve(masterDataNames);
+            }
+            catch(e){
+                reject(e);
+            }
+        });
+        
+    }
+
+    function saveListOfMasterData(context) {
+
+        context.data.data.forEach(function (data) {
+            var masterData = {
+                dataName: context.dataName,
+                data: data,
+                clientId: context.loggedInUser.clientId
+            }
+            var masterDataContext = utils.getUtils().cloneContext(context, masterData);
+            updatedMasterData(masterDataContext);
+        });
+
     }
 
 

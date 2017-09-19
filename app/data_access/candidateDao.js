@@ -326,27 +326,29 @@ module.exports = (function () {
         var query = {};
 
         if (queryFilter.firstName) {
-            query.firstName = { "$regex": queryFilter.firstName.toLowerCase(), "$options": "i" };
+            query.firstName = { "$regex": queryFilter.firstName.toLowerCase().trim(), "$options": "i" };
         }
         if (queryFilter.lastName) {
-            query.lastName = { "$regex": queryFilter.lastName.toLowerCase(), "$options": "i" };
+            query.lastName = { "$regex": queryFilter.lastName.toLowerCase().trim(), "$options": "i" };
         }
         if (queryFilter.contactNo) {
             query.contactNo = queryFilter.contactNo;
         }
+        
         if (queryFilter.emailId) {
-            query.emailId = queryFilter.emailId.toLowerCase();
+            query.emailId = { "$regex": queryFilter.emailId.toLowerCase().trim(), "$options": "i" };
         }
         if (queryFilter.identifier) {
-            query.identifier = queryFilter.identifier;
+            query.identifier = { "$regex": queryFilter.identifier.toLowerCase().trim(), "$options": "i" };
         }
         if (queryFilter.gender && queryFilter.gender.length > 0) {
             query.gender = { $in: queryFilter.gender };
         }
+
         if (queryFilter.groupName) {
-            query.groupName = queryFilter.groupName;
+            query.groupName = { "$regex": queryFilter.groupName.toLowerCase().trim(), "$options": "i" };
         }
-        
+                
         if (queryFilter.isActive === true) {
             query.isActive = queryFilter.isActive;
         }
@@ -358,6 +360,10 @@ module.exports = (function () {
     function criteriaQueryBuilder(data) {
 
         var query = {};
+
+        if (!utils.getUtils().isEmpty(data._id)) {
+            query["_id"] = data._id;
+        }
 
         if (!utils.getUtils().isEmpty(data.candidateId)) {
             query["candidateId"] = data.candidateId;

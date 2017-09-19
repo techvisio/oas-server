@@ -41,5 +41,14 @@ router.put('/client/:clientId/masterdata/:dataName', function (req, res, next) {
 
 });
 
+router.get('/client/:clientId/masterdata/all/masterdataname', function (req, res, next) {
+
+    masterDataService.getMasterDataNames().then(function (data) {
+        var responseBody = utils.getUtils().buildSuccessResponse(data);
+        res.status(200).send(responseBody);
+    }, function (err) {
+        next(err);
+    })
+});
 
 module.exports = router;

@@ -61,6 +61,7 @@ module.exports = (function () {
         var candidate;
         return new Promise((resolve, reject) => {
             creatingCandidate()
+                .then(updateGroup)
                 .then(creatingUser)
                 .then(savedCandidate => resolve(savedCandidate))
                 .catch(err => reject(err))
@@ -75,6 +76,13 @@ module.exports = (function () {
                         logger.debug(context.reqId + " : sending response from createCandidate: " + savedCandidate);
                     })
                     .catch(err => reject(err));
+            });
+        }
+
+        function updateGroup(savedCandidate) {
+
+            savedCandidate.candidateGroups.forEach(function (grp) {
+                getAndUpdateGroup(grp, context, savedCandidate)
             });
         }
 
@@ -123,13 +131,37 @@ module.exports = (function () {
         logger.debug(context.reqId + " : updateCandidate request recieved for candidate : " + context.data);
 
         return new Promise((resolve, reject) => {
-            candidateDao.updateCandidate(context)
-                .then(function (updatedCandidate) {
-                    resolve(updatedCandidate);
-                    logger.debug(context.reqId + " : sending response from updateCandidate: " + updatedCandidate);
-                })
-                .catch(err => reject(err));
+            updatingCandidate()
+                .then(updatingUser)
+                .then(updatedCandidate => resolve(updatedCandidate))
+                .catch(err => reject(err))
         });
+
+        function updatingCandidate() {
+            return new Promise((resolve, reject) => {
+                candidateDao.updateCandidate(context)
+                    .then(function (updatedCandidate) {
+                        resolve(updatedCandidate);
+                        logger.debug(context.reqId + " : sending response from updateCandidate: " + updatedCandidate);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
+
+        function updatingUser(updatedCandidate) {
+            var user = {
+                userName: updatedCandidate.emailId,
+                emailId: updatedCandidate.emailId,
+                fullName: updatedCandidate.firstName + ' ' + savedCandidate.lastName,
+                mobileNo: updatedCandidate.contactNo
+            }
+            var userContext = utils.getUtils().cloneContext(context, user);
+            return new Promise((resolve, reject) => {
+                userService.updateUser(userContext)
+                    .then(updatedUser => resolve(updatedCandidate))
+                    .catch(err => reject(err))
+            });
+        }
 
     }
 
@@ -232,15 +264,33 @@ module.exports = (function () {
     function createCandidateGroup(context) {
         init();
         logger.debug(context.reqId + " : createCandidateGroup request recieved for new user : " + context.data);
-        context.data.isActive = true;
+
         return new Promise((resolve, reject) => {
-            candidateDao.createCandidateGroup(context)
-                .then(function (savedCandidateGroup) {
-                    resolve(savedCandidateGroup);
-                    logger.debug(context.reqId + " : sending response from createCandidateGroup: " + savedCandidateGroup);
-                })
-                .catch(err => reject(err));
+            creatingGroup()
+                .then(updateCandidate)
+                .then(savedCandidateGroup => resolve(savedCandidateGroup))
+                .catch(err => reject(err))
         });
+
+        function creatingGroup() {
+            context.data.isActive = true;
+            return new Promise((resolve, reject) => {
+                candidateDao.createCandidateGroup(context)
+                    .then(function (savedCandidateGroup) {
+                        resolve(savedCandidateGroup);
+                        logger.debug(context.reqId + " : sending response from createCandidateGroup: " + savedCandidateGroup);
+                    })
+                    .catch(err => reject(err));
+            });
+
+        }
+
+        function updateCandidate(savedCandidateGroup) {
+
+            savedCandidateGroup.candidates.forEach(function (candidate) {
+                getAndUpdateCandidate(candidate, context, savedCandidateGroup)
+            });
+        }
 
     }
 
@@ -297,6 +347,78 @@ module.exports = (function () {
                 })
                 .catch(err => reject(err));
         });
+    }
+
+    function getAndUpdateGroup(groupId, context, savedCandidate) {
+        init();
+        return new Promise((resolve, reject) => {
+            getGroups()
+                .then(updateGroup)
+                .then(savedCandidate => resolve(savedCandidate))
+                .catch(err => reject(err))
+        });
+
+        function getGroups() {
+            init();
+            return new Promise((resolve, reject) => {
+                var queryData = {};
+                queryData._id = groupId;
+                queryData.clientId = context.loggedInUser.clientId;
+                candidateDao.getCandidateGroups(queryData).then(function (candidateGroup) {
+                    resolve(candidateGroup);
+                })
+                    .catch(err => reject(err));
+            });
+        }
+
+        function updateGroup(candidateGroup) {
+
+            candidateGroup[0].candidates.push(savedCandidate._id);
+            var groupContext = utils.getUtils().cloneContext(context, candidateGroup[0]);
+            return new Promise((resolve, reject) => {
+                candidateDao.updateCandidateGroup(groupContext)
+                    .then(function (updatedGroup) {
+                        resolve(savedCandidate);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
+    }
+
+    function getAndUpdateCandidate(candidateId, context, savedGroup) {
+        init();
+        return new Promise((resolve, reject) => {
+            getcandidates()
+                .then(updateCandidate)
+                .then(savedGroup => resolve(savedGroup))
+                .catch(err => reject(err))
+        });
+
+        function getcandidates() {
+            init();
+            return new Promise((resolve, reject) => {
+                var queryData = {};
+                queryData._id = candidateId;
+                queryData.clientId = context.loggedInUser.clientId;
+                candidateDao.getCandidates(queryData).then(function (candidates) {
+                    resolve(candidates);
+                })
+                    .catch(err => reject(err));
+            });
+        }
+
+        function updateCandidate(candidates) {
+
+            candidates[0].candidateGroups.push(savedGroup._id);
+            var candidateContext = utils.getUtils().cloneContext(context, candidates[0]);
+            return new Promise((resolve, reject) => {
+                candidateDao.updateCandidate(candidateContext)
+                    .then(function (updatedCandidate) {
+                        resolve(savedGroup);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
     }
 
 }());

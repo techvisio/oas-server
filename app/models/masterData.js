@@ -9,7 +9,7 @@ var MasterData = new Schema({
     clientId: Number,
     dataName: String,
     data: [{
-        key: String,
+       
         value: String
     }],
     creationDate: Date,
