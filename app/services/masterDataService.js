@@ -12,7 +12,9 @@ module.exports = (function () {
         createMasterData: createMasterData,
         updateMasterData: updateMasterData,
         getMasterDataByClientIdAndType: getMasterDataByClientIdAndType,
-        getMasterDataNames: getMasterDataNames
+        getMasterDataNames: getMasterDataNames,
+        createAllMasterDataInit: createAllMasterDataInit,
+        saveMultipleDataInMasterData: saveMultipleDataInMasterData
     }
 
     function init() {
@@ -82,36 +84,33 @@ module.exports = (function () {
         }
         return new Promise((resolve, reject) => {
             var clientMasterData = cacheService.getMasterData(masterData.clientId);
-            if (masterData.dataName === "section") {
-                resolve(clientMasterData.section);
+
+            switch (masterData.dataName.toLowerCase()) {
+                case utils.getConstants().SECTION.toLowerCase():
+                    resolve(clientMasterData.section);
+                case utils.getConstants().CATEGORY.toLowerCase():
+                    resolve(clientMasterData.category);
+                case utils.getConstants().SUBJECT.toLowerCase():
+                    resolve(clientMasterData.subject);
+                case utils.getConstants().EXAM_DURATION.toLowerCase():
+                    resolve(clientMasterData.exam_duration);
+                case utils.getConstants().EXAM_AVAILABILITY.toLowerCase():
+                    resolve(clientMasterData.exam_availability);
+                case utils.getConstants().RESULT_TYPE.toLowerCase():
+                    resolve(clientMasterData.result_type);
+                case utils.getConstants().ORDER_OF_QUES.toLowerCase():
+                    resolve(clientMasterData.order_of_ques);
+                case utils.getConstants().RESULT_REPORT_TYPE.toLowerCase():
+                    resolve(clientMasterData.result_report_type);
+                case utils.getConstants().SCORING.toLowerCase():
+                    resolve(clientMasterData.scoring);
+                case utils.getConstants().MINIMUM_PASSING_SCORE.toLowerCase():
+                    resolve(clientMasterData.minimum_passing_score);
+                default:
+                    resolve(null);
+
             }
-            if (masterData.dataName === "category") {
-                resolve(clientMasterData.category);
-            }
-            if (masterData.dataName === "subject") {
-                resolve(clientMasterData.subject);
-            }
-            if (masterData.dataName === "examduration") {
-                resolve(clientMasterData.examduration);
-            }
-            if (masterData.dataName === "examavailability") {
-                resolve(clientMasterData.examavailability);
-            }
-            if (masterData.dataName === "resulttype") {
-                resolve(clientMasterData.resulttype);
-            }
-            if (masterData.dataName === "orderofquestions") {
-                resolve(clientMasterData.orderofquestions);
-            }
-            if (masterData.dataName === "resultreporttype") {
-                resolve(clientMasterData.resultreporttype);
-            }
-            if (masterData.dataName === "scoring") {
-                resolve(clientMasterData.scoring);
-            }
-            if (masterData.dataName === "minimum_passing_score") {
-                resolve(clientMasterData.minimumpassingscore);
-            }
+
 
         });
     }
@@ -119,31 +118,104 @@ module.exports = (function () {
     function getMasterDataNames() {
         init();
         return new Promise((resolve, reject) => {
-            try{
-            var masterDataNames = "Section, Category, Subject, Scoring, Exam Availability, Exam Duration, Order of Questions, Result Type, Documents to Mail";
-            masterDataNames = masterDataNames.split(',');
-            resolve(masterDataNames);
+            try {
+                var masterDataNames = utils.getUtils().getMasterDataNames();
+                resolve(masterDataNames);
             }
-            catch(e){
+            catch (e) {
                 reject(e);
             }
         });
-        
+
     }
 
-    function saveListOfMasterData(context) {
+    function saveMultipleDataInMasterData(context) {
+        init();
 
-        context.data.data.forEach(function (data) {
-            var masterData = {
-                dataName: context.dataName,
-                data: data,
-                clientId: context.loggedInUser.clientId
-            }
-            var masterDataContext = utils.getUtils().cloneContext(context, masterData);
-            updatedMasterData(masterDataContext);
+        return new Promise((resolve, reject) => {
+            updatingMasterData()
+                .then(getMasterData)
+                .then(updtedmasterData => resolve(updtedmasterData))
+                .catch(err => reject(err))
         });
 
+
+        function updatingMasterData() {
+
+            return new Promise((resolve, reject) => {
+                var masterData = {
+                    dataName: context.data.dataName,
+                    data: context.data.data
+                }
+                var masterDataContext = utils.getUtils().cloneContext(context, masterData);
+
+                masterDataDao.updateMasterData(masterDataContext)
+                    .then(function (updtdmstrData) {
+                        resolve(updtdmstrData);
+                    })
+                    .catch(err => reject(err));
+            });
+
+
+        }
+
+        function getMasterData(updtdmstrData) {
+
+            var masterData = {
+                dataName: updtdmstrData.dataName,
+                clientId: context.loggedInUser.clientId
+            }
+            return new Promise((resolve, reject) => {
+                masterDataDao.getMasterDataByClientIdAndType(masterData)
+                    .then(function (masterData) {
+                        cacheService.populdateMasterData(masterData.clientId);
+                        resolve(masterData);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
     }
 
+
+    function createAllMasterDataInit(context, clientId) {
+
+        init();
+
+        var savedMasterDataCollection = [];
+        var masterDataNames = utils.getUtils().getMasterDataNames();
+
+        for (var i = 0; i < masterDataNames.length; i++) {
+            savedMasterDataCollection.push(
+                new Promise((resolve, reject) => {
+
+                    var dataValue = utils.getUtils().createInitialMasterData(masterDataNames[i].key.toLowerCase());
+                    var masterData = {
+                        dataName: masterDataNames[i].key,
+                        dataValue: {
+                            value: dataValue
+                        },
+                        clientId: clientId
+                    }
+
+                    var masterDataContext = utils.getUtils().cloneContext(context, masterData);
+
+                    masterDataDao.createMasterData(masterDataContext)
+                        .then(function (savedmstrData) {
+                            resolve(savedmstrData);
+                            logger.debug(context.reqId + " : sending response from createAllMasterDataInit: " + savedmstrData);
+                        })
+                        .catch(err => reject(err));
+                })
+            )
+        }
+
+        var resolvedMasterDataCollection = new Promise((resolve, reject) => {
+            Promise.all(savedMasterDataCollection).then(values => {
+                resolve(values);
+            });
+        });
+
+        return resolvedMasterDataCollection;
+    }
 
 }());

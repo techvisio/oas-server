@@ -8,10 +8,13 @@ var MasterData = new Schema({
 
     clientId: Number,
     dataName: String,
+    
     data: [{
-       
-        value: String
+        value: String,
+        isActive: Boolean,
+        logicalValue: String,
     }],
+    isEditable: Boolean,
     creationDate: Date,
     createdBy: String,
     updateDate: Date,

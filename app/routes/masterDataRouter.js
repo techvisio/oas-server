@@ -29,7 +29,7 @@ router.post('/client/:clientId/masterdata', function (req, res, next) {
 
 });
 
-router.put('/client/:clientId/masterdata/:dataName', function (req, res, next) {
+router.put('/client/:clientId/masterdata', function (req, res, next) {
 
     var context = utils.getUtils().getContext(req);
     masterDataService.updateMasterData(context).then(function (updatedMasterData) {
@@ -49,6 +49,18 @@ router.get('/client/:clientId/masterdata/all/masterdataname', function (req, res
     }, function (err) {
         next(err);
     })
+});
+
+router.put('/client/:clientId/masterdata/multi/masterdata', function (req, res, next) {
+
+    var context = utils.getUtils().getContext(req);
+    masterDataService.saveMultipleDataInMasterData(context).then(function (updatedMasterData) {
+        var responseBody = utils.getUtils().buildSuccessResponse(updatedMasterData);
+        res.status(200).send(responseBody);
+    }, function (err) {
+        next(err);
+    })
+
 });
 
 module.exports = router;

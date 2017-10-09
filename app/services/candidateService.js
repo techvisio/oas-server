@@ -6,7 +6,7 @@ var logger;
 var passwordGenerator;
 var emailService;
 var isInitialised = false;
-
+var validationService;
 
 module.exports = (function () {
     return {
@@ -21,7 +21,8 @@ module.exports = (function () {
         getCandidateGroupById: getCandidateGroupById,
         getFiltteredCandidates: getFiltteredCandidates,
         getFiltteredCandidateGroups: getFiltteredCandidateGroups,
-        deleteCandidateGroup: deleteCandidateGroup
+        deleteCandidateGroup: deleteCandidateGroup,
+        getCandidateByEmailId :getCandidateByEmailId
     }
 
     function init() {
@@ -32,6 +33,7 @@ module.exports = (function () {
             emailService = require('./emailService');
             candidateDao = daoFactory.getDataAccessObject(utils.getConstants().DAO_CANDIDATE);
             logger = utils.getLogger();
+            validationService = require('../validations/validationProcessor');
             passwordGenerator = require('generate-password');
             isInitialised = true;
         }
@@ -60,7 +62,8 @@ module.exports = (function () {
         logger.debug(context.reqId + " : createCandidate request recieved for new candidate : " + context.data);
         var candidate;
         return new Promise((resolve, reject) => {
-            creatingCandidate()
+            validationService.validate(utils.getConstants().CANDIDATE_VALIDATION, utils.getConstants().SAVE_CANDIDATE, context.data)
+            .then(creatingCandidate)
                 .then(updateGroup)
                 .then(creatingUser)
                 .then(savedCandidate => resolve(savedCandidate))
@@ -152,7 +155,7 @@ module.exports = (function () {
             var user = {
                 userName: updatedCandidate.emailId,
                 emailId: updatedCandidate.emailId,
-                fullName: updatedCandidate.firstName + ' ' + savedCandidate.lastName,
+                fullName: updatedCandidate.firstName + ' ' + updatedCandidate.lastName,
                 mobileNo: updatedCandidate.contactNo
             }
             var userContext = utils.getUtils().cloneContext(context, user);
@@ -419,6 +422,29 @@ module.exports = (function () {
                     .catch(err => reject(err));
             });
         }
+    }
+
+
+    function getCandidateByEmailId(emailId) {
+        init();
+        logger.debug("getCandidateByEmailId request recieved");
+        return new Promise((resolve, reject) => {
+            if (!utils.getUtils().isEmpty(emailId)) {
+                var candidate = {
+                    emailId: emailId
+                };
+                candidateDao.getCandidates(candidate)
+                    .then(function (foundCandidates) {
+                        resolve(foundCandidates[0]);
+                        logger.debug("sending response from getCandidateByEmailId: " + foundCandidates[0]);
+                    })
+                    .catch(err => reject(err));
+            }
+            else {
+                resolve(undefined);
+            }
+        });
+
     }
 
 }());

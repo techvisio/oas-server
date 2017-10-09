@@ -42,13 +42,14 @@ module.exports = {
     CLIENT_VALIDATION: "CLIENT_VALIDATION",
     USER_VALIDATION: "USER_VALIDATION",
     QUESTIONNAIRE_VALIDATION: "QUESTIONNAIRE_VALIDATION",
-
+    CANDIDATE_VALIDATION: "CANDIDATE_VALIDATION",
     //constants for operations
     SIGN_UP: "SIGN_UP",
     LOGIN: "LOGIN",
     SAVE_QUESTIONNAIRE: "SAVE_QUESTIONNAIRE",
     SAVE_QUESTION: "SAVE_QUESTION",
-
+    SAVE_CANDIDATE: "SAVE_CANDIDATE",
+    UPDATE_CANDIDATE: "UPDATE_CANDIDATE",
     //constants for questionnaire status
     DRAFT: "Draft",
     FINALISED: "Finalised",
@@ -56,14 +57,14 @@ module.exports = {
 
     // master data constants
 
-    SECTION: "section",
-    CATEGORY: "category",
-    SUBJECT: "subject",
-    EXAM_DURATION: "exam duration",
-    EXAM_AVAILABILITY: "exam availability",
-    RESULT_TYPE: "result type",
-    ORDER_OF_QUES: "order of questions",
-    RESULT_REPORT_TYPE: "result report type",
-    SCORING: "scoring",
-    MINIMUM_PASSING_SCORE: "minimum_passing_score"
+    SECTION: "SECTION",
+    CATEGORY: "CATEGORY",
+    SUBJECT: "SUBJECT",
+    EXAM_DURATION: "EXAM_DURATION",
+    EXAM_AVAILABILITY: "EXAM_AVAILABILITY",
+    RESULT_TYPE: "RESULT_TYPE",
+    ORDER_OF_QUES: "ORDER_OF_QUES",
+    RESULT_REPORT_TYPE: "RESULT_REPORT_TYPE",
+    SCORING: "SCORING",
+    MINIMUM_PASSING_SCORE: "MINIMUM_PASSING_SCORE"
 }

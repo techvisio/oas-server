@@ -18,7 +18,9 @@ module.exports = (function () {
         buildSystemFailedResponse: buildSystemFailedResponse,
         cloneContext: cloneContext,
         getServerUrl: getServerUrl,
-        getDataFromCookie: getDataFromCookie
+        getDataFromCookie: getDataFromCookie,
+        getMasterDataNames: getMasterDataNames,
+        createInitialMasterData: createInitialMasterData
     };
 
     function init() {
@@ -150,4 +152,79 @@ module.exports = (function () {
         }
         return "";
     }
+
+    function getMasterDataNames() {
+
+        var masterDataNames = [
+            {
+                key: "SUBJECT",
+                value: "Subject"
+            },
+            {
+                key: "Category",
+                value: "Category"
+            },
+            {
+                key: "SECTION",
+                value: "Section"
+            },
+            {
+                key: "EXAM_DURATION",
+                value: "Exam Duration"
+            },
+            {
+                key: "EXAM_AVAILABILITY",
+                value: "Exam Availability"
+            },
+            {
+                key: "RESULT_TYPE",
+                value: "Result Type"
+            },
+            {
+                key: "ORDER_OF_QUES",
+                value: "Order of Questions"
+            },
+            {
+                key: "RESULT_REPORT_TYPE",
+                value: "Result Report Type"
+            },
+            {
+                key: "SCORING",
+                value: "Scoring"
+            },
+            {
+                key: "MINIMUM_PASSING_SCORE",
+                value: "Minimun Passing Score"
+            },
+        ];
+
+        return masterDataNames;
+    }
+
+    function createInitialMasterData(dataName){
+        switch (dataName) {
+            case utils.getConstants().SECTION.toLowerCase():
+            return "Reasoning";
+            case utils.getConstants().CATEGORY.toLowerCase():
+            return "Numerical";
+            case utils.getConstants().SUBJECT.toLowerCase():
+            return "English";
+            case utils.getConstants().EXAM_DURATION.toLowerCase():
+            return "30 Mintus";
+            case utils.getConstants().EXAM_AVAILABILITY.toLowerCase():
+            return "1 Day";
+            case utils.getConstants().RESULT_TYPE.toLowerCase():
+            return "Pass Or Fail";
+            case utils.getConstants().ORDER_OF_QUES.toLowerCase():
+            return "Shuffle Questions";
+            case utils.getConstants().RESULT_REPORT_TYPE.toLowerCase():
+            return "Certificate";
+            case utils.getConstants().SCORING.toLowerCase():
+            return "Assign Total Points To The Marks";
+            case utils.getConstants().MINIMUM_PASSING_SCORE.toLowerCase():
+            return "33%";
+        }
+
+    }
+
 }())

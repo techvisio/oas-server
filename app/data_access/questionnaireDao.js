@@ -190,6 +190,7 @@ module.exports = (function () {
 
     function populateFilterData(queryFilter) {
         var query = {};
+        
         if (queryFilter.subjects && queryFilter.subjects.length > 0) {
             query.subject = { $in: queryFilter.subjects };
         }
@@ -198,6 +199,9 @@ module.exports = (function () {
         }
         if (queryFilter.questionnaireDesc) {
             query.desc = { "$regex": queryFilter.questionnaireDesc, "$options": "i" };
+        }
+        if (queryFilter.clientId) {
+            query.clientId = queryFilter.clientId;
         }
         if (queryFilter.pageFrom && queryFilter.pageTo) {
             query.marks = {

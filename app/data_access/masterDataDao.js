@@ -44,9 +44,12 @@ module.exports = (function () {
         logger.debug(context.reqId + " : createMasterData request recieved ");
         return new Promise((resolve, reject) => {
             var masterData = context.data;
-            masterData.masterData = [];
-            masterData.masterData.push(context.data.data);
-            masterData.clientId = context.loggedInUser.clientId;
+            masterData.data = [];
+            masterData.data.push(context.data.dataValue);
+            if (!masterData.clientId) {
+                masterData.clientId = context.loggedInUser.clientId;
+            }
+
             masterData.creationDate = new Date();
             masterData.createdBy = context.loggedInUser.userName;
             masterData.updateDate = new Date();
@@ -82,11 +85,12 @@ module.exports = (function () {
             return new Promise((resolve, reject) => {
                 var masterData = {
                     clientId: context.loggedInUser.clientId,
-                    dataName: context.namedParam.dataName
+                    dataName: context.data.dataName
                 }
                 getMasterDataByClientIdAndType(masterData)
                     .then(function (foundMasterData) {
-                        foundMasterData.data.push(context.data.data);
+                        foundMasterData.data = context.data.data;
+
                         resolve(foundMasterData);
                     })
                     .catch(err => reject(err));

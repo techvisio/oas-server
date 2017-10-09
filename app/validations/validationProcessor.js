@@ -77,6 +77,10 @@ module.exports = (function () {
         if (validationType === "QUESTIONNAIRE_VALIDATION") {
             return utils.getErrorConstants().QUESTIONNAIRE_VALIDATION_ERROR;
         }
+
+        if (validationType === "CANDIDATE_VALIDATION") {
+            return utils.getErrorConstants().CANDIDATE_VALIDATION_ERROR;
+        }
     }
 
 }())

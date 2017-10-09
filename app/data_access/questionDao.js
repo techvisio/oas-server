@@ -88,7 +88,9 @@ module.exports = (function () {
         if (queryFilter.questionDesc) {
             query.questionDesc = { "$regex": queryFilter.questionDesc, "$options": "i" };
         }
-
+        if (queryFilter.clientId) {
+            query.clientId = queryFilter.clientId;
+        }
         return query;
     }
     function createQuestion(context) {

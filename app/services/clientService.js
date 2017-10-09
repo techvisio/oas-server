@@ -6,9 +6,11 @@ var daoFactory;
 var clientDao;
 var clientModel;
 var validationService;
+var masterDataService;
 var uuid;
 var logger;
 var isInitialised = false;
+
 module.exports = (function () {
     return {
 
@@ -32,6 +34,7 @@ module.exports = (function () {
             clientDao = daoFactory.getDataAccessObject(utils.getConstants().DAO_CLIENT);
             clientModel = modelFactory.getModel(utils.getConstants().MODEL_CLIENT);
             validationService = require('../validations/validationProcessor');
+            masterDataService = require('./masterDataService');
             uuid = require('node-uuid');
             logger = utils.getLogger();
             isInitialised = true;
@@ -59,6 +62,7 @@ module.exports = (function () {
         return new Promise((resolve, reject) => {
             validationService.validate(utils.getConstants().CLIENT_VALIDATION, utils.getConstants().SIGN_UP, data)
                 .then(createClient)
+                .then(createMasterDataInit)
                 .then(createUser)
                 .then(sendConfirmationMail)
                 .then(client => resolve(client))
@@ -73,6 +77,15 @@ module.exports = (function () {
                 var clientContext = utils.getUtils().cloneContext(context, clientData);
                 clientDao.createClient(clientContext)
                     .then(client => resolve(client))
+                    .catch(err => reject(err));
+            });
+        }
+
+        function createMasterDataInit(client) {
+            return new Promise((resolve, reject) => {
+
+                masterDataService.createAllMasterDataInit(context,client.clientId)
+                    .then(savedMasterData => resolve(client))
                     .catch(err => reject(err));
             });
         }
