@@ -140,6 +140,18 @@ router.put('/client/:clientid/candidategroup/:candgrpid/delete', function (req, 
 
 });
 
+router.post('/client/:clientid/upload/bulkcandidate', function (req, res, next) {
+    
+    var context = utils.getUtils().getContext(req);
+    candidateService.validateBulkDataCandidate(req,context).then(function (candidateGroup) {
+        var responseBody = utils.getUtils().buildSuccessResponse(candidateGroup);
+        res.status(200).json(responseBody);
+    }, function (err) {
+        next(err);
+    })
+
+    });
+
 router.get('/client/:clientid/candidategroup/:id', function (req, res, next) {
 
     var candidateGroupId = req.params.id;

@@ -21,9 +21,14 @@ var CandidateExam = new Schema({
     documentMailToExamTaker: String,
     documentMailToCandidate: String,
     scoring: String,
-    minimumPassingScore:String,
-    candidates: [],
-    questions:[]
+    minimumPassingScore: String,
+    candidates: [
+        {
+            candidateId: String,
+            hashCode: String
+        }
+    ],
+    questions: []
 
 });
 

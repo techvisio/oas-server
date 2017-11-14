@@ -7,6 +7,10 @@ var passwordGenerator;
 var emailService;
 var isInitialised = false;
 var validationService;
+var formidable;
+var csv;
+var shell;
+var fs;
 
 module.exports = (function () {
     return {
@@ -22,7 +26,8 @@ module.exports = (function () {
         getFiltteredCandidates: getFiltteredCandidates,
         getFiltteredCandidateGroups: getFiltteredCandidateGroups,
         deleteCandidateGroup: deleteCandidateGroup,
-        getCandidateByEmailId :getCandidateByEmailId
+        getCandidateByEmailId: getCandidateByEmailId,
+        validateBulkDataCandidate: validateBulkDataCandidate
     }
 
     function init() {
@@ -35,6 +40,10 @@ module.exports = (function () {
             logger = utils.getLogger();
             validationService = require('../validations/validationProcessor');
             passwordGenerator = require('generate-password');
+            formidable = require('formidable');
+            csv = require('csvtojson');
+            fs = require('fs');
+            shell = require('shelljs');
             isInitialised = true;
         }
     }
@@ -63,7 +72,7 @@ module.exports = (function () {
         var candidate;
         return new Promise((resolve, reject) => {
             validationService.validate(utils.getConstants().CANDIDATE_VALIDATION, utils.getConstants().SAVE_CANDIDATE, context.data)
-            .then(creatingCandidate)
+                .then(creatingCandidate)
                 .then(updateGroup)
                 .then(creatingUser)
                 .then(savedCandidate => resolve(savedCandidate))
@@ -446,5 +455,119 @@ module.exports = (function () {
         });
 
     }
+
+    function validateBulkDataCandidate(req, context) {
+
+        init();
+
+        return new Promise((resolve, reject) => {
+            parseCandidateBulkFile(req, context)
+                .then(readAndConvertCsvToJson)
+                .then(validatingData).
+                then(sendValidAndInvalidData)
+                .then(data => resolve(data))
+                .catch(err => reject(err))
+        });
+
+
+        function parseCandidateBulkFile(req, context) {
+
+            return new Promise((resolve, reject) => {
+                var form = new formidable.IncomingForm();
+                var rootDirectory = utils.getConfiguration().getProperty('imageDirectory');
+                form.uploadDir = rootDirectory + req.session.user.clientId;
+                if (!fs.existsSync(form.uploadDir)) {
+                    shell.mkdir('-p', form.uploadDir);
+                }
+                form.parse(req, function (err, fields, files) {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(files);
+                    }
+                });
+            });
+        }
+
+        function readAndConvertCsvToJson(file) {
+
+            var convertedData = [];
+            var csvFilePath = file.file.path;
+            return new Promise((resolve, reject) => {
+                csv()
+                    .fromFile(csvFilePath)
+                    .on('json', (jsonObj) => {
+                        convertedData.push(jsonObj);
+                        resolve(convertedData)
+                    })
+            });
+        }
+
+        function sendValidAndInvalidData(candidates) {
+
+
+            var validData = [];
+            var invalidData = [];
+
+            return new Promise((resolve, reject) => {
+                for (var i = 0; i < candidates.length; i++) {
+                    if (candidates[i].isValidCandidate) {
+                        validData.push(candidates[i]);
+                    }
+                    else {
+                        invalidData.push(candidates[i]);
+                    }
+                }
+
+                var data = {
+                    "validCandidate": validData,
+                    "invalidCandidate": invalidData
+                }
+                resolve(data);
+            })
+        }
+    }
+
+    function validatingData(convertedData) {
+
+        var allCandidateData = [];
+        for (var i = 0; i < convertedData.length; i++) {
+
+
+            var candidateData = {
+                firstName: convertedData[i].First_Name,
+                lastName: convertedData[i].Last_Name,
+                emailId: convertedData[i].Email_Id,
+                identifier: convertedData[i].Identifier,
+                isValidCandidate: false,
+                errCode: ""
+
+            }
+            allCandidateData.push(
+                new Promise((resolve, reject) => {
+                    validationService.validate(utils.getConstants().CANDIDATE_VALIDATION, utils.getConstants().BULK_CANDIDATE_UPLOAD, candidateData)
+                        .then(function (msg) {
+
+                            if (msg === 'valid') {
+                                candidateData.isValidCandidate = true;
+                                resolve(candidateData)
+                            }
+
+                        })
+                        .catch(err => candidateData.isValidCandidate = false,
+                            resolve(candidateData));
+                })
+            )
+        }
+
+        return new Promise((resolve, reject) => {
+            Promise.all(allCandidateData).then(values => {
+                resolve(values);
+            });
+        });
+
+    }
+
 
 }());

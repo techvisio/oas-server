@@ -4,6 +4,9 @@ var candidateExamDao;
 var logger;
 var isInitialised = false;
 var candidateService;
+var uuid;
+var emailService;
+var candidateService;
 
 module.exports = (function () {
     return {
@@ -22,7 +25,11 @@ module.exports = (function () {
             candidateExamDao = daoFactory.getDataAccessObject(utils.getConstants().DAO_CANDIDATE_EXAM);
             logger = utils.getLogger();
             candidateService = require('./candidateService');
+            uuid = require('node-uuid');
+            emailService = require('./emailService');
+            candidateService = require('./candidateService');
             isInitialised = true;
+
         }
     }
 
@@ -58,13 +65,35 @@ module.exports = (function () {
         logger.debug(context.reqId + " : updateCandidateExam request recieved : " + context.data);
 
         return new Promise((resolve, reject) => {
-            candidateExamDao.updateCandidateExam(context)
-                .then(function (updatedExam) {
-                    resolve(updatedExam);
-                    logger.debug(context.reqId + " : sending response from updateCandidateExam: " + updatedExam);
-                })
-                .catch(err => reject(err));
+            updateExam()
+                .then(sendMail)
+                .then(exam => resolve(exam))
+                .catch(err => reject(err))
         });
+
+
+        function updateExam() {
+            putHashCodeToExamCandidate(context.data.candidates);
+            return new Promise((resolve, reject) => {
+                candidateExamDao.updateCandidateExam(context)
+                    .then(function (updatedExam) {
+                        resolve(updatedExam);
+                        logger.debug(context.reqId + " : sending response from updateCandidateExam: " + updatedExam);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
+
+        function sendMail(updatedExam) {
+
+            return new Promise((resolve, reject) => {
+                getCandidateAndSendExamEmail(context, updatedExam.candidates)
+                    .then(updatedExam => resolve(updatedExam))
+                    .catch(err => reject(err));
+            });
+        }
+
+
     }
 
     function quickAddCandidate(context) {
@@ -124,5 +153,63 @@ module.exports = (function () {
         });
     }
 
+    function putHashCodeToExamCandidate(candidates) {
+
+        for (var i = 0; i < candidates.length; i++) {
+
+            candidates[i].hashCode = uuid.v4();
+        }
+
+    }
+
+    function getCandidateAndSendExamEmail(context, examCandidates) {
+
+        var resolvedCandidates = [];
+
+        for (var i = 0; i < examCandidates.length; i++) {
+
+            resolvedCandidates.push(
+
+                new Promise((resolve, reject) => {
+                    getFiltteredCandidates(examCandidates[i])
+                        .then(sendExamMail)
+                        .then(candidate => resolve(candidate))
+                        .catch(err => reject(err))
+                })
+            );
+
+        }
+
+        function getFiltteredCandidates(candidate) {
+
+            var candidateData = {
+                _id: candidate.candidateId
+            }
+            candidateContext = utils.getUtils().cloneContext(context, candidateData);
+            return new Promise((resolve, reject) => {
+                candidateService.getFiltteredCandidates(candidateContext)
+                    .then(function (candidates) {
+                        resolve(candidates[0]);
+                    })
+                    .catch(err => reject(err));
+            });
+        }
+
+        function sendExamMail(candidate) {
+            return new Promise((resolve, reject) => {
+                emailService.sendCandidateExamMail(candidate)
+                    .then(data => resolve(candidate))
+                    .catch(err => reject(err));
+            });
+        }
+
+        var resolvedData = new Promise((resolve, reject) => {
+            Promise.all(resolvedCandidates).then(values => {
+                resolve(values);
+            });
+        });
+
+        return resolvedCandidates;
+    }
 
 }());

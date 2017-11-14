@@ -7,7 +7,8 @@ var isInitialised = false;
 module.exports = (function () {
     return {
         "SAVE_CANDIDATE": [checkContactNo,checkDuplicateCandidate,checkEmailId,checkFirstName, checkGender, checkIdentifier,checkLastName],
-        "UPDATE_CANDIDATE": [checkContactNo,checkDuplicateCandidate,checkEmailId,checkFirstName, checkGender, checkIdentifier,checkLastName]
+        "UPDATE_CANDIDATE": [checkContactNo,checkDuplicateCandidate,checkEmailId,checkFirstName, checkGender, checkIdentifier,checkLastName],
+        "BULK_CANDIDATE_UPLOAD": [checkDuplicateCandidate,checkEmailId,checkFirstName, checkIdentifier,checkLastName]
     }
 
     function init() {

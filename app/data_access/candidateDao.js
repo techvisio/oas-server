@@ -325,6 +325,12 @@ module.exports = (function () {
     function populateFilterData(queryFilter) {
         var query = {};
 
+        
+        if (queryFilter._id) {
+            query._id = queryFilter._id;
+
+        }
+
         if (queryFilter.firstName) {
             query.firstName = { "$regex": queryFilter.firstName.toLowerCase().trim(), "$options": "i" };
         }
@@ -353,6 +359,9 @@ module.exports = (function () {
             query.isActive = queryFilter.isActive;
         }
 
+        if (queryFilter.clientId) {
+            query.clientId = queryFilter.clientId;
+        }
         return query;
     }
 

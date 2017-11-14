@@ -7,6 +7,7 @@ var masterDataDao = require('./masterDataDao');
 var utilDao = require('./utilDao');
 var candidateDao = require('./candidateDao');
 var candidateExamDao = require('./candidateExamDao');
+var examCandidateDataDao = require('./examCandidateDataDao');
 
 module.exports = (function () {
     return {
@@ -31,6 +32,8 @@ module.exports = (function () {
                 return candidateDao;
             case utils.getConstants().DAO_CANDIDATE_EXAM:
                 return candidateExamDao;
+            case utils.getConstants().DAO_EXAM_CANDIDATE_DATA:
+                return examCandidateDataDao;
         }
     }
 })()

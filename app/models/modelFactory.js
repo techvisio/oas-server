@@ -8,6 +8,8 @@ var clientImageModel = require('./clientImage');
 var candidateModel = require('./candidate');
 var candidateGroupModel = require('./candidateGroup');
 var candidateExamModel = require('./candidateExam');
+var examCandidateDataModel = require('./examCandidateData');
+var examQuesDataModel = require('./examQuesData');
 
 module.exports = (function () {
     return {
@@ -34,6 +36,10 @@ module.exports = (function () {
                 return candidateGroupModel;
             case constants.MODEL_CANDIDATE_EXAM:
                 return candidateExamModel;
+            case constants.MODEL_EXAM_CANDIDATE_DATA:
+                return examCandidateDataModel;
+            case constants.MODEL_EXAM_QUES_DATA:
+                return examCandidateDataModel;
         }
 
     }

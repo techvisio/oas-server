@@ -12,6 +12,12 @@
   "candidateUserMailTemplate":{
       "subject":"[Techvisio] Login details for candidate",
       "body":"<!DOCTYPE html> <html><body><p>Hi,</p><p>{{ fullName }}</p><p>Your new account has been created.</p><p>your account details provided below, use for login.</p> <p><b> Password - {{ password }}</b></p><p><b>User Name - {{ userName }}</b></p><p><b>Client Code - {{ clientCode }}</b></p><p>Thanks,</p><p>The Techvisio Team</p></body></html>"
-  }
+  },
+
+  "candidateExamMailTemplate":{
+    "subject":"[Techvisio] exam link",
+    "body":"<!DOCTYPE html> <html><body><p>Hi,</p><p>{{ firstName }}</p><p>An exam has been created for you</p><p> {{ serverUrl }}' click here to start your exam.</p><p>Thanks,</p><p>The Techvisio Team</p></body></html>"
+}
+
 
 }

@@ -15,7 +15,8 @@ module.exports = (function () {
         sendMail: sendMail,
         sendVerificationMail: sendVerificationMail,
         sendResetPasswordMail: sendResetPasswordMail,
-        sendCandidateUserMail: sendCandidateUserMail
+        sendCandidateUserMail: sendCandidateUserMail,
+        sendCandidateExamMail : sendCandidateExamMail
     }
 
     function init() {
@@ -148,6 +149,23 @@ module.exports = (function () {
         }
         sendMail(mailContent);
         return Promise.resolve(user);
+    }
+
+    function sendCandidateExamMail(candidate) {
+        init();
+        var subject = utils.getTemplate().getProperty('candidateExamMailTemplate')['subject'];
+        var bodyTemplate = utils.getTemplate().getProperty('candidateExamMailTemplate')['body']
+        var serverUrl = utils.getUtils().getServerUrl(candidate);
+        candidate.serverUrl = serverUrl + "/api/public/client/verify?hashCode=" + candidate.hashCode
+        var emailContent = jst.render(bodyTemplate, client);
+
+        var mailContent = {
+            sentTo: client.primaryEmailId,
+            htmlBody: emailContent,
+            emailSubject: subject
+        }
+        sendMail(mailContent);
+        return Promise.resolve(candidate);
     }
 
 }());
